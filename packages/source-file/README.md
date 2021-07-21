@@ -1,4 +1,4 @@
-# @cogeotiff/source-file
+# @chunkd/source-file
 
 
 Load a COG from a file using `fs`
@@ -6,7 +6,7 @@ Load a COG from a file using `fs`
 ## Usage
 
 ```javascript
-import { SourceFile } from '@cogeotiff/source-file';
+import { SourceFile } from '@chunkd/source-file';
 
 const source = new SourceFile('./cog.tif');
 

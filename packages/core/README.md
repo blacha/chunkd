@@ -3,9 +3,9 @@
 Split up a file into chunks and then read the chunks as needed.
 
 ## Example Sources
-- File - [@cogeotiff/source-file](https://www.npmjs.com/package/@cogeotiff/source-file)
-- AWS - [@cogeotiff/source-aws](https://www.npmjs.com/package/@cogeotiff/source-aws)
-- Url - [@cogeotiff/source-url](https://www.npmjs.com/package/@cogeotiff/source-url)
+- File - [@chunkd/source-file](https://www.npmjs.com/package/@chunkd/source-file)
+- AWS - [@chunkd/source-aws](https://www.npmjs.com/package/@chunkd/source-aws)
+- Url - [@chunkd/source-url](https://www.npmjs.com/package/@chunkd/source-url)
 
 ### Example Usage
 Fetching Data

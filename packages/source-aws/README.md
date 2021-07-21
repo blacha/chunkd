@@ -1,11 +1,11 @@
-# @cogeotiff/source-aws
+# @chunkd/source-aws
 
 Load a chunks of a file from a AWS using `aws-sdk`
 
 ## Usage
 
 ```typescript
-import { SourceAwsS3 } from '@cogeotiff/source-aws';
+import { SourceAwsS3 } from '@chunkd/source-aws';
 import S3 from 'aws-sdk/clients/s3';
 
 const source = new SourceAwsS3('bucket', 'path/to/cog.tif', new S3());

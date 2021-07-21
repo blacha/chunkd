@@ -1,4 +1,4 @@
-# @cogeotiff/source-url
+# @chunkd/source-url
 
 
 Load a chunks of a file from a URL Source using `fetch`
@@ -6,7 +6,7 @@ Load a chunks of a file from a URL Source using `fetch`
 ## Usage
 
 ```javascript
-import { SourceUrl } from '@cogeotiff/source-url';
+import { SourceUrl } from '@chunkd/source-url';
 
 const source= new SourceUrl('https://example.com/cog.tif');
 
