@@ -14,7 +14,7 @@ export class SourceMemory extends ChunkSource {
     return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   }
 
-  constructor(name: string, bytes: ArrayBuffer) {
+  constructor(name: string, bytes: ArrayBuffer | Buffer) {
     super();
     const buf = SourceMemory.toArrayBuffer(bytes);
     this.name = name;
