@@ -2,7 +2,7 @@ import o from 'ospec';
 import 'source-map-support/register';
 import { ChunkSource } from '../chunk.source';
 
-o.spec('CogSourceChunked', () => {
+o.spec('SourceChunked', () => {
   o('should compute byte ranges', () => {
     const chunks = ChunkSource.getByteRanges(new Set([1, 2, 3]), 10);
     o(chunks.chunks).deepEquals([[1, 2, 3]]);

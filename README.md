@@ -7,7 +7,7 @@ File abstraction to read chunks of files from various sources
 
 ## Usage
 
-Load a COG from a URL using `fetch`
+Load a chunks from a URL using `fetch`
 
 ```typescript
 const source = new SourceUrl('https://example.com/foo')

@@ -15,7 +15,7 @@ function getUint64(dataview: DataView, byteOffset: number, isLittleEndian: boole
   return isLittleEndian ? left + 2 ** 32 * right : 2 ** 32 * left + right;
 }
 
-o.spec('CogSourceChunk', () => {
+o.spec('SourceChunk', () => {
   const CHUNK_SIZE = 10;
   let source: FakeChunkSource;
 
@@ -106,7 +106,15 @@ o.spec('CogSourceChunk', () => {
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt64; i++) {
         o(getUint64(chunk, i, source.isLittleEndian)).equals(source.uint64(i));
-        o(BigInt(getUint64(chunk, i, source.isLittleEndian))).equals(source.bigUint64(i));
+      }
+    });
+
+    o(`should read bigint 64 (${word}`, async () => {
+      source.isLittleEndian = isLittleEndian;
+
+      const chunk = await Chunk(0);
+      for (let i = 0; i < source.chunkSize - ByteSize.UInt64; i++) {
+        o(chunk.getBigUint64(i, source.isLittleEndian)).equals(source.bigUint64(i));
       }
     });
   }

@@ -27,7 +27,7 @@ export class FakeRemote implements S3Like {
   }
 }
 
-o.spec('CogSourceAwsS3', () => {
+o.spec('SourceAwsS3', () => {
   const fakeRemote = new FakeRemote(Buffer.from([]));
 
   o('should round trip uri', () => {

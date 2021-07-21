@@ -12,7 +12,7 @@ function getCB(source: SourceUrl, index: number): DataView {
   throw Error(`Missing chunk ${index}`);
 }
 
-o.spec('CogSourceUrl', () => {
+o.spec('SourceUrl', () => {
   let source: SourceUrl;
   let ranges: string[];
 
@@ -28,7 +28,7 @@ o.spec('CogSourceUrl', () => {
     }
     const buffer = new Uint8Array(bytes).buffer;
     const arrayBuffer = (): any => Promise.resolve(buffer);
-    return Promise.resolve({ arrayBuffer, ok: true }) as any;
+    return Promise.resolve({ arrayBuffer, ok: true, headers: new Map() }) as any;
   };
 
   o.beforeEach(() => {
