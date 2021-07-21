@@ -1,0 +1,23 @@
+{
+    "name": "@chunkd/source-aws",
+    "version": "4.3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/blacha/chunkd.git",
+        "directory": "packages/source-aws"
+    },
+    "author": "Blayne Chard",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "license": "MIT",
+    "scripts": {},
+    "dependencies": {
+        "@chunkd/core": "^4.3.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.22"
+    }
+}

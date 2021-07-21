@@ -1,0 +1,25 @@
+{
+    "name": "@chunkd/source-url",
+    "version": "4.3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/blacha/chunkd.git",
+        "directory": "packages/source-url"
+    },
+    "main": "./build/index.node.js",
+    "browser": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "author": "Blayne Chard",
+    "license": "MIT",
+    "scripts": {},
+    "dependencies": {
+        "@chunkd/core": "^4.3.0",
+        "node-fetch": "^2.6.0"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^2.5.8"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
