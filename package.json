@@ -1,0 +1,33 @@
+{
+    "name": "@cogeotiff/base",
+    "version": "0.1.0",
+    "scripts": {
+        "clean": "tsc -b --clean && rimraf 'packages/*/build'",
+        "build": "tsc -b --pretty",
+        "build-watch": "tsc -b --pretty --watch",
+        "version": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
+        "lint": "eslint 'packages/*/{src,test}/**/*.{js,ts,tsx}' --quiet --fix",
+        "test": "ospec --globs 'packages/*/build/**/*.test.js'"
+    },
+    "private": true,
+    "keywords": [],
+    "author": "Blayne Chard",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@linzjs/style": "^2.0.0",
+        "@types/ospec": "^4.0.2",
+        "lerna": "^4.0.0",
+        "ospec": "^4.1.1",
+        "rimraf": "^3.0.0",
+        "source-map-support": "^0.5.19"
+    },
+    "workspaces": {
+        "packages": [
+            "packages/*"
+        ],
+        "nohoist": [
+            "**/@types/**"
+        ]
+    }
+}
