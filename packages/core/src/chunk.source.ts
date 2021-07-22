@@ -279,12 +279,11 @@ export abstract class ChunkSource {
       return chunk.getUint32(offset - chunkId * this.chunkSize, this.isLittleEndian);
     }
 
-    const intA = this.uint8(offset);
-    const intB = this.uint8(offset + 1);
-    const intC = this.uint8(offset + 2);
-    const intD = this.uint8(offset + 3);
-    if (this.isLittleEndian) return intA + (intB << 8) + (intC << 16) + (intD << 24);
-    return (intA << 24) + (intB << 16) + (intC << 8) + intD;
+    const intA = this.uint16(offset);
+    const intB = this.uint16(offset + ByteSize.UInt16);
+
+    if (this.isLittleEndian) return intA + intB * 0x10000;
+    return intA * 0x10000 + intB;
   }
 
   /**

@@ -144,6 +144,15 @@ o.spec('SourceChunk', () => {
     });
   }
 
+  o('should correctly sign uint32', () => {
+    const chunks = Buffer.from([75, 168, 242, 148]);
+    const source = new SourceMemory('source', chunks);
+    source.isOneChunk = (): null => null;
+
+    const view = new DataView(SourceMemory.toArrayBuffer(chunks));
+    o(source.uint32(0)).equals(view.getUint32(0, true));
+  });
+
   o('should uint16 across chunks', async () => {
     source.chunkSize = 1;
     await Chunk(0);
