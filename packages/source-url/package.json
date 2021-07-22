@@ -1,6 +1,6 @@
 {
     "name": "@chunkd/source-url",
-    "version": "4.5.0",
+    "version": "4.5.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/blacha/chunkd.git",
@@ -13,7 +13,7 @@
     "license": "MIT",
     "scripts": {},
     "dependencies": {
-        "@chunkd/core": "^4.5.0",
+        "@chunkd/core": "^4.5.1",
         "node-fetch": "^2.6.0"
     },
     "devDependencies": {
