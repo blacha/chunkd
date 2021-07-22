@@ -2,6 +2,7 @@ import o from 'ospec';
 import 'source-map-support/register';
 import { ByteSize } from '../bytes';
 import { ChunkId } from '../chunk.source';
+import { SourceMemory } from '../chunk.source.memory';
 import { FakeChunkSource } from './chunk.source.fake';
 
 // Reference uin64 from MDN
@@ -109,13 +110,37 @@ o.spec('SourceChunk', () => {
       }
     });
 
-    o(`should read bigint 64 (${word}`, async () => {
+    o(`should read bigint 64 (${word})`, async () => {
       source.isLittleEndian = isLittleEndian;
 
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt64; i++) {
         o(chunk.getBigUint64(i, source.isLittleEndian)).equals(source.bigUint64(i));
       }
+    });
+
+    o(`should read across chunk boundary (${word})`, async () => {
+      const chunks = Buffer.from([0, 1, 2, 3, 4, 5, 6, 7]);
+      const view = new DataView(SourceMemory.toArrayBuffer(chunks));
+      source.isLittleEndian = isLittleEndian;
+      source.chunkSize = 1;
+
+      await source.loadBytes(0, 8);
+
+      o(source.isOneChunk(0, 2)).equals(null);
+      o(source.uint16(0)).equals(view.getUint16(0, isLittleEndian));
+      o(source.uint16(2)).equals(view.getUint16(2, isLittleEndian));
+      o(source.uint16(4)).equals(view.getUint16(4, isLittleEndian));
+      o(source.uint16(6)).equals(view.getUint16(6, isLittleEndian));
+
+      o(source.isOneChunk(0, 4)).equals(null);
+      o(source.uint32(0)).equals(view.getUint32(0, isLittleEndian));
+      o(source.uint32(2)).equals(view.getUint32(2, isLittleEndian));
+      o(source.uint32(4)).equals(view.getUint32(4, isLittleEndian));
+
+      o(source.isOneChunk(0, 16)).equals(null);
+      o(source.uint64(0)).equals(Number(view.getBigUint64(0, isLittleEndian)));
+      o(source.bigUint64(0)).equals(view.getBigUint64(0, isLittleEndian));
     });
   }
 

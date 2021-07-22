@@ -300,8 +300,8 @@ export abstract class ChunkSource {
     }
     const intA = BigInt(this.uint32(offset));
     const intB = BigInt(this.uint32(offset + ByteSize.UInt32));
-    if (this.isLittleEndian) return (intA + intB) << BigInt(32);
-    return intA << (BigInt(32) + intB);
+    if (this.isLittleEndian) return intA + (intB << BigInt(32));
+    return (intA << BigInt(32)) + intB;
   }
 
   /**
