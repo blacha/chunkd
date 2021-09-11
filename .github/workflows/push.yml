@@ -30,6 +30,12 @@ jobs:
     - name: Test
       run: yarn run test
 
+    - name: Create github release
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: npx conventional-github-releaser -p angular
+      env:
+        CONVENTIONAL_GITHUB_RELEASER_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
     - name: Publish NPM
       if: startsWith(github.ref, 'refs/tags/v')
       run: npx lerna publish from-git --yes
