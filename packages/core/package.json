@@ -1,6 +1,6 @@
 {
     "name": "@chunkd/core",
-    "version": "4.5.1",
+    "version": "5.0.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/blacha/chunkd.git",
