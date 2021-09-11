@@ -18,6 +18,13 @@ source.chunkSize = 1024;
 if (!source.hasBytes(0, 2048)) await source.loadBytes(0, 2048)
 
 const bytes = source.bytes(0, 2048);
+
+// Accessing data using Dataview methods
+bytes.getUint8(1024);
+bytes.getUint16(1024);
+bytes.getUint32(1024);
+bytes.getUint64(1024); // Read a bigint as a number this may loose precision
+bytes.getBigUint64(1024);
 ```
 
 

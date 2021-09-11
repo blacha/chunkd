@@ -1,6 +1,6 @@
-import { ChunkSource, LogType } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
 
-export class SourceUrl extends ChunkSource {
+export class SourceUrl extends ChunkSourceBase {
   type = 'url';
   protocol = 'http';
 

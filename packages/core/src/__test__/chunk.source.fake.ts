@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { ChunkSource } from '../chunk.source';
+import { ChunkSourceBase } from '../chunk.source';
 
-export class FakeChunkSource extends ChunkSource {
+export class FakeChunkSource extends ChunkSourceBase {
   protocol = 'fake';
   type = 'fake';
   uri = 'fake';
@@ -21,7 +21,7 @@ export class FakeChunkSource extends ChunkSource {
 }
 
 let Id = 0;
-export class TestFileChunkSource extends ChunkSource {
+export class TestFileChunkSource extends ChunkSourceBase {
   protocol = 'test';
   id = Id++;
   type = 'test-file';

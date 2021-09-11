@@ -1,6 +1,6 @@
-import { ChunkSource } from './chunk.source';
+import { ChunkSourceBase } from './chunk.source';
 
-export class SourceMemory extends ChunkSource {
+export class SourceMemory extends ChunkSourceBase {
   protocol = 'memory';
   chunkSize: number;
   uri: string;

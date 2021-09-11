@@ -1,3 +1,4 @@
+import { ChunkSource } from './source';
 import { ByteSize } from './bytes';
 import { LogType } from './log';
 export type ChunkId = number & { _type: 'chunkId' };
@@ -19,6 +20,10 @@ export interface RequestLog {
 const setNext: (cb: () => void, delay?: number) => void =
   typeof setImmediate === 'undefined' ? setTimeout : setImmediate;
 
+const NotImplemented = (): number => {
+  throw new Error('Method not implemented.');
+};
+
 /**
  * Chunked source for remote data
  *
@@ -26,9 +31,9 @@ const setNext: (cb: () => void, delay?: number) => void =
  *
  * This will also handle joining of consecutive requests, even when it is semi consecutive
  */
-export abstract class ChunkSource {
+export abstract class ChunkSourceBase implements ChunkSource {
   /** By default record a log of requests made by chunked sources */
-  static DefaultTrackRequests = true;
+  static DefaultTrackRequests = false;
 
   /** size of chunks to fetch (Bytes) */
   abstract chunkSize: number;
@@ -63,7 +68,7 @@ export abstract class ChunkSource {
    */
   requests: RequestLog[] = [];
   /** Should this source track requests  */
-  isRequestsTracked: boolean = ChunkSource.DefaultTrackRequests;
+  isRequestsTracked: boolean = ChunkSourceBase.DefaultTrackRequests;
 
   /**
    * number non requested chunks to load even
@@ -153,7 +158,7 @@ export abstract class ChunkSource {
     this.toFetch = new Set();
     this.toFetchPromise = null;
 
-    const ranges = ChunkSource.getByteRanges(chunkIds, this.maxChunkCount, this.blankFillCount);
+    const ranges = ChunkSourceBase.getByteRanges(chunkIds, this.maxChunkCount, this.blankFillCount);
 
     const chunkData: ArrayBuffer[] = [];
 
@@ -236,92 +241,14 @@ export abstract class ChunkSource {
   uint(offset: number, bs: ByteSize): number {
     switch (bs) {
       case ByteSize.UInt8:
-        return this.uint8(offset);
+        return this.getUint8(offset);
       case ByteSize.UInt16:
-        return this.uint16(offset);
+        return this.getUint16(offset);
       case ByteSize.UInt32:
-        return this.uint32(offset);
+        return this.getUint32(offset);
       case ByteSize.UInt64:
-        return this.uint64(offset);
+        return this.getUint64(offset);
     }
-  }
-
-  /**
-   * Read a Uint8 at the offset
-   * @param offset Offset relative to the view
-   */
-  uint8(offset: number): number {
-    const chunkId = this.getChunkId(offset);
-    const chunk = this.getView(chunkId);
-    return chunk.getUint8(offset - chunkId * this.chunkSize);
-  }
-
-  /** Read a UInt16 at the offset */
-  uint16(offset: number): number {
-    const chunkId = this.isOneChunk(offset, ByteSize.UInt8);
-    if (chunkId != null) {
-      const chunk = this.getView(chunkId);
-      return chunk.getUint16(offset - chunkId * this.chunkSize, this.isLittleEndian);
-    }
-
-    const intA = this.uint8(offset);
-    const intB = this.uint8(offset + ByteSize.UInt8);
-    if (this.isLittleEndian) return intA + (intB << 8);
-    return (intA << 8) + intB;
-  }
-
-  /** Read a UInt32 at the offset */
-  uint32(offset: number): number {
-    // If all the data is contained inside one Chunk, Load the bytes directly
-    const chunkId = this.isOneChunk(offset, ByteSize.UInt32);
-    if (chunkId != null) {
-      const chunk = this.getView(chunkId);
-      return chunk.getUint32(offset - chunkId * this.chunkSize, this.isLittleEndian);
-    }
-
-    const intA = this.uint16(offset);
-    const intB = this.uint16(offset + ByteSize.UInt16);
-
-    if (this.isLittleEndian) return intA + intB * 0x10000;
-    return intA * 0x10000 + intB;
-  }
-
-  /**
-   * Read a uint64 at the offset as a BigInt
-   *
-   * @param offset offset to read
-   */
-  bigUint64(offset: number): bigint {
-    const chunkId = this.isOneChunk(offset, ByteSize.UInt64);
-    if (chunkId != null) {
-      const chunk = this.getView(chunkId);
-      return chunk.getBigUint64(offset - chunkId * this.chunkSize, this.isLittleEndian);
-    }
-    const intA = BigInt(this.uint32(offset));
-    const intB = BigInt(this.uint32(offset + ByteSize.UInt32));
-    if (this.isLittleEndian) return intA + (intB << BigInt(32));
-    return (intA << BigInt(32)) + intB;
-  }
-
-  /**
-   * Read a uint64 at the offset
-   *
-   * This is not precise for large numbers
-   * @see uint64be
-   * @param offset offset to read
-   */
-  uint64(offset: number): number {
-    // If all the data is contained inside one Chunk, Load the bytes directly
-    const chunkId = this.isOneChunk(offset, ByteSize.UInt64);
-    if (chunkId != null) {
-      const chunk = this.getView(chunkId);
-      return Number(chunk.getBigUint64(offset - chunkId * this.chunkSize, this.isLittleEndian));
-    }
-
-    const intA = this.uint32(offset);
-    const intB = this.uint32(offset + ByteSize.UInt32);
-    if (this.isLittleEndian) return intA + intB * POW_32; // Shifting by 32 is bad
-    return intA * POW_32 + intB;
   }
 
   /**
@@ -408,4 +335,103 @@ export abstract class ChunkSource {
     if (isNaN(result)) throw new Error('Failed to parse content-range: ' + range);
     return result;
   }
+
+  get buffer(): ArrayBuffer {
+    throw new Error('Method not implemented.');
+  }
+
+  _byteLength: number;
+  get byteLength(): number {
+    if (this._byteLength) return this._byteLength;
+    throw Error('.size() has not been feteched.');
+  }
+  byteOffset = 0;
+
+  getUint8(byteOffset: number): number {
+    const chunkId = this.getChunkId(byteOffset);
+    const chunk = this.getView(chunkId);
+    return chunk.getUint8(byteOffset - chunkId * this.chunkSize);
+  }
+
+  getUint16(byteOffset: number): number {
+    const chunkId = this.isOneChunk(byteOffset, ByteSize.UInt8);
+    if (chunkId != null) {
+      const chunk = this.getView(chunkId);
+      return chunk.getUint16(byteOffset - chunkId * this.chunkSize, this.isLittleEndian);
+    }
+
+    const intA = this.getUint8(byteOffset);
+    const intB = this.getUint8(byteOffset + ByteSize.UInt8);
+    if (this.isLittleEndian) return intA + (intB << 8);
+    return (intA << 8) + intB;
+  }
+
+  getUint32(byteOffset: number): number {
+    // If all the data is contained inside one Chunk, Load the bytes directly
+    const chunkId = this.isOneChunk(byteOffset, ByteSize.UInt32);
+    if (chunkId != null) {
+      const chunk = this.getView(chunkId);
+      return chunk.getUint32(byteOffset - chunkId * this.chunkSize, this.isLittleEndian);
+    }
+
+    const intA = this.getUint16(byteOffset);
+    const intB = this.getUint16(byteOffset + ByteSize.UInt16);
+
+    if (this.isLittleEndian) return intA + intB * 0x10000;
+    return intA * 0x10000 + intB;
+  }
+
+  /**
+   * Read a uint64 at the offset
+   *
+   * This is not precise for large numbers
+   * @see uint64be
+   * @param offset offset to read
+   */
+  getUint64(offset: number): number {
+    // If all the data is contained inside one Chunk, Load the bytes directly
+    const chunkId = this.isOneChunk(offset, ByteSize.UInt64);
+    if (chunkId != null) {
+      const chunk = this.getView(chunkId);
+      return Number(chunk.getBigUint64(offset - chunkId * this.chunkSize, this.isLittleEndian));
+    }
+
+    const intA = this.getUint32(offset);
+    const intB = this.getUint32(offset + ByteSize.UInt32);
+    if (this.isLittleEndian) return intA + intB * POW_32; // Shifting by 32 is bad
+    return intA * POW_32 + intB;
+  }
+
+  getBigUint64(byteOffset: number): bigint {
+    const chunkId = this.isOneChunk(byteOffset, ByteSize.UInt64);
+    if (chunkId != null) {
+      const chunk = this.getView(chunkId);
+      return chunk.getBigUint64(byteOffset - chunkId * this.chunkSize, this.isLittleEndian);
+    }
+    const intA = BigInt(this.getUint32(byteOffset));
+    const intB = BigInt(this.getUint32(byteOffset + ByteSize.UInt32));
+    if (this.isLittleEndian) return intA + (intB << BigInt(32));
+    return (intA << BigInt(32)) + intB;
+  }
+
+  getBigInt64(): bigint {
+    throw new Error('Not implemented.');
+  }
+
+  getFloat32 = NotImplemented;
+  getFloat64 = NotImplemented;
+  getInt8 = NotImplemented;
+  getInt16 = NotImplemented;
+  getInt32 = NotImplemented;
+  setFloat32 = NotImplemented;
+  setFloat64 = NotImplemented;
+  setInt8 = NotImplemented;
+  setInt16 = NotImplemented;
+  setInt32 = NotImplemented;
+  setUint8 = NotImplemented;
+  setUint16 = NotImplemented;
+  setUint32 = NotImplemented;
+  setBigInt64 = NotImplemented;
+  setBigUint64 = NotImplemented;
+  [Symbol.toStringTag]: string;
 }

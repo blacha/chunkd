@@ -31,8 +31,8 @@ o.spec('SourceAwsS3', () => {
   const fakeRemote = new FakeRemote(Buffer.from([]));
 
   o('should round trip uri', () => {
-    o(SourceAwsS3.fromUri('s3://foo/bar.tiff', fakeRemote)!.name).equals('s3://foo/bar.tiff');
-    o(SourceAwsS3.fromUri('s3://foo/bar/baz.tiff', fakeRemote)!.name).equals('s3://foo/bar/baz.tiff');
+    o(SourceAwsS3.fromUri('s3://foo/bar.tiff', fakeRemote)!.uri).equals('s3://foo/bar.tiff');
+    o(SourceAwsS3.fromUri('s3://foo/bar/baz.tiff', fakeRemote)!.uri).equals('s3://foo/bar/baz.tiff');
 
     // No Key
     o(SourceAwsS3.fromUri('s3://foo', fakeRemote)).equals(null);
