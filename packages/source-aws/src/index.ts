@@ -109,7 +109,7 @@ export class SourceAwsS3 extends ChunkSourceBase {
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     } catch (error) {
       logger?.error({ error, source: this.uri, fetchRange }, 'FailedToFetch');
-      throw new CompositeError(`Failed to fetch ${this.uri} ${fetchRange}`, error);
+      throw new CompositeError(`Failed to fetch ${this.uri} ${fetchRange}`, error as Error);
     }
   }
 }
