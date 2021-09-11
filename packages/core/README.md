@@ -45,7 +45,7 @@ const source = new SourceUrl('https://example.com/foo')
 
 if (!source.hasBytes(0, 1024)) await source.loadBytes(0, 1024)
 // Read a UInt8 starting at offset 0
-const firstNumber = source.uint8(0);
+const firstNumber = source.getUint8(0);
 // Read a buffer from offset 10, with length of 100
 const firstBuffer = source.bytes(10, 100)
 ```
