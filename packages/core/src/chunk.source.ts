@@ -238,7 +238,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
     return Math.floor(offset / this.chunkSize) as ChunkId;
   }
 
-  uint(offset: number, bs: ByteSize): number {
+  getUint(offset: number, bs: ByteSize): number {
     switch (bs) {
       case ByteSize.UInt8:
         return this.getUint8(offset);
