@@ -1,5 +1,5 @@
 import o from 'ospec';
-import { SourceMemory } from '../chunk.source.memory';
+import { SourceMemory } from '../chunk.source.memory.js';
 
 o.spec('MemorySource', () => {
   o('should read from memory', async () => {

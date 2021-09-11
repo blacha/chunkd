@@ -1,6 +1,6 @@
 import o from 'ospec';
-import 'source-map-support/register';
-import { ChunkSourceBase } from '../chunk.source';
+import 'source-map-support/register.js';
+import { ChunkSourceBase } from '../chunk.source.js';
 
 o.spec('SourceChunked', () => {
   o('should compute byte ranges', () => {

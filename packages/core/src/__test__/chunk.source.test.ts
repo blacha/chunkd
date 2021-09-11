@@ -1,9 +1,9 @@
 import o from 'ospec';
-import 'source-map-support/register';
-import { ByteSize } from '../bytes';
-import { ChunkId } from '../chunk.source';
-import { SourceMemory } from '../chunk.source.memory';
-import { FakeChunkSource } from './chunk.source.fake';
+import 'source-map-support/register.js';
+import { ByteSize } from '../bytes.js';
+import { ChunkId } from '../chunk.source.js';
+import { SourceMemory } from '../chunk.source.memory.js';
+import { FakeChunkSource } from './chunk.source.fake.js';
 
 // Reference uin64 from MDN
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView

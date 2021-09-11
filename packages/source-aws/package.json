@@ -1,6 +1,10 @@
 {
     "name": "@chunkd/source-aws",
     "version": "5.0.0",
+    "type": "module",
+    "engines": {
+        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/blacha/chunkd.git",

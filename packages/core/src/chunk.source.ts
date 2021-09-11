@@ -1,6 +1,6 @@
-import { ChunkSource } from './source';
-import { ByteSize } from './bytes';
-import { LogType } from './log';
+import { ChunkSource } from './source.js';
+import { ByteSize } from './bytes.js';
+import { LogType } from './log.js';
 export type ChunkId = number & { _type: 'chunkId' };
 
 /** Shifting `<< 32` does not work in javascript */

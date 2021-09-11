@@ -1,5 +1,5 @@
-import { ByteSize } from '.';
-import { LogType } from './log';
+import { ByteSize } from './bytes.js';
+import { LogType } from './log.js';
 
 export interface ChunkSource extends DataView {
   /** type of the source, @example `file` or `aws:s3` */
@@ -22,7 +22,6 @@ export interface ChunkSource extends DataView {
   getUint64(offset: number): number;
   /** Read a uint by number of bytes */
   getUint(offset: number, bytes: ByteSize): number;
-
   /** close the source */
   close?(): Promise<void>;
 }
