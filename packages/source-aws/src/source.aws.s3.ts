@@ -1,4 +1,4 @@
-import { ChunkSource, LogType } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
 
 class CompositeError extends Error {
   reason: Error;
@@ -20,8 +20,9 @@ export interface S3Like {
   headObject(req: { Bucket: string; Key: string }): S3LikeResponse<{ ContentLength?: number }>;
 }
 
-export class SourceAwsS3 extends ChunkSource {
-  type = 'aws-s3';
+export class SourceAwsS3 extends ChunkSourceBase {
+  static type = 'aws:s3';
+  type = SourceAwsS3.type;
   protocol = 's3';
 
   static DefaultChunkSize = 64 * 1024;
@@ -51,7 +52,7 @@ export class SourceAwsS3 extends ChunkSource {
   }
 
   static isSource(source: ChunkSource): source is SourceAwsS3 {
-    return source.type === 'aws-s3';
+    return source.type === SourceAwsS3.type;
   }
 
   _size: Promise<number> | undefined;

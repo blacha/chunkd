@@ -41,8 +41,8 @@ o.spec('SourceUrl', () => {
     await source.loadBytes(0, 2);
 
     o([...source.chunks.keys()]).deepEquals([0, 1]);
-    o(source.uint8(0)).equals(0);
-    o(source.uint8(1)).equals(1);
+    o(source.getUint8(0)).equals(0);
+    o(source.getUint8(1)).equals(1);
   });
 
   o('should group big fetches', async () => {
@@ -52,7 +52,7 @@ o.spec('SourceUrl', () => {
     o([...source.chunks.keys()]).deepEquals([0, 1, 2, 3, 4]);
 
     for (let i = 0; i < 5; i++) {
-      o(source.uint8(i)).equals(i);
+      o(source.getUint8(i)).equals(i);
       o(source.chunks.get(i)?.getUint8(0)).equals(i);
     }
   });
@@ -66,7 +66,7 @@ o.spec('SourceUrl', () => {
     o([...source.chunks.keys()]).deepEquals([0, 1, 2, 3, 4, 5, 6, 7]);
 
     for (let i = 0; i < MAX_BYTE; i++) {
-      o(source.uint8(i)).equals(i);
+      o(source.getUint8(i)).equals(i);
     }
 
     for (let i = 0; i < MAX_BYTE / source.chunkSize; i++) {
@@ -81,9 +81,9 @@ o.spec('SourceUrl', () => {
     source.chunkSize = 2;
     await source.loadBytes(2, 3);
 
-    o(source.uint8(2)).equals(2);
-    o(source.uint8(3)).equals(3);
-    o(source.uint8(4)).equals(4);
+    o(source.getUint8(2)).equals(2);
+    o(source.getUint8(3)).equals(3);
+    o(source.getUint8(4)).equals(4);
 
     o(getCB(source, 1).byteLength).equals(2);
     o(getCB(source, 2).byteLength).equals(2);
@@ -93,11 +93,11 @@ o.spec('SourceUrl', () => {
     source.chunkSize = 2;
     await Promise.all([source.loadBytes(8, 3), source.loadBytes(1, 3)]);
 
-    o(source.uint8(0)).equals(0);
-    o(source.uint8(1)).equals(1);
-    o(source.uint8(2)).equals(2);
-    o(source.uint8(8)).equals(8);
-    o(source.uint8(9)).equals(9);
-    o(source.uint8(10)).equals(10);
+    o(source.getUint8(0)).equals(0);
+    o(source.getUint8(1)).equals(1);
+    o(source.getUint8(2)).equals(2);
+    o(source.getUint8(8)).equals(8);
+    o(source.getUint8(9)).equals(9);
+    o(source.getUint8(10)).equals(10);
   });
 });

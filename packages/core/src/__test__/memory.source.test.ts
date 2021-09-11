@@ -12,8 +12,8 @@ o.spec('MemorySource', () => {
     const lastByte = await sourceMemory.fetchBytes(-1);
     o(String.fromCharCode(new Uint8Array(lastByte)[0])).equals('c');
 
-    o(sourceMemory.uint8(0)).equals('a'.charCodeAt(0));
-    o(sourceMemory.uint8(1)).equals('b'.charCodeAt(0));
-    o(sourceMemory.uint8(2)).equals('c'.charCodeAt(0));
+    o(sourceMemory.getUint8(0)).equals('a'.charCodeAt(0));
+    o(sourceMemory.getUint8(1)).equals('b'.charCodeAt(0));
+    o(sourceMemory.getUint8(2)).equals('c'.charCodeAt(0));
   });
 });

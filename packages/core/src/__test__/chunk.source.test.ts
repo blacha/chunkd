@@ -33,23 +33,23 @@ o.spec('SourceChunk', () => {
 
   o('should get unit8', async () => {
     const chunk = await Chunk(0);
-    o(source.uint8(0)).equals(0);
-    o(source.uint16(0)).equals(256);
+    o(source.getUint8(0)).equals(0);
+    o(source.getUint16(0)).equals(256);
 
-    o(source.uint32(0)).equals(50462976);
-    o(source.uint32(4)).equals(117835012);
+    o(source.getUint32(0)).equals(50462976);
+    o(source.getUint32(4)).equals(117835012);
 
-    o(source.uint64(0)).equals(getUint64(chunk, 0, true));
+    o(source.getUint64(0)).equals(getUint64(chunk, 0, true));
   });
 
   o('should get unit8 from range', async () => {
     await Chunk(0);
-    for (let i = 0; i < 10; i++) o(source.uint8(i)).equals(i);
+    for (let i = 0; i < 10; i++) o(source.getUint8(i)).equals(i);
   });
 
   o('should use chunk offset', async () => {
     await Chunk(1);
-    o(source.uint8(10)).equals(10);
+    o(source.getUint8(10)).equals(10);
   });
 
   o('should disable request tracking', async () => {
@@ -59,12 +59,13 @@ o.spec('SourceChunk', () => {
   });
 
   o('should support multiple chunks', async () => {
+    source.isRequestsTracked = true;
     await Chunk(1);
     await Chunk(2);
     await Chunk(3);
 
     for (let i = 10; i < source.chunkSize * 3; i++) {
-      o(source.uint8(i)).equals(i);
+      o(source.getUint8(i)).equals(i);
     }
 
     o(source.requests.length).equals(3);
@@ -77,7 +78,7 @@ o.spec('SourceChunk', () => {
     source.isLittleEndian = false;
     const chunk = await Chunk(0);
     for (let i = 0; i < source.chunkSize - 1; i++) {
-      o(chunk.getUint16(i, source.isLittleEndian)).equals(source.uint16(i));
+      o(chunk.getUint16(i, source.isLittleEndian)).equals(source.getUint16(i));
     }
   });
 
@@ -88,7 +89,7 @@ o.spec('SourceChunk', () => {
 
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt16; i++) {
-        o(chunk.getUint16(i, source.isLittleEndian)).equals(source.uint16(i));
+        o(chunk.getUint16(i, source.isLittleEndian)).equals(source.getUint16(i));
       }
     });
 
@@ -97,7 +98,7 @@ o.spec('SourceChunk', () => {
 
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt32; i++) {
-        o(chunk.getUint32(i, source.isLittleEndian)).equals(source.uint32(i));
+        o(chunk.getUint32(i, source.isLittleEndian)).equals(source.getUint32(i));
       }
     });
 
@@ -106,7 +107,7 @@ o.spec('SourceChunk', () => {
 
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt64; i++) {
-        o(getUint64(chunk, i, source.isLittleEndian)).equals(source.uint64(i));
+        o(getUint64(chunk, i, source.isLittleEndian)).equals(source.getUint64(i));
       }
     });
 
@@ -115,7 +116,7 @@ o.spec('SourceChunk', () => {
 
       const chunk = await Chunk(0);
       for (let i = 0; i < source.chunkSize - ByteSize.UInt64; i++) {
-        o(chunk.getBigUint64(i, source.isLittleEndian)).equals(source.bigUint64(i));
+        o(chunk.getBigUint64(i, source.isLittleEndian)).equals(source.getBigUint64(i));
       }
     });
 
@@ -128,19 +129,19 @@ o.spec('SourceChunk', () => {
       await source.loadBytes(0, 8);
 
       o(source.isOneChunk(0, 2)).equals(null);
-      o(source.uint16(0)).equals(view.getUint16(0, isLittleEndian));
-      o(source.uint16(2)).equals(view.getUint16(2, isLittleEndian));
-      o(source.uint16(4)).equals(view.getUint16(4, isLittleEndian));
-      o(source.uint16(6)).equals(view.getUint16(6, isLittleEndian));
+      o(source.getUint16(0)).equals(view.getUint16(0, isLittleEndian));
+      o(source.getUint16(2)).equals(view.getUint16(2, isLittleEndian));
+      o(source.getUint16(4)).equals(view.getUint16(4, isLittleEndian));
+      o(source.getUint16(6)).equals(view.getUint16(6, isLittleEndian));
 
       o(source.isOneChunk(0, 4)).equals(null);
-      o(source.uint32(0)).equals(view.getUint32(0, isLittleEndian));
-      o(source.uint32(2)).equals(view.getUint32(2, isLittleEndian));
-      o(source.uint32(4)).equals(view.getUint32(4, isLittleEndian));
+      o(source.getUint32(0)).equals(view.getUint32(0, isLittleEndian));
+      o(source.getUint32(2)).equals(view.getUint32(2, isLittleEndian));
+      o(source.getUint32(4)).equals(view.getUint32(4, isLittleEndian));
 
       o(source.isOneChunk(0, 16)).equals(null);
-      o(source.uint64(0)).equals(Number(view.getBigUint64(0, isLittleEndian)));
-      o(source.bigUint64(0)).equals(view.getBigUint64(0, isLittleEndian));
+      o(source.getUint64(0)).equals(Number(view.getBigUint64(0, isLittleEndian)));
+      o(source.getBigUint64(0)).equals(view.getBigUint64(0, isLittleEndian));
     });
   }
 
@@ -150,14 +151,14 @@ o.spec('SourceChunk', () => {
     source.isOneChunk = (): null => null;
 
     const view = new DataView(SourceMemory.toArrayBuffer(chunks));
-    o(source.uint32(0)).equals(view.getUint32(0, true));
+    o(source.getUint32(0)).equals(view.getUint32(0, true));
   });
 
   o('should uint16 across chunks', async () => {
     source.chunkSize = 1;
     await Chunk(0);
     await Chunk(1);
-    o(source.uint16(0)).equals(256);
+    o(source.getUint16(0)).equals(256);
   });
 
   o('should uint32 across chunks', async () => {
@@ -166,7 +167,7 @@ o.spec('SourceChunk', () => {
     await Chunk(1);
     await Chunk(2);
     await Chunk(3);
-    o(source.uint32(0)).equals(50462976);
+    o(source.getUint32(0)).equals(50462976);
   });
 
   o('should uint64 when numbers are close', async () => {
@@ -175,10 +176,10 @@ o.spec('SourceChunk', () => {
     // This causes chunks to be read from chunks 31.9990234375 and 32.0029296875
     // which when should be reading part from chunk 31 and chunk 32
 
-    o(() => source.uint64(65534)).throws('Chunk:32 is not ready');
+    o(() => source.getUint64(65534)).throws('Chunk:32 is not ready');
 
     await Chunk(32);
 
-    o(source.uint64(65534) > 0).equals(true);
+    o(source.getUint64(65534) > 0).equals(true);
   });
 });

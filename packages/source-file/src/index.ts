@@ -1,8 +1,8 @@
-import { ChunkSource } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase } from '@chunkd/core';
 import { promises as fs } from 'fs';
 import { basename, resolve } from 'path';
 
-export class SourceFile extends ChunkSource {
+export class SourceFile extends ChunkSourceBase {
   type = 'file';
   protocol = 'file';
 

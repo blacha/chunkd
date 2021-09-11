@@ -1,4 +1,5 @@
 export { ByteSize } from './bytes';
-export { ChunkSource } from './chunk.source';
+export { ChunkSourceBase } from './chunk.source';
 export { LogType } from './log';
 export { SourceMemory } from './chunk.source.memory';
+export { ChunkSource } from './source';
