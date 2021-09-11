@@ -1,6 +1,6 @@
 import o from 'ospec';
-import 'source-map-support/register';
-import { SourceUrl } from '../source.url';
+import 'source-map-support/register.js';
+import { SourceUrl } from '../source.url.js';
 
 export interface HttpHeaders {
   Range: string;

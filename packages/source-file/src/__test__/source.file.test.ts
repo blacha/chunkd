@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import o from 'ospec';
-import 'source-map-support/register';
-import { SourceFile } from '../index';
 import { basename, join } from 'path';
+import 'source-map-support/register.js';
+import { fileURLToPath } from 'url';
+import { SourceFile } from '../index.js';
 
 o.spec('SourceFile', () => {
-  const TestFile = join(__dirname, 'source.file.test.js');
+  const TestFile = join(fileURLToPath(import.meta.url));
 
   let source: SourceFile;
   o.beforeEach(() => {
@@ -28,7 +29,7 @@ o.spec('SourceFile', () => {
 
   o('should resolve uri', () => {
     o(source.uri[0]).equals('/');
-    o(source.name).equals(basename(__filename));
+    o(source.name).equals(basename(fileURLToPath(import.meta.url)));
   });
 
   o('should read last bytes from file', async () => {

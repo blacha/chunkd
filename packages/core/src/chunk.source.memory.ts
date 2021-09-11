@@ -1,4 +1,4 @@
-import { ChunkSourceBase } from './chunk.source';
+import { ChunkSourceBase } from './chunk.source.js';
 
 export class SourceMemory extends ChunkSourceBase {
   protocol = 'memory';

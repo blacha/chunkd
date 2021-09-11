@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ChunkSourceBase } from '../chunk.source';
+import { ChunkSourceBase } from '../chunk.source.js';
 
 export class FakeChunkSource extends ChunkSourceBase {
   protocol = 'fake';

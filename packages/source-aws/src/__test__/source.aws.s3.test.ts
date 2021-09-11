@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import 'source-map-support/register';
+import 'source-map-support/register.js';
 import o from 'ospec';
-import { SourceAwsS3, S3Like, S3LikeResponse } from '..';
+import { SourceAwsS3, S3Like, S3LikeResponse } from '../index.js';
 
 export class FakeRemote implements S3Like {
   static id = 0;

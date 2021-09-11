@@ -1,4 +1,4 @@
-import { SourceMemory } from '../chunk.source.memory';
+import { SourceMemory } from '../chunk.source.memory.js';
 import { assert } from 'console';
 
 async function main(): Promise<void> {
