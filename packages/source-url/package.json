@@ -1,6 +1,6 @@
 {
     "name": "@chunkd/source-url",
-    "version": "5.0.0",
+    "version": "6.0.0",
     "type": "module",
     "engines": {
         "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
@@ -17,7 +17,7 @@
     "license": "MIT",
     "scripts": {},
     "dependencies": {
-        "@chunkd/core": "^5.0.0",
+        "@chunkd/core": "^6.0.0",
         "node-fetch": "^2.6.0"
     },
     "devDependencies": {
