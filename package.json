@@ -9,6 +9,7 @@
         "lint": "eslint 'packages/*/{src,test}/**/*.{js,ts,tsx}' --quiet --fix",
         "test": "ospec --globs 'packages/*/build/**/*.test.js'"
     },
+    "type": "module",
     "private": true,
     "keywords": [],
     "author": "Blayne Chard",
