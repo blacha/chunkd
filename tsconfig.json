@@ -2,7 +2,7 @@
     "files": [],
     "references": [
         { "path": "./packages/core"  },
-        { "path": "./packages/source-url"  },
+        { "path": "./packages/source-http"  },
         { "path": "./packages/source-aws"  },
         { "path": "./packages/source-file"  }
     ]
