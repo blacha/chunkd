@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { Readable } from 'stream';
 import * as s3like from '../type.js';
 
 export class FakeRemote implements s3like.S3Like {

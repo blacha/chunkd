@@ -1,5 +1,5 @@
 import { CompositeError, FileInfo, FileSystem, isRecord } from '@chunkd/core';
-import type { Readable } from 'node:stream';
+import type { Readable } from 'stream';
 import { SourceHttp } from './http.source.js';
 
 export type FsError = { code: string } & Error;

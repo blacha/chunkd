@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { Readable } from 'node:stream';
+import fs from 'fs';
+import path from 'path';
+import { Readable } from 'stream';
 import { CompositeError, FileInfo, FileSystem, isRecord } from '@chunkd/core';
 import { SourceFile } from './file.source.js';
 
