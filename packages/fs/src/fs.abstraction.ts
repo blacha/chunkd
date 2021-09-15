@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { FileInfo, FileSystem } from '@chunkd/core';
+import { FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -75,11 +75,11 @@ export class FileSystemAbstraction {
    * @param filePath file to write
    * @param buffer buffer or stream to write
    */
-  write(filePath: string, buffer: FileWriteTypes): Promise<void> {
+  write(filePath: string, buffer: FileWriteTypes, opts?: WriteOptions): Promise<void> {
     if (Array.isArray(buffer) || isRecord(buffer)) {
-      return this.get(filePath).write(filePath, JSON.stringify(buffer, null, 2));
+      return this.get(filePath).write(filePath, JSON.stringify(buffer, null, 2), opts);
     }
-    return this.get(filePath).write(filePath, buffer);
+    return this.get(filePath).write(filePath, buffer, opts);
   }
 
   /**
