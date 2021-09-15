@@ -68,11 +68,11 @@ export class FsFile implements FileSystem<SourceFile> {
     return this.head(filePath).then((f) => f != null);
   }
 
-  async write(filePath: string, buf: Buffer | Readable): Promise<void> {
+  async write(filePath: string, buf: Buffer | Readable | string): Promise<void> {
     const folderPath = path.dirname(filePath);
     await fs.promises.mkdir(folderPath, { recursive: true });
     try {
-      if (Buffer.isBuffer(buf)) {
+      if (Buffer.isBuffer(buf) || typeof buf === 'string') {
         await fs.promises.writeFile(filePath, buf);
       } else {
         const st = fs.createWriteStream(filePath);
