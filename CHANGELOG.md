@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.1](https://github.com/blacha/chunkd/compare/v7.2.0...v7.2.1) (2021-09-15)
+
+
+### Bug Fixes
+
+* **source-file:** should support writing strings to files ([632170a](https://github.com/blacha/chunkd/commit/632170a60581940985e554b9074458df39e855c6))
+
+
+
+
+
 # [7.2.0](https://github.com/blacha/chunkd/compare/v7.1.1...v7.2.0) (2021-09-15)
 
 
