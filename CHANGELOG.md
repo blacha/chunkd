@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.1](https://github.com/blacha/chunkd/compare/v7.1.0...v7.1.1) (2021-09-15)
+
+
+### Bug Fixes
+
+* **fs:** actually expose write options for `.write` ([55ae27d](https://github.com/blacha/chunkd/commit/55ae27d4622277edad77a5ed7da70546f74880b2))
+
+
+
+
+
 # [7.1.0](https://github.com/blacha/chunkd/compare/v7.0.1...v7.1.0) (2021-09-15)
 
 
