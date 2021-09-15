@@ -3,7 +3,7 @@ import o from 'ospec';
 import { basename, join } from 'path';
 import 'source-map-support/register.js';
 import { fileURLToPath } from 'url';
-import { SourceFile } from '../index.js';
+import { SourceFile } from '../file.source.js';
 
 o.spec('SourceFile', () => {
   const TestFile = join(fileURLToPath(import.meta.url));

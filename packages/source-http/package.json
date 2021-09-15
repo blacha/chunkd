@@ -1,5 +1,5 @@
 {
-    "name": "@chunkd/source-aws",
+    "name": "@chunkd/source-http",
     "version": "6.0.0",
     "type": "module",
     "engines": {
@@ -8,21 +8,22 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/blacha/chunkd.git",
-        "directory": "packages/source-aws"
+        "directory": "packages/source-http"
     },
-    "author": "Blayne Chard",
-    "main": "./build/index.js",
+    "main": "./build/index.node.js",
+    "browser": "./build/index.js",
     "types": "./build/index.d.ts",
+    "author": "Blayne Chard",
     "license": "MIT",
     "scripts": {},
     "dependencies": {
         "@chunkd/core": "^6.0.0",
-        "aws-sdk": "*"
+        "node-fetch": "^2.6.0"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^2.5.8"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "devDependencies": {
-        "@types/node": "^14.14.22"
     }
 }

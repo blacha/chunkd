@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./build",
+        "lib": ["es2020",]
+    },
+    "include": ["src/**/*"],
+    "references": [{ "path": "../core" }, { "path": "../source-aws"}, {"path": "../source-file"}]
+}

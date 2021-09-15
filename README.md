@@ -3,14 +3,15 @@
 [![Build Status](https://github.com/blacha/chunkd/workflows/Main/badge.svg)](https://github.com/blacha/chunkd/actions)
 
 
-File abstraction to read chunks of files from various sources
+File system abstraction to read files from various sources
 
 ## Usage
 
-Load a chunks from a URL using `fetch`
+Load a chunks of data from a URL using `fetch`
 
 ```typescript
-const source = new SourceUrl('https://example.com/foo')
+import {SourceHttp} from '@chunkd/source-http'
+const source = new SourceHttp('https://example.com/foo')
 // Read 1KB chunks
 source.chunkSize = 1024;
 
@@ -27,6 +28,13 @@ bytes.getUint64(1024); // Read a bigint as a number this may loose precision
 bytes.getBigUint64(1024);
 ```
 
+
+```typescript
+import {fsa} from '@chunkd/fs'
+
+const source = fsa.source('https://example.com/foo.zip');
+source.chunkSize = 1024;
+```
 
 # Building
 
