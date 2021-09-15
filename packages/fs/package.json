@@ -1,5 +1,5 @@
 {
-    "name": "@chunkd/source-aws",
+    "name": "@chunkd/fs",
     "version": "6.0.0",
     "type": "module",
     "engines": {
@@ -8,21 +8,23 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/blacha/chunkd.git",
-        "directory": "packages/source-aws"
+        "directory": "packages/fs"
     },
     "author": "Blayne Chard",
-    "main": "./build/index.js",
+    "main": "./build/index.node.js",
+    "browser": "./build/index.js",
     "types": "./build/index.d.ts",
     "license": "MIT",
     "scripts": {},
     "dependencies": {
         "@chunkd/core": "^6.0.0",
-        "aws-sdk": "*"
+        "@chunkd/source-file": "^6.0.0",
+        "@chunkd/source-aws": "^6.0.0"
     },
     "publishConfig": {
         "access": "public"
     },
     "devDependencies": {
-        "@types/node": "^14.14.22"
+        "@types/node": "^14.14.31"
     }
 }

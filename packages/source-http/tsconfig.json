@@ -5,6 +5,6 @@
         "outDir": "./build",
         "lib": ["es2018", "DOM"]
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/.ts"],
     "references": [{ "path": "../core" }]
 }

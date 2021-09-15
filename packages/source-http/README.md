@@ -6,9 +6,9 @@ Load a chunks of a file from a URL Source using `fetch`
 ## Usage
 
 ```javascript
-import { SourceUrl } from '@chunkd/source-url';
+import { SourceHttp } from '@chunkd/source-http';
 
-const source= new SourceUrl('https://example.com/cog.tif');
+const source= new SourceHttp('https://example.com/cog.tif');
 
 await source.loadBytes(0, 1024)
 ```

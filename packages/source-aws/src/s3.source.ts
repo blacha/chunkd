@@ -1,23 +1,10 @@
-import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase, LogType, CompositeError, isRecord } from '@chunkd/core';
+import { S3Like } from './type.js';
 
-class CompositeError extends Error {
-  reason: Error;
-  constructor(msg: string, reason: Error) {
-    super(msg);
-    this.reason = reason;
-  }
-}
-
-export interface S3LikeResponse<T> {
-  promise(): Promise<T>;
-}
-export interface S3Like {
-  getObject(req: {
-    Bucket: string;
-    Key: string;
-    Range?: string;
-  }): S3LikeResponse<{ Body?: Buffer | unknown; ContentRange?: string }>;
-  headObject(req: { Bucket: string; Key: string }): S3LikeResponse<{ ContentLength?: number }>;
+export function getCompositeError(e: unknown, msg: string): CompositeError {
+  if (!isRecord(e)) return new CompositeError(msg, 500, e);
+  if (typeof e.statusCode !== 'number') return new CompositeError(msg, 500, e);
+  return new CompositeError(msg, e.statusCode, e);
 }
 
 export class SourceAwsS3 extends ChunkSourceBase {
@@ -110,9 +97,9 @@ export class SourceAwsS3 extends ChunkSourceBase {
 
       const buffer = resp.Body;
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-    } catch (error) {
-      logger?.error({ error, source: this.name, fetchRange }, 'FailedToFetch');
-      throw new CompositeError(`Failed to fetch ${this.name} ${fetchRange}`, error as Error);
+    } catch (err) {
+      logger?.error({ err, source: this.name, fetchRange }, 'FailedToFetch');
+      throw getCompositeError(err, `Failed to fetch ${this.name} ${fetchRange}`);
     }
   }
 }

@@ -1,23 +1,23 @@
 import o from 'ospec';
 import 'source-map-support/register.js';
-import { SourceUrl } from '../source.url.js';
+import { SourceHttp } from '../http.source.js';
 
 export interface HttpHeaders {
   Range: string;
 }
 
-function getCB(source: SourceUrl, index: number): DataView {
+function getCB(source: SourceHttp, index: number): DataView {
   const chunk = source.chunks.get(index);
   if (chunk != null) return chunk;
   throw Error(`Missing chunk ${index}`);
 }
 
-o.spec('SourceUrl', () => {
-  let source: SourceUrl;
+o.spec('SourceHttp', () => {
+  let source: SourceHttp;
   let ranges: string[];
 
   // Fake fetch that returns the number of the byte that was requested
-  SourceUrl.fetch = (url: string, obj: Record<string, HttpHeaders>): any => {
+  SourceHttp.fetch = (url: string, obj: Record<string, HttpHeaders>): any => {
     const [startByte, endByte] = obj.headers.Range.split('=')[1]
       .split('-')
       .map((i) => parseInt(i, 10));
@@ -32,7 +32,7 @@ o.spec('SourceUrl', () => {
   };
 
   o.beforeEach(() => {
-    source = new SourceUrl('https://foo');
+    source = new SourceHttp('https://foo');
     source.chunkSize = 1;
     ranges = [];
   });

@@ -1,11 +1,11 @@
 import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
 
-export class SourceUrl extends ChunkSourceBase {
+export class SourceHttp extends ChunkSourceBase {
   type = 'url';
   protocol = 'http';
 
   static DefaultChunkSize = 32 * 1024;
-  chunkSize: number = SourceUrl.DefaultChunkSize;
+  chunkSize: number = SourceHttp.DefaultChunkSize;
 
   uri: string;
 
@@ -14,7 +14,7 @@ export class SourceUrl extends ChunkSourceBase {
     this.uri = uri;
   }
 
-  static isSource(source: ChunkSource): source is SourceUrl {
+  static isSource(source: ChunkSource): source is SourceHttp {
     return source.type === 'url';
   }
 
@@ -22,7 +22,7 @@ export class SourceUrl extends ChunkSourceBase {
   get size(): Promise<number> {
     if (this._size) return this._size;
     this._size = Promise.resolve().then(async () => {
-      const res = await SourceUrl.fetch(this.uri, { method: 'HEAD' });
+      const res = await SourceHttp.fetch(this.uri, { method: 'HEAD' });
       return Number(res.headers.get('content-length'));
     });
     return this._size;
@@ -31,7 +31,7 @@ export class SourceUrl extends ChunkSourceBase {
   async fetchBytes(offset: number, length?: number, logger?: LogType): Promise<ArrayBuffer> {
     const Range = this.toRange(offset, length);
     const headers = { Range };
-    const response = await SourceUrl.fetch(this.uri, { headers });
+    const response = await SourceHttp.fetch(this.uri, { headers });
 
     if (response.ok) {
       const contentRange = response.headers.get('content-range');
