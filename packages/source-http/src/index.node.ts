@@ -6,3 +6,4 @@ import { SourceHttp } from './http.source.js';
 SourceHttp.fetch = fetch as any;
 
 export { SourceHttp } from './http.source.js';
+export { FsHttp } from './http.fs.js';

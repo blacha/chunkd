@@ -148,3 +148,5 @@ export class FileSystemAbstraction {
     throw new Error(`Unable to find file system for path:${filePath}`);
   }
 }
+
+export const fsa = new FileSystemAbstraction();

@@ -27,8 +27,9 @@ export class FsFile implements FileSystem<SourceFile> {
   async *list(filePath: string): AsyncGenerator<string> {
     try {
       const files = await fs.promises.readdir(filePath, { withFileTypes: true });
+      const resolve = path.resolve(filePath);
       for (const file of files) {
-        const targetPath = path.join(filePath, file.name);
+        const targetPath = path.join(resolve, file.name);
         if (file.isDirectory()) yield* this.list(targetPath);
         else yield targetPath;
       }

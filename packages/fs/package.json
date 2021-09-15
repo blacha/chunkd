@@ -19,7 +19,8 @@
     "dependencies": {
         "@chunkd/core": "^6.0.0",
         "@chunkd/source-file": "^6.0.0",
-        "@chunkd/source-aws": "^6.0.0"
+        "@chunkd/source-aws": "^6.0.0",
+        "@chunkd/source-http": "^6.0.0"
     },
     "publishConfig": {
         "access": "public"

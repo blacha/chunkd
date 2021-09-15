@@ -1,5 +1,18 @@
 import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
 
+export interface FetchLikeOptions {
+  method?: string;
+  headers?: Record<string, string>;
+}
+export interface FetchLikeResponse {
+  ok: boolean;
+  statusText: string;
+  status: number;
+  headers: { get(k: string): string | null };
+  arrayBuffer(): Promise<ArrayBuffer>;
+}
+export type FetchLike = (url: string, opts?: FetchLikeOptions) => Promise<FetchLikeResponse>;
+
 export class SourceHttp extends ChunkSourceBase {
   type = 'url';
   protocol = 'http';
@@ -55,5 +68,5 @@ export class SourceHttp extends ChunkSourceBase {
   }
 
   // Allow overwriting the fetcher used (eg testing/node-js)
-  static fetch: WindowOrWorkerGlobalScope['fetch'] = (a, b) => fetch(a, b);
+  static fetch: FetchLike = (a, b) => fetch(a, b);
 }

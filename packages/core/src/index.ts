@@ -6,6 +6,6 @@ export { ChunkSource } from './source.js';
 export { ErrorCodes, CompositeError } from './composite.js';
 export { FileSystem, FileInfo } from './fs.js';
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }

@@ -1,6 +1,7 @@
+import { isRecord } from '@chunkd/core';
 import o from 'ospec';
 import 'source-map-support/register.js';
-import { SourceHttp } from '../http.source.js';
+import { FetchLikeOptions, SourceHttp } from '../http.source.js';
 
 export interface HttpHeaders {
   Range: string;
@@ -17,7 +18,8 @@ o.spec('SourceHttp', () => {
   let ranges: string[];
 
   // Fake fetch that returns the number of the byte that was requested
-  SourceHttp.fetch = (url: string, obj: Record<string, HttpHeaders>): any => {
+  SourceHttp.fetch = (input, obj?: FetchLikeOptions): any => {
+    if (!isRecord(obj) || !isRecord<string>(obj.headers)) throw new Error('Invalid fetch');
     const [startByte, endByte] = obj.headers.Range.split('=')[1]
       .split('-')
       .map((i) => parseInt(i, 10));

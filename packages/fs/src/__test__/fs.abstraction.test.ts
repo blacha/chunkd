@@ -15,6 +15,7 @@ o.spec('FileSystemAbstraction', () => {
 
     o(fsa.get('/foo').protocol).equals('file');
     o(fsa.get('/').protocol).equals('file');
+    o(fsa.get('.').protocol).equals('file');
     o(fsa.get('./').protocol).equals('file');
   });
 

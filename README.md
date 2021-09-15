@@ -10,8 +10,9 @@ File system abstraction to read files from various sources
 Load a chunks of data from a URL using `fetch`
 
 ```typescript
-import {SourceHttp} from '@chunkd/source-http'
-const source = new SourceHttp('https://example.com/foo')
+import {fsa} from '@chunkd/fs'
+
+const source = fsa.source('https://example.com/foo.zip');
 // Read 1KB chunks
 source.chunkSize = 1024;
 
@@ -26,14 +27,6 @@ bytes.getUint16(1024);
 bytes.getUint32(1024);
 bytes.getUint64(1024); // Read a bigint as a number this may loose precision
 bytes.getBigUint64(1024);
-```
-
-
-```typescript
-import {fsa} from '@chunkd/fs'
-
-const source = fsa.source('https://example.com/foo.zip');
-source.chunkSize = 1024;
 ```
 
 # Building
