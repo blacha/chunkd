@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
+import { ChunkSource, FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -126,6 +126,15 @@ export class FileSystemAbstraction {
   /** path.join removes slashes, s3:// => s3:/ which causes issues */
   join(filePathA: string, filePathB: string): string {
     return filePathA.replace(/\/$/, '') + '/' + filePathB.replace(/^\//, '');
+  }
+
+  /**
+   * create a chunked reading source from the file path
+   * @param filePath File to read
+   * @returns
+   */
+  source(filePath: string): ChunkSource | null {
+    return this.get(filePath).source(filePath);
   }
 
   /**
