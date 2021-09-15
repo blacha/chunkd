@@ -13,7 +13,11 @@ export type Location = { Bucket: string; Key: string };
 export type GetObjectReq = Location & { Range?: string };
 export type GetObjectRes = { Body?: Buffer | unknown; ContentRange?: string };
 
-export type UploadReq = Location & { Body?: Buffer | string | Readable };
+export type UploadReq = Location & {
+  Body?: Buffer | string | Readable;
+  ContentEncoding?: string;
+  ContentType?: string;
+};
 export type UploadRes = unknown;
 
 export type ListReq = { Bucket: string; Prefix?: string; ContinuationToken?: string };

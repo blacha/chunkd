@@ -1,4 +1,4 @@
-import { FileInfo, FileSystem, isRecord } from '@chunkd/core';
+import { FileInfo, FileSystem, isRecord, WriteOptions } from '@chunkd/core';
 import S3 from 'aws-sdk/clients/s3.js';
 import { Credentials } from 'aws-sdk/lib/credentials.js';
 import ctc from 'aws-sdk/lib/credentials/chainable_temporary_credentials.js';
@@ -147,12 +147,20 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     }
   }
 
-  async write(filePath: string, buf: Buffer | Readable | string): Promise<void> {
+  async write(filePath: string, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
     const opts = this.parse(filePath);
     if (opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
 
     try {
-      await this.s3.upload({ Bucket: opts.bucket, Key: opts.key, Body: buf }).promise();
+      await this.s3
+        .upload({
+          Bucket: opts.bucket,
+          Key: opts.key,
+          Body: buf,
+          ContentEncoding: ctx?.contentEncoding,
+          ContentType: ctx?.contentType,
+        })
+        .promise();
     } catch (e) {
       throw getCompositeError(e, `Failed to write: "${filePath}"`);
     }
