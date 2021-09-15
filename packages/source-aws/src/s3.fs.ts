@@ -1,16 +1,14 @@
 import { FileInfo, FileSystem, isRecord } from '@chunkd/core';
 import S3 from 'aws-sdk/clients/s3.js';
 import { Credentials } from 'aws-sdk/lib/credentials.js';
-import { ChainableTemporaryCredentials } from 'aws-sdk/lib/credentials/chainable_temporary_credentials.js';
-import { EC2MetadataCredentials } from 'aws-sdk/lib/credentials/ec2_metadata_credentials.js';
-import { SharedIniFileCredentials } from 'aws-sdk/lib/credentials/shared_ini_file_credentials.js';
+import ctc from 'aws-sdk/lib/credentials/chainable_temporary_credentials.js';
+import ec2 from 'aws-sdk/lib/credentials/ec2_metadata_credentials.js';
+import shi from 'aws-sdk/lib/credentials/shared_ini_file_credentials.js';
 import type { Readable } from 'stream';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like } from './type.js';
 
-const Ec2 = Symbol();
-const x: typeof Ec2 = Ec2;
-console.log(x);
+const Ec2 = Symbol('ec2');
 
 export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static protocol = 's3';
@@ -31,8 +29,8 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     let credentials = FsAwsS3.credentials.get(credKey);
     if (credentials == null) {
       const masterCredentials =
-        profile === Ec2 ? new EC2MetadataCredentials() : new SharedIniFileCredentials({ profile });
-      credentials = new ChainableTemporaryCredentials({
+        profile === Ec2 ? new ec2.EC2MetadataCredentials() : new shi.SharedIniFileCredentials({ profile });
+      credentials = new ctc.ChainableTemporaryCredentials({
         params: {
           RoleArn: roleArn,
           ExternalId: externalId,
