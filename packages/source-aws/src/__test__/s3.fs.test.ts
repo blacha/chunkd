@@ -1,7 +1,7 @@
 import { FsAwsS3 } from '../s3.fs.js';
 import o from 'ospec';
 import S3 from 'aws-sdk/clients/s3.js';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 /** Utility to convert async generators into arrays */
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
@@ -33,6 +33,11 @@ o.spec('file.s3', () => {
       o(fs.parse('s3://bucket')).deepEquals({ bucket: 'bucket' });
       o(fs.parse('s3://bucket/')).deepEquals({ bucket: 'bucket' });
     });
+  });
+
+  o('should create credentials', () => {
+    const role = FsAwsS3.fromRoleArn('arn:foo:bar');
+    o(role.protocol).equals('s3');
   });
 
   o.spec('exists', () => {
