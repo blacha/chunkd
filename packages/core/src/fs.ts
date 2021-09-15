@@ -11,6 +11,13 @@ export interface FileInfo {
   size?: number;
 }
 
+export interface WriteOptions {
+  /** Encoding of the file eg "gzip" */
+  contentEncoding: string;
+  /** Content type of the file eg "text/plain" */
+  contentType: string;
+}
+
 export interface FileSystem<T extends ChunkSource = ChunkSource> {
   /**
    * Protocol used for communication
@@ -25,7 +32,7 @@ export interface FileSystem<T extends ChunkSource = ChunkSource> {
   /** Create a read stream */
   stream(filePath: string): Readable;
   /** Write a file from either a buffer or stream */
-  write(filePath: string, buffer: Buffer | Readable | string): Promise<void>;
+  write(filePath: string, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
   /** Recursively list all files in path */
   list(filePath: string): AsyncGenerator<string>;
   /** Recursively list all files in path with additional details */
