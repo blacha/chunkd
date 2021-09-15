@@ -13,9 +13,9 @@ export interface FileInfo {
 
 export interface WriteOptions {
   /** Encoding of the file eg "gzip" */
-  contentEncoding: string;
+  contentEncoding?: string;
   /** Content type of the file eg "text/plain" */
-  contentType: string;
+  contentType?: string;
 }
 
 export interface FileSystem<T extends ChunkSource = ChunkSource> {

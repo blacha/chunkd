@@ -77,7 +77,8 @@ export class FileSystemAbstraction {
    */
   write(filePath: string, buffer: FileWriteTypes, opts?: WriteOptions): Promise<void> {
     if (Array.isArray(buffer) || isRecord(buffer)) {
-      return this.get(filePath).write(filePath, JSON.stringify(buffer, null, 2), opts);
+      const content = JSON.stringify(buffer, null, 2);
+      return this.get(filePath).write(filePath, content, { contentType: 'application/json', ...opts });
     }
     return this.get(filePath).write(filePath, buffer, opts);
   }
