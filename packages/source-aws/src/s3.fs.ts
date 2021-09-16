@@ -1,12 +1,9 @@
 import { FileInfo, FileSystem, isRecord, WriteOptions } from '@chunkd/core';
 import S3 from 'aws-sdk/clients/s3.js';
-import aws from 'aws-sdk/lib/core.js';
-import { Credentials } from 'aws-sdk/lib/credentials.js';
 import type { Readable } from 'stream';
+import { AwsCredentials } from './s3.credentials.js';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like } from './type.js';
-
-const Ec2 = Symbol('ec2');
 
 export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static protocol = 's3';
@@ -14,44 +11,18 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   /** Max list requests to run before erroring */
   static MaxListCount = 100;
 
-  static Ec2Credentials = Ec2;
-
-  static credentials: Map<string, Credentials> = new Map();
-  /**
-   * Create a aws credential instance from a role arn
-   *
-   * if the AWS profile is "FsAwsS3.Ec2Credentials" use EC2MetadataCredentials, otherwise load credentials from the shared ini file
-   */
-  static getCredentials(roleArn: string, profile?: string | typeof Ec2, externalId?: string): Credentials {
-    const credKey = `${roleArn}::${roleArn}::${externalId}`;
-    let credentials = FsAwsS3.credentials.get(credKey);
-    if (credentials == null) {
-      const masterCredentials =
-        profile === Ec2 ? new aws.EC2MetadataCredentials() : new aws.SharedIniFileCredentials({ profile });
-      credentials = new aws.ChainableTemporaryCredentials({
-        params: {
-          RoleArn: roleArn,
-          ExternalId: externalId,
-          RoleSessionName: 'fsa-' + Math.random().toString(32) + '-' + Date.now(),
-        },
-        masterCredentials,
-      });
-      FsAwsS3.credentials.set(credKey, credentials);
-    }
-    return credentials;
-  }
+  /** Credential cache to allow reuse of credentials */
+  static credentials = AwsCredentials;
 
   /**
    * Create a FsS3 instance from a role arn
    *
-   * if the AWS profile is "ec2" use EC2MetadataCredentials, otherwise load credentials from the shared ini file
-   *
    * @example
-   * Fs3.fromRoleArn('arn:foo', 'ec2');
-   * FsS3.fromRoleArn('arn:bar', process.env.AWS_PROFILE);
+   * Fs3.fromRoleArn('arn:foo', externalId, 900);
+   * FsS3.fromRoleArn('arn:bar');
    */
-  static fromRoleArn(roleArn: string, profile?: string | typeof Ec2, externalId?: string): FsAwsS3 {
-    const credentials = FsAwsS3.getCredentials(roleArn, profile, externalId);
+  static fromRoleArn(roleArn: string, externalId?: string, duration?: number): FsAwsS3 {
+    const credentials = FsAwsS3.credentials.role(roleArn, externalId, duration);
     return new FsAwsS3(new S3({ credentials }));
   }
 

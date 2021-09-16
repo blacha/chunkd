@@ -15,7 +15,7 @@ export class FileSystemAbstraction {
    * @see FileSystemAbstraction.sortSystems
    */
   private isOrdered = true;
-  private systems: { path: string; system: FileSystem }[] = [];
+  systems: { path: string; system: FileSystem }[] = [];
 
   /**
    * Register a file system to a specific path which can then be used with any `fsa` command
