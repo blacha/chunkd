@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.1](https://github.com/blacha/chunkd/compare/v7.3.0...v7.3.1) (2021-09-16)
+
+
+### Bug Fixes
+
+* **fs:** export AwsCredentials in nodejs ([6a03e68](https://github.com/blacha/chunkd/commit/6a03e68d6b07762e0f51cd64422d35679a433eec))
+
+
+
+
+
 # [7.3.0](https://github.com/blacha/chunkd/compare/v7.2.4...v7.3.0) (2021-09-16)
 
 
