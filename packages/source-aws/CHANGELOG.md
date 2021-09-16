@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/blacha/chunkd/compare/v7.2.4...v7.3.0) (2021-09-16)
+
+
+### Features
+
+* **fs:** support caching of aws credentials ([c0b08b3](https://github.com/blacha/chunkd/commit/c0b08b3e5c580893c783e4c0c16d884f10e971e7))
+
+
+
+
+
 ## [7.2.4](https://github.com/blacha/chunkd/compare/v7.2.3...v7.2.4) (2021-09-16)
 
 **Note:** Version bump only for package @chunkd/source-aws
