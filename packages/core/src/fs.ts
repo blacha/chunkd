@@ -42,5 +42,5 @@ export interface FileSystem<T extends ChunkSource = ChunkSource> {
   /** Get information about the path  */
   head(filePath: string): Promise<FileInfo | null>;
   /** Create a file source to read chunks out of */
-  source(filePath: string): T | null;
+  source(filePath: string): T;
 }

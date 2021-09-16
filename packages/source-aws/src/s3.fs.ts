@@ -61,8 +61,10 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   constructor(s3: S3Like) {
     this.s3 = s3;
   }
-  source(filePath: string): SourceAwsS3 | null {
-    return SourceAwsS3.fromUri(filePath, this.s3);
+  source(filePath: string): SourceAwsS3 {
+    const source = SourceAwsS3.fromUri(filePath, this.s3);
+    if (source == null) throw new Error(`Failed to create aws s3 source from uri: ${filePath}`);
+    return source;
   }
 
   /** Is this file system a s3 file system */

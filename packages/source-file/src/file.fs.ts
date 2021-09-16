@@ -20,7 +20,7 @@ export class FsFile implements FileSystem<SourceFile> {
     return fs.protocol === FsFile.protocol;
   }
 
-  source(filePath: string): SourceFile | null {
+  source(filePath: string): SourceFile {
     return new SourceFile(filePath);
   }
 
