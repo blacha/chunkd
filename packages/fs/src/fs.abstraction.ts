@@ -133,7 +133,7 @@ export class FileSystemAbstraction {
    * @param filePath File to read
    * @returns
    */
-  source(filePath: string): ChunkSource | null {
+  source(filePath: string): ChunkSource {
     return this.get(filePath).source(filePath);
   }
 
