@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.2](https://github.com/blacha/chunkd/compare/v7.2.1...v7.2.2) (2021-09-16)
+
+
+### Bug Fixes
+
+* **core:** expose missing fetchBytes function to directly read form the source ([8dc883e](https://github.com/blacha/chunkd/commit/8dc883e3ee55c52935e689ea6051a3da00691d9b))
+
+
+
+
+
 # [7.2.0](https://github.com/blacha/chunkd/compare/v7.1.1...v7.2.0) (2021-09-15)
 
 

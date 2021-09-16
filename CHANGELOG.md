@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.2](https://github.com/blacha/chunkd/compare/v7.2.1...v7.2.2) (2021-09-16)
+
+
+### Bug Fixes
+
+* **core:** expose missing fetchBytes function to directly read form the source ([8dc883e](https://github.com/blacha/chunkd/commit/8dc883e3ee55c52935e689ea6051a3da00691d9b))
+* **fs:** add .source mapping to sub file systems ([171106b](https://github.com/blacha/chunkd/commit/171106be2db6c16e2a2570405ee218036dbae64e))
+* **source-aws:** aws-sdk does not export the credential providers ([4401dcc](https://github.com/blacha/chunkd/commit/4401dccc8f38dec142a44bdb267cddfe7a63a9ab))
+
+
+
+
+
 ## [7.2.1](https://github.com/blacha/chunkd/compare/v7.2.0...v7.2.1) (2021-09-15)
 
 
