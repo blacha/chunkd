@@ -12,6 +12,21 @@ export interface ChunkSource extends DataView {
   size: Promise<number>;
   /** Is the source little endian */
   isLittleEndian: boolean;
+  /**
+   * Directly read from the source
+   *
+   * **Warning** this method will bypass any caching or chunking
+   *
+   * @example
+   *  source.fetchBytes(0, 1024)
+   *  source.fetchBytes(1024, 20)
+   *  source.fetchBytes(-1024)
+   *
+   * @param offset Byte to start reading form
+   * @param length optional number of bytes to read
+   * @param log optional logger to track requests with
+   */
+  fetchBytes(offset: number, length?: number, log?: LogType): Promise<ArrayBuffer>;
   /** are the following bytes loaded into memory */
   hasBytes(offset: number, length: number): boolean;
   /** Load bytes from a remote source into memory */
