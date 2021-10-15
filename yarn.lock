@@ -1295,9 +1295,9 @@ at-least-node@^1.0.0:
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
 aws-sdk@*:
-  version "2.989.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.989.0.tgz#ed3cce6b94856b469784bc3312a0b64438b9fe67"
-  integrity sha512-sMjvqeF9mEOxXkhOAUjCrBt2iYafclkmaIbgSdjJ+te7zKXeReqrc6P3VgIGUxU8kwmdSro0n1NjrXbzKQJhcw==
+  version "2.1008.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1008.0.tgz#0f6b58ef6093afec2027a49c0696bec52bb79ef6"
+  integrity sha512-wBEon+ARCuMcwEPpOFZqRT3elBLfLtPqv8jMql3Hsr7Ua5toPlgKMmjf368iTzBNaY7TOZsjLAT9nAhvtSZ++g==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
