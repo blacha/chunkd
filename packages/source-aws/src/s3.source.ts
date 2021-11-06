@@ -1,5 +1,5 @@
-import { ChunkSource, ChunkSourceBase, LogType, CompositeError, isRecord } from '@chunkd/core';
-import { S3Like, S3LikeV2Response, toPromise } from './type.js';
+import { ChunkSource, ChunkSourceBase, CompositeError, isRecord, LogType } from '@chunkd/core';
+import { S3Like, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
   if (!isRecord(e)) return new CompositeError(msg, 500, e);
