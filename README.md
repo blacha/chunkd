@@ -49,3 +49,8 @@ yarn run build
 # Run the unit tests
 yarn run test
 ```
+
+
+### Performance
+
+Performance regression is monitored with [hyperfine-action](https://github.com/blacha/hyperfine-action) with results being hosted on github pages [benchmarks.html](https://blacha.github.io/chunkd/benchmarks.html)
