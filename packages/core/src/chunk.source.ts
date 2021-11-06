@@ -348,9 +348,10 @@ export abstract class ChunkSourceBase implements ChunkSource {
   byteOffset = 0;
 
   getUint8(byteOffset: number): number {
-    const chunkId = this.getChunkId(byteOffset);
-    const chunk = this.getView(chunkId);
-    return chunk.getUint8(byteOffset - chunkId * this.chunkSize);
+    const chunkId = Math.floor(byteOffset / this.chunkSize) as ChunkId;
+    const view = this.chunks.get(chunkId);
+    if (view == null) throw new Error(`Chunk:${chunkId} is not ready`);
+    return view.getUint8(byteOffset - chunkId * this.chunkSize);
   }
 
   getUint16(byteOffset: number): number {
