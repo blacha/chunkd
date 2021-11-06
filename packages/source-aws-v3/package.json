@@ -1,0 +1,30 @@
+{
+    "name": "@chunkd/source-aws-v3",
+    "version": "7.3.0",
+    "type": "module",
+    "engines": {
+        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/blacha/chunkd.git",
+        "directory": "packages/source-aws-v3"
+    },
+    "author": "Blayne Chard",
+    "main": "./build/index.js",
+    "types": "./build/index.d.ts",
+    "license": "MIT",
+    "scripts": {},
+    "dependencies": {
+        "@aws-sdk/lib-storage": "*",
+        "@aws-sdk/client-s3": "*",
+        "@chunkd/core": "^7.2.4",
+        "@chunkd/source-aws": "^7.2.4"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.22"
+    }
+}

@@ -1,5 +1,5 @@
 import { ChunkSource, ChunkSourceBase, LogType, CompositeError, isRecord } from '@chunkd/core';
-import { S3Like } from './type.js';
+import { S3Like, S3LikeV2Response, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
   if (!isRecord(e)) return new CompositeError(msg, 500, e);
@@ -46,7 +46,7 @@ export class SourceAwsS3 extends ChunkSourceBase {
   get size(): Promise<number> {
     if (this._size) return this._size;
     this._size = Promise.resolve().then(async () => {
-      const res = await this.remote.headObject({ Bucket: this.bucket, Key: this.key }).promise();
+      const res = await toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key }));
       return res.ContentLength || -1;
     });
     return this._size;
