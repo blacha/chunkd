@@ -299,9 +299,10 @@ export abstract class ChunkSourceBase implements ChunkSource {
    * @returns chunkId if the data is contained inside one chunk otherwise null.
    */
   isOneChunk(offset: number, byteCount: number): ChunkId | null {
+    const endOffset = offset + byteCount - 1;
     const startChunk = Math.floor(offset / this.chunkSize);
-    const endChunk = Math.floor((offset + byteCount) / this.chunkSize);
-    if (endChunk - startChunk < 1) return Math.floor(startChunk) as ChunkId;
+    const endChunk = Math.floor(endOffset / this.chunkSize);
+    if (endChunk - startChunk < 1) return startChunk as ChunkId;
     return null;
   }
 
@@ -355,7 +356,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
   }
 
   getUint16(byteOffset: number): number {
-    const chunkId = this.isOneChunk(byteOffset, ByteSize.UInt8);
+    const chunkId = this.isOneChunk(byteOffset, ByteSize.UInt16);
     if (chunkId != null) {
       const chunk = this.getView(chunkId);
       return chunk.getUint16(byteOffset - chunkId * this.chunkSize, this.isLittleEndian);

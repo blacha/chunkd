@@ -120,6 +120,26 @@ o.spec('SourceChunk', () => {
       }
     });
 
+    o(`should read across large chunk boundaries (${word})`, async () => {
+      const chunks = Buffer.alloc(1024);
+      for (let i = 0; i < chunks.length; i++) chunks[i] = i;
+      const view = new DataView(SourceMemory.toArrayBuffer(chunks));
+      source.isLittleEndian = isLittleEndian;
+      source.chunkSize = 256;
+
+      await source.loadBytes(254, 2);
+      o(source.chunks.size).equals(1);
+
+      o(source.isOneChunk(254, 2)).equals(0 as ChunkId);
+      o(source.getUint16(254)).equals(view.getUint16(254, isLittleEndian));
+
+      await source.loadBytes(255, 2);
+      o(source.chunks.size).equals(2);
+
+      o(source.isOneChunk(255, 2)).equals(null);
+      o(source.getUint16(255)).equals(view.getUint16(255, isLittleEndian));
+    });
+
     o(`should read across chunk boundary (${word})`, async () => {
       const chunks = Buffer.from([0, 1, 2, 3, 4, 5, 6, 7]);
       const view = new DataView(SourceMemory.toArrayBuffer(chunks));
@@ -142,6 +162,13 @@ o.spec('SourceChunk', () => {
       o(source.isOneChunk(0, 16)).equals(null);
       o(source.getUint64(0)).equals(Number(view.getBigUint64(0, isLittleEndian)));
       o(source.getBigUint64(0)).equals(view.getBigUint64(0, isLittleEndian));
+
+      source.chunkSize = 2;
+      source.chunks.clear();
+      await source.loadBytes(0, 8);
+
+      o(source.isOneChunk(0, 2)).equals(0 as ChunkId);
+      o(source.getUint16(0)).equals(view.getUint16(0, isLittleEndian));
     });
   }
 
