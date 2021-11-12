@@ -1,31 +1,31 @@
 {
-    "name": "@chunkd/fs",
-    "version": "7.3.1",
-    "type": "module",
-    "engines": {
-        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/blacha/chunkd.git",
-        "directory": "packages/fs"
-    },
-    "author": "Blayne Chard",
-    "main": "./build/index.node.js",
-    "browser": "./build/index.js",
-    "types": "./build/index.d.ts",
-    "license": "MIT",
-    "scripts": {},
-    "dependencies": {
-        "@chunkd/core": "^7.2.4",
-        "@chunkd/source-aws": "^7.3.0",
-        "@chunkd/source-file": "^7.2.4",
-        "@chunkd/source-http": "^7.2.4"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "devDependencies": {
-        "@types/node": "^14.14.31"
-    }
+  "name": "@chunkd/fs",
+  "version": "7.3.1",
+  "type": "module",
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blacha/chunkd.git",
+    "directory": "packages/fs"
+  },
+  "author": "Blayne Chard",
+  "main": "./build/index.node.js",
+  "browser": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@chunkd/core": "^7.2.4",
+    "@chunkd/source-aws": "^7.3.0",
+    "@chunkd/source-file": "^7.2.4",
+    "@chunkd/source-http": "^7.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.31"
+  }
 }

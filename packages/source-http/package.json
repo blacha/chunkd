@@ -1,29 +1,29 @@
 {
-    "name": "@chunkd/source-http",
-    "version": "7.2.4",
-    "type": "module",
-    "engines": {
-        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/blacha/chunkd.git",
-        "directory": "packages/source-http"
-    },
-    "main": "./build/index.node.js",
-    "browser": "./build/index.js",
-    "types": "./build/index.d.ts",
-    "author": "Blayne Chard",
-    "license": "MIT",
-    "scripts": {},
-    "dependencies": {
-        "@chunkd/core": "^7.2.4",
-        "node-fetch": "^2.6.0"
-    },
-    "devDependencies": {
-        "@types/node-fetch": "^2.5.8"
-    },
-    "publishConfig": {
-        "access": "public"
-    }
+  "name": "@chunkd/source-http",
+  "version": "7.2.4",
+  "type": "module",
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blacha/chunkd.git",
+    "directory": "packages/source-http"
+  },
+  "main": "./build/index.node.js",
+  "browser": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "author": "Blayne Chard",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@chunkd/core": "^7.2.4",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

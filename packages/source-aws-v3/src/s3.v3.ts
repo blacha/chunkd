@@ -1,7 +1,7 @@
 import { GetObjectCommand, HeadObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { PassThrough, Readable } from 'stream';
-import {
+import type {
   GetObjectReq,
   GetObjectRes,
   HeadRes,

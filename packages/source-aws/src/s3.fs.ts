@@ -1,7 +1,5 @@
 import { FileInfo, FileSystem, isRecord, WriteOptions } from '@chunkd/core';
-import S3 from 'aws-sdk/clients/s3.js';
 import type { Readable } from 'stream';
-import { AwsCredentials } from './s3.credentials.js';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
 
@@ -11,27 +9,13 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   /** Max list requests to run before erroring */
   static MaxListCount = 100;
 
-  /** Credential cache to allow reuse of credentials */
-  static credentials = AwsCredentials;
-
-  /**
-   * Create a FsS3 instance from a role arn
-   *
-   * @example
-   * Fs3.fromRoleArn('arn:foo', externalId, 900);
-   * FsS3.fromRoleArn('arn:bar');
-   */
-  static fromRoleArn(roleArn: string, externalId?: string, duration?: number): FsAwsS3 {
-    const credentials = FsAwsS3.credentials.role(roleArn, externalId, duration);
-    return new FsAwsS3(new S3({ credentials }));
-  }
-
   /** AWS-SDK s3 to use */
   s3: S3Like;
 
   constructor(s3: S3Like) {
     this.s3 = s3;
   }
+
   source(filePath: string): SourceAwsS3 {
     const source = SourceAwsS3.fromUri(filePath, this.s3);
     if (source == null) throw new Error(`Failed to create aws s3 source from uri: ${filePath}`);

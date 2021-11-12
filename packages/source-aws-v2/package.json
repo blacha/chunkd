@@ -1,5 +1,5 @@
 {
-  "name": "@chunkd/source-aws-v3",
+  "name": "@chunkd/source-aws-v2",
   "version": "7.3.0",
   "type": "module",
   "engines": {
@@ -20,15 +20,13 @@
     "@chunkd/source-aws": "^7.2.4"
   },
   "peerDependencies": {
-    "@aws-sdk/lib-storage": "*",
-    "@aws-sdk/client-s3": "*"
+    "aws-sdk": "*"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@aws-sdk/lib-storage": "*",
-    "@aws-sdk/client-s3": "*",
-    "@types/node": "^14.14.22"
+    "@types/node": "^14.14.22",
+    "aws-sdk": "*"
   }
 }

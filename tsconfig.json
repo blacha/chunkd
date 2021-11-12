@@ -1,11 +1,11 @@
 {
-    "files": [],
-    "references": [
-        { "path": "./packages/core"  },
-        { "path": "./packages/source-http"  },
-        { "path": "./packages/source-aws"  },
-        { "path": "./packages/source-aws-v3"  },
-        { "path": "./packages/source-file"  },
-        { "path": "./packages/fs"  },
-    ]
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/source-http" },
+    { "path": "./packages/source-aws" },
+    { "path": "./packages/source-aws-v3" },
+    { "path": "./packages/source-file" },
+    { "path": "./packages/fs" }
+  ]
 }
