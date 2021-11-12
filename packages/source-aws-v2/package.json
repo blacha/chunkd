@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/blacha/chunkd.git",
-    "directory": "packages/source-aws-v3"
+    "directory": "packages/source-aws-v2"
   },
   "author": "Blayne Chard",
   "main": "./build/index.js",
