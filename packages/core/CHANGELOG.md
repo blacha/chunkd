@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/blacha/chunkd/compare/v7.3.1...v8.0.0) (2021-11-12)
+
+
+*  feat(source-aws): support aws-sdk-v3 with a S3LikeWrapper (#92) ([0d02a69](https://github.com/blacha/chunkd/commit/0d02a69499a513f7c552969d9857de92d7449bef)), closes [#92](https://github.com/blacha/chunkd/issues/92) [#88](https://github.com/blacha/chunkd/issues/88)
+
+
+### Bug Fixes
+
+* **core:** uint16 requires 2 bytes to read from one chunk ([61c9014](https://github.com/blacha/chunkd/commit/61c9014f1157221f1d67e12b30d078db35fa51bf))
+
+
+### Performance Improvements
+
+* reduce function calls in u8 hot path ([0f7cc57](https://github.com/blacha/chunkd/commit/0f7cc57f40a728a8e5ddebf1a166ee2029c6c67f))
+
+
+### BREAKING CHANGES
+
+* moves the credential helper into @chunkd/source-aws-v2
+
+
+
+
+
 ## [7.2.4](https://github.com/blacha/chunkd/compare/v7.2.3...v7.2.4) (2021-09-16)
 
 
