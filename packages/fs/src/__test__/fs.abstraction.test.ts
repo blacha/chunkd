@@ -47,4 +47,16 @@ o.spec('FileSystemAbstraction', () => {
     o(fsa.get('fake://some-prefix-string/').protocol).equals('fakeSpecific');
     o(fsa.get('fake://some-prefix-string/some-key').protocol).equals('fakeSpecific');
   });
+
+  o('should replace file systems when registering duplicates', () => {
+    const fakeA = new FakeSystem('fake');
+    const fakeB = new FakeSystem('fakeSpecific');
+    const fsa = new FileSystemAbstraction();
+
+    fsa.register('fake://', fakeA);
+    fsa.register('fake://', fakeB);
+
+    o(fsa.systems.length).equals(1);
+    o(fsa.systems[0].system).equals(fakeB);
+  });
 });
