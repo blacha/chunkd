@@ -5,7 +5,7 @@
     "clean": "tsc -b --clean && rimraf 'packages/*/build'",
     "build": "tsc -b --pretty",
     "build-watch": "tsc -b --pretty --watch",
-    "version": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
+    "version": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag && eslint lerna.json",
     "lint": "eslint '.' --quiet --fix --ignore-path .gitignore",
     "test": "ospec --globs 'packages/*/build/**/*.test.js'"
   },
