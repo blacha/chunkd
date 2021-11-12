@@ -344,7 +344,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
   _byteLength: number;
   get byteLength(): number {
     if (this._byteLength) return this._byteLength;
-    throw Error('.size() has not been feteched.');
+    throw Error('.size() has not been fetched.');
   }
   byteOffset = 0;
 

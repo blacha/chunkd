@@ -1,37 +1,37 @@
 {
-    "name": "@chunkd/base",
-    "version": "0.1.0",
-    "scripts": {
-        "clean": "tsc -b --clean && rimraf 'packages/*/build'",
-        "build": "tsc -b --pretty",
-        "build-watch": "tsc -b --pretty --watch",
-        "version": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
-        "lint": "eslint 'packages/*/{src,test}/**/*.{js,ts,tsx}' --quiet --fix",
-        "test": "ospec --globs 'packages/*/build/**/*.test.js'"
-    },
-    "type": "module",
-    "private": true,
-    "keywords": [],
-    "author": "Blayne Chard",
-    "license": "ISC",
-    "description": "",
-    "devDependencies": {
-        "@linzjs/style": "^3.1.1",
-        "@types/ospec": "^4.0.2",
-        "@types/sinon": "^10.0.2",
-        "conventional-github-releaser": "^3.1.5",
-        "lerna": "^4.0.0",
-        "ospec": "^4.1.1",
-        "rimraf": "^3.0.0",
-        "sinon": "^11.1.2",
-        "source-map-support": "^0.5.19"
-    },
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ],
-        "nohoist": [
-            "**/@types/**"
-        ]
-    }
+  "name": "@chunkd/base",
+  "version": "0.1.0",
+  "scripts": {
+    "clean": "tsc -b --clean && rimraf 'packages/*/build'",
+    "build": "tsc -b --pretty",
+    "build-watch": "tsc -b --pretty --watch",
+    "version": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
+    "lint": "eslint '.' --quiet --fix --ignore-path .gitignore",
+    "test": "ospec --globs 'packages/*/build/**/*.test.js'"
+  },
+  "type": "module",
+  "private": true,
+  "keywords": [],
+  "author": "Blayne Chard",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@linzjs/style": "^3.1.1",
+    "@types/ospec": "^4.0.2",
+    "@types/sinon": "^10.0.2",
+    "conventional-github-releaser": "^3.1.5",
+    "lerna": "^4.0.0",
+    "ospec": "^4.1.1",
+    "rimraf": "^3.0.0",
+    "sinon": "^11.1.2",
+    "source-map-support": "^0.5.19"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/@types/**"
+    ]
+  }
 }

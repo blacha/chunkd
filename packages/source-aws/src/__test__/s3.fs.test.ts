@@ -35,11 +35,6 @@ o.spec('file.s3', () => {
     });
   });
 
-  o('should create credentials', () => {
-    const role = FsAwsS3.fromRoleArn('arn:foo:bar');
-    o(role.protocol).equals('s3');
-  });
-
   o.spec('exists', () => {
     o('should throw if max call count is reached', async () => {
       let callCount = 0;

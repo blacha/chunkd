@@ -27,6 +27,13 @@ export class FileSystemAbstraction {
    *
    */
   register(path: string, system: FileSystem): void {
+    for (let i = 0; i < this.systems.length; i++) {
+      const sys = this.systems[i];
+      if (sys.path === path) {
+        this.systems.splice(i, 1, { path, system });
+        return;
+      }
+    }
     this.systems.push({ path, system });
     this.isOrdered = false;
   }
