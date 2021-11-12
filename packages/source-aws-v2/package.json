@@ -17,7 +17,7 @@
   "scripts": {},
   "dependencies": {
     "@chunkd/core": "^7.2.4",
-    "@chunkd/source-aws": "^7.2.4"
+    "@chunkd/source-aws": "^7.3.0"
   },
   "peerDependencies": {
     "aws-sdk": "*"
