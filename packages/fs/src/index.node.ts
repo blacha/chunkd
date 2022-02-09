@@ -10,8 +10,7 @@ export { FileSystemAbstraction, fsa } from './fs.abstraction.js';
 
 // Include local files by default in nodejs
 const fsFile = new FsFile();
-fsa.register('/', fsFile);
-fsa.register('.', fsFile);
+fsa.register('', fsFile);
 fsa.register('file://', fsFile);
 
 const fsHttp = new FsHttp();
