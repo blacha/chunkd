@@ -38,6 +38,9 @@ export abstract class ChunkSourceBase implements ChunkSource {
   /** By default create a new cache for every chunk source */
   static DefaultChunkCache = (): Map<number, DataView> => new Map();
 
+  /** By default wait this amount of ms before running a fetch */
+  static DefaultDelayMs = 1;
+
   /** size of chunks to fetch (Bytes) */
   abstract chunkSize: number;
   /** Reference to the source */
@@ -54,7 +57,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
    * Number of ms to wait before performing a fetch
    * Larger numbers means more fetches will be grouped together
    */
-  delayMs = 1;
+  delayMs = ChunkSourceBase.DefaultDelayMs;
   /**
    * Max number of chunks to load in one go
    * Requested chunks could be more than this number if blankFillCount is used
