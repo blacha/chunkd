@@ -231,7 +231,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
 
     // Queue a fetch
     if (this.toFetchPromise == null) {
-      this.toFetchPromise = new Promise<void>((resolve) => setNext(resolve, 1)).then(() => {
+      this.toFetchPromise = new Promise<void>((resolve) => setNext(resolve, this.delayMs)).then(() => {
         return this.fetchData(log);
       });
     }
