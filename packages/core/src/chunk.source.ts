@@ -1,6 +1,5 @@
 import { ChunkSource } from './source.js';
 import { ByteSize } from './bytes.js';
-import { LogType } from './log.js';
 export type ChunkId = number & { _type: 'chunkId' };
 
 /** Shifting `<< 32` does not work in javascript */
@@ -29,9 +28,6 @@ interface TinyMap<K, V> {
  * This will also handle joining of consecutive requests, even when it is semi consecutive
  */
 export abstract class ChunkSourceBase implements ChunkSource {
-  /** By default record a log of requests made by chunked sources */
-  static DefaultTrackRequests = false;
-
   /** By default create a new cache for every chunk source */
   static DefaultChunkCache = (): TinyMap<number, DataView> => new Map<number, DataView>();
 
@@ -95,9 +91,8 @@ export abstract class ChunkSourceBase implements ChunkSource {
    *
    * @param offset Byte to start reading form
    * @param length optional number of bytes to read
-   * @param log optional logger to track requests with
    */
-  abstract fetchBytes(offset: number, length?: number, log?: LogType): Promise<ArrayBuffer>;
+  abstract fetchBytes(offset: number, length?: number): Promise<ArrayBuffer>;
 
   /** Byte size of the file */
   abstract size: Promise<number>;
@@ -150,7 +145,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
     return { chunks, blankFill };
   }
 
-  private async fetchData(logger?: LogType): Promise<void> {
+  private async fetchData(): Promise<void> {
     if (this.toFetch.size === 0) return;
     const chunkIds = this.toFetch;
     this.toFetch = new Set();
@@ -160,31 +155,17 @@ export abstract class ChunkSourceBase implements ChunkSource {
 
     const chunkData: ArrayBuffer[] = [];
 
-    const startAt = Date.now();
     // TODO putting this in a promise queue to do multiple requests
     // at a time would be a good idea.
     for (const chunkRange of ranges.chunks) {
       const firstChunk = chunkRange[0];
       const lastChunk = chunkRange[chunkRange.length - 1];
-      const req = { startAt, requestStartAt: Date.now(), endAt: -1, chunks: chunkRange };
 
       const offset = firstChunk * this.chunkSize;
       const length = lastChunk * this.chunkSize + this.chunkSize - offset;
 
-      const startTime = Date.now();
-      const buffer = await this.fetchBytes(offset, length, logger);
-      req.endAt = Date.now();
-      logger?.info(
-        {
-          uri: this.uri,
-          source: this.type,
-          bytes: length,
-          chunks: chunkRange,
-          chunkCount: chunkRange.length,
-          duration: Date.now() - startTime,
-        },
-        'FetchChunk',
-      );
+      const buffer = await this.fetchBytes(offset, length);
+
       if (chunkRange.length === 1) {
         chunkData[firstChunk] = buffer;
         this.chunks.set(firstChunk, new DataView(buffer));
@@ -206,9 +187,8 @@ export abstract class ChunkSourceBase implements ChunkSource {
    *
    * @param offset byte offset to start reading from
    * @param length number of bytes to load
-   * @param log optional logger to log requests
    */
-  public async loadBytes(offset: number, length: number, log?: LogType): Promise<void> {
+  public async loadBytes(offset: number, length: number): Promise<void> {
     if (offset < 0) throw new Error('Offset must be positive');
     const startChunk = Math.floor(offset / this.chunkSize);
     const endChunk = Math.ceil((offset + length) / this.chunkSize) - 1;
@@ -222,7 +202,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
     // Queue a fetch
     if (this.toFetchPromise == null) {
       this.toFetchPromise = new Promise<void>((resolve) => setNext(resolve, this.delayMs)).then(() => {
-        return this.fetchData(log);
+        return this.fetchData();
       });
     }
 

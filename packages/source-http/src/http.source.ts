@@ -1,4 +1,4 @@
-import { ChunkSource, ChunkSourceBase, LogType } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase } from '@chunkd/core';
 
 export interface FetchLikeOptions {
   method?: string;
@@ -41,7 +41,7 @@ export class SourceHttp extends ChunkSourceBase {
     return this._size;
   }
 
-  async fetchBytes(offset: number, length?: number, logger?: LogType): Promise<ArrayBuffer> {
+  async fetchBytes(offset: number, length?: number): Promise<ArrayBuffer> {
     const Range = this.toRange(offset, length);
     const headers = { Range };
     const response = await SourceHttp.fetch(this.uri, { headers });
@@ -53,16 +53,6 @@ export class SourceHttp extends ChunkSourceBase {
       }
       return response.arrayBuffer();
     }
-    logger?.error(
-      {
-        offset,
-        bytes: length,
-        status: response.status,
-        statusText: response.statusText,
-        url: this.uri,
-      },
-      'Failed to fetch',
-    );
 
     throw new Error('Failed to fetch');
   }

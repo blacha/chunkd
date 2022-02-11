@@ -1,4 +1,4 @@
-import { ChunkSource, ChunkSourceBase, CompositeError, isRecord, LogType } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase, CompositeError, isRecord } from '@chunkd/core';
 import { S3Like, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
@@ -84,7 +84,7 @@ export class SourceAwsS3 extends ChunkSourceBase {
     return new SourceAwsS3(res.bucket, res.key, remote);
   }
 
-  async fetchBytes(offset: number, length?: number, logger?: LogType): Promise<ArrayBuffer> {
+  async fetchBytes(offset: number, length?: number): Promise<ArrayBuffer> {
     const fetchRange = this.toRange(offset, length);
     try {
       const resp = await this.remote.getObject({ Bucket: this.bucket, Key: this.key, Range: fetchRange }).promise();
@@ -98,7 +98,6 @@ export class SourceAwsS3 extends ChunkSourceBase {
       const buffer = resp.Body;
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     } catch (err) {
-      logger?.error({ err, source: this.name, fetchRange }, 'FailedToFetch');
       throw getCompositeError(err, `Failed to fetch ${this.name} ${fetchRange}`);
     }
   }

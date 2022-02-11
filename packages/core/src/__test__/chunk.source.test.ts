@@ -27,7 +27,7 @@ o.spec('SourceChunk', () => {
   });
 
   async function Chunk(chunkId: number): Promise<DataView> {
-    await source.loadBytes(chunkId * source.chunkSize, source.chunkSize, undefined);
+    await source.loadBytes(chunkId * source.chunkSize, source.chunkSize);
     return source.getView(chunkId as ChunkId);
   }
 
