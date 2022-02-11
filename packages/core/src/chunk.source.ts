@@ -35,6 +35,9 @@ export abstract class ChunkSourceBase implements ChunkSource {
   /** By default record a log of requests made by chunked sources */
   static DefaultTrackRequests = false;
 
+  /** By default create a new cache for every chunk source */
+  static DefaultChunkCache = (): Map<number, DataView> => new Map();
+
   /** size of chunks to fetch (Bytes) */
   abstract chunkSize: number;
   /** Reference to the source */
@@ -62,7 +65,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
 
   // TODO this should ideally be a LRU
   // With a priority for the first few chunks (Generally where the main IFD resides)
-  chunks: Map<number, DataView> = new Map();
+  chunks: Map<number, DataView> = ChunkSourceBase.DefaultChunkCache();
   /**
    * List of all requests made by this source,
    */
