@@ -71,7 +71,8 @@ export abstract class ChunkSourceBase implements ChunkSource {
   isRequestsTracked: boolean = ChunkSourceBase.DefaultTrackRequests;
 
   /**
-   * number non requested chunks to load even
+   * Number of non requested chunks to load
+   *
    * This allows one fetch for semi sparse requests eg requested [1,5]
    * instead of two fetches [1] & [5] run one fetch [1,2,3,4,5]
    */
