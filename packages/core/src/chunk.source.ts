@@ -6,17 +6,6 @@ export type ChunkId = number & { _type: 'chunkId' };
 /** Shifting `<< 32` does not work in javascript */
 const POW_32 = 2 ** 32;
 
-export interface RequestLog {
-  /** Time of start of the batch this was apart of */
-  startAt: number;
-  /** Time of the actual request start */
-  requestStartAt: number;
-  /** Time of request done */
-  endAt: number;
-  /** Chunks requested */
-  chunks: number[];
-}
-
 const setNext: (cb: () => void, delay?: number) => void =
   typeof setImmediate === 'undefined' ? setTimeout : setImmediate;
 
@@ -77,12 +66,6 @@ export abstract class ChunkSourceBase implements ChunkSource {
   // TODO this should ideally be a LRU
   // With a priority for the first few chunks (Generally where the main IFD resides)
   chunks: TinyMap<number, DataView> = ChunkSourceBase.DefaultChunkCache();
-  /**
-   * List of all requests made by this source,
-   */
-  requests: RequestLog[] = [];
-  /** Should this source track requests  */
-  isRequestsTracked: boolean = ChunkSourceBase.DefaultTrackRequests;
 
   /**
    * Number of non requested chunks to load
@@ -191,7 +174,6 @@ export abstract class ChunkSourceBase implements ChunkSource {
       const startTime = Date.now();
       const buffer = await this.fetchBytes(offset, length, logger);
       req.endAt = Date.now();
-      if (this.isRequestsTracked) this.requests.push(req);
       logger?.info(
         {
           uri: this.uri,

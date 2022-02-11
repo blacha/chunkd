@@ -52,28 +52,6 @@ o.spec('SourceChunk', () => {
     o(source.getUint8(10)).equals(10);
   });
 
-  o('should disable request tracking', async () => {
-    source.isRequestsTracked = false;
-    await Chunk(1);
-    o(source.requests.length).equals(0);
-  });
-
-  o('should support multiple chunks', async () => {
-    source.isRequestsTracked = true;
-    await Chunk(1);
-    await Chunk(2);
-    await Chunk(3);
-
-    for (let i = 10; i < source.chunkSize * 3; i++) {
-      o(source.getUint8(i)).equals(i);
-    }
-
-    o(source.requests.length).equals(3);
-    o(source.requests[0].chunks).deepEquals([1]);
-    o(source.requests[1].chunks).deepEquals([2]);
-    o(source.requests[2].chunks).deepEquals([3]);
-  });
-
   o('should fetch big endian', async () => {
     source.isLittleEndian = false;
     const chunk = await Chunk(0);
