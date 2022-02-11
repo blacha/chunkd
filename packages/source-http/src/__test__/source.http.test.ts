@@ -42,7 +42,7 @@ o.spec('SourceHttp', () => {
   o('should group fetches together', async () => {
     await source.loadBytes(0, 2);
 
-    o([...source.chunks.keys()]).deepEquals([0, 1]);
+    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1]);
     o(source.getUint8(0)).equals(0);
     o(source.getUint8(1)).equals(1);
   });
@@ -51,7 +51,7 @@ o.spec('SourceHttp', () => {
     await source.loadBytes(0, 2);
     await source.loadBytes(0, 5);
 
-    o([...source.chunks.keys()]).deepEquals([0, 1, 2, 3, 4]);
+    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1, 2, 3, 4]);
 
     for (let i = 0; i < 5; i++) {
       o(source.getUint8(i)).equals(i);
@@ -65,7 +65,7 @@ o.spec('SourceHttp', () => {
 
     await source.loadBytes(0, MAX_BYTE);
 
-    o([...source.chunks.keys()]).deepEquals([0, 1, 2, 3, 4, 5, 6, 7]);
+    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1, 2, 3, 4, 5, 6, 7]);
 
     for (let i = 0; i < MAX_BYTE; i++) {
       o(source.getUint8(i)).equals(i);

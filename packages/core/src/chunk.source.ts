@@ -24,6 +24,14 @@ const NotImplemented = (): number => {
   throw new Error('Method not implemented.');
 };
 
+/** Tiny map implementation so its easy to override */
+interface TinyMap<K, V> {
+  size: number;
+  get(key: K): V | undefined;
+  set(key: K, value: V): unknown;
+  has(key: K): boolean;
+}
+
 /**
  * Chunked source for remote data
  *
@@ -36,7 +44,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
   static DefaultTrackRequests = false;
 
   /** By default create a new cache for every chunk source */
-  static DefaultChunkCache = (): Map<number, DataView> => new Map();
+  static DefaultChunkCache = (): TinyMap<number, DataView> => new Map<number, DataView>();
 
   /** By default wait this amount of ms before running a fetch */
   static DefaultDelayMs = 1;
@@ -68,7 +76,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
 
   // TODO this should ideally be a LRU
   // With a priority for the first few chunks (Generally where the main IFD resides)
-  chunks: Map<number, DataView> = ChunkSourceBase.DefaultChunkCache();
+  chunks: TinyMap<number, DataView> = ChunkSourceBase.DefaultChunkCache();
   /**
    * List of all requests made by this source,
    */

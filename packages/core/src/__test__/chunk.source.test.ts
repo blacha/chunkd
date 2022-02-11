@@ -164,7 +164,7 @@ o.spec('SourceChunk', () => {
       o(source.getBigUint64(0)).equals(view.getBigUint64(0, isLittleEndian));
 
       source.chunkSize = 2;
-      source.chunks.clear();
+      source.chunks = new Map();
       await source.loadBytes(0, 8);
 
       o(source.isOneChunk(0, 2)).equals(0 as ChunkId);
