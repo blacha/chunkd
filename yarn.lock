@@ -401,9 +401,9 @@
     tslib "^2.3.0"
 
 "@aws-sdk/lib-storage@*":
-  version "3.44.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.44.0.tgz#ca9f9a49072a22d0ec4ee761eb67aeef30120498"
-  integrity sha512-Va/HcoChM73o0PNJwzQ7jGcW75nBDMQ2sUjwSp0CseBQaXmDLE2+2SjzWvmv65PPeyoMkuYkuXZ47sS2LsJnJw==
+  version "3.51.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.51.0.tgz#640d36a9a33c830fa352b911a9d7382996eeddc6"
+  integrity sha512-EGaoMCMJpqYiaRBwFIHzQ1hiStHeizfcfceFoKiQOW43QRsj2luGy94CfMitt+vxYyKUceOeaQgTHiOBIwwySQ==
   dependencies:
     buffer "5.6.0"
     events "3.3.0"
