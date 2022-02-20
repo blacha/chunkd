@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ChunkSource, FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
@@ -9,7 +9,8 @@ function isRecord(obj: unknown): obj is Record<string, unknown> {
   return obj.constructor === Object;
 }
 
-export class FileSystemAbstraction {
+export class FileSystemAbstraction implements FileSystem {
+  protocol = 'abstract';
   /**
    * Is the systems array currently ordered
    * @see FileSystemAbstraction.sortSystems
@@ -70,7 +71,7 @@ export class FileSystemAbstraction {
    * @param filePath file to read
    * @returns Stream of file contents
    */
-  stream(filePath: string): NodeJS.ReadableStream {
+  stream(filePath: string): Readable {
     return this.get(filePath).stream(filePath);
   }
 

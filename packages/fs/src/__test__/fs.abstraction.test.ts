@@ -1,5 +1,6 @@
 import { FsFile } from '@chunkd/source-file';
 import o from 'ospec';
+import Sinon from 'sinon';
 import { FileSystemAbstraction } from '../fs.abstraction.js';
 
 export class FakeSystem extends FsFile {
@@ -58,5 +59,22 @@ o.spec('FileSystemAbstraction', () => {
 
     o(fsa.systems.length).equals(1);
     o(fsa.systems[0].system).equals(fakeB);
+  });
+
+  o('should stream files between systems', () => {
+    const fakeA = new FakeSystem('fake');
+    const fakeB = new FakeSystem('fakeSpecific');
+    const fsa = new FileSystemAbstraction();
+
+    const writeStub = (fakeB.write = Sinon.stub());
+    const streamStub = (fakeA.stream = Sinon.stub());
+
+    fsa.register('fake-a://', fakeA);
+    fsa.register('fake-b://', fakeB);
+
+    fsa.write('fake-b://bar.js', fsa.stream('fake-a://foo.js'));
+
+    o(streamStub.callCount).equals(1);
+    o(writeStub.callCount).equals(1);
   });
 });
