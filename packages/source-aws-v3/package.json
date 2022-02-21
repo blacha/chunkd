@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-aws-v3",
-  "version": "8.0.3",
+  "version": "8.1.0",
   "type": "module",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
@@ -16,8 +16,8 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^8.0.3",
-    "@chunkd/source-aws": "^8.0.3"
+    "@chunkd/core": "^8.1.0",
+    "@chunkd/source-aws": "^8.1.0"
   },
   "peerDependencies": {
     "@aws-sdk/client-s3": "*",

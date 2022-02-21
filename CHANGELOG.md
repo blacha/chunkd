@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/blacha/chunkd/compare/v8.0.3...v8.1.0) (2022-02-21)
+
+
+### Bug Fixes
+
+* **core:** do not hard code the number of ms to wait before fetching ([60fdbdd](https://github.com/blacha/chunkd/commit/60fdbdd7e89a74d001efb983b62941166d809c72))
+* **fs:** correct typing so fsa.stream can be used with fsa.write ([460a596](https://github.com/blacha/chunkd/commit/460a5960258d4c8f9278c925fc85e05b1f7213cb))
+
+
+### Features
+
+* remove logger a tracking source can be used instead ([151dd08](https://github.com/blacha/chunkd/commit/151dd08e2052daa09ccda1f2df55adc95cdf126f))
+* **core:** allow overriding all chunk source delays ([b3091ad](https://github.com/blacha/chunkd/commit/b3091add9d504bba9fa04c539cffebd03e47936d))
+* **core:** allow overriding how the chunk cache is created for all sources ([9ca865a](https://github.com/blacha/chunkd/commit/9ca865a83243fcd60d8959ef5f8dc3956e01156b))
+* **core:** remove request tracking ([65f2395](https://github.com/blacha/chunkd/commit/65f239552e9b90d37c2ded31ce24c193f0471ab4))
+* **fs:** default to local file system when in nodejs ([#193](https://github.com/blacha/chunkd/issues/193)) ([ff908b0](https://github.com/blacha/chunkd/commit/ff908b0893cb31fb35dcf7bc063ba3ed84296fc0))
+
+
+
+
+
 ## [8.0.3](https://github.com/blacha/chunkd/compare/v8.0.2...v8.0.3) (2022-01-26)
 
 **Note:** Version bump only for package @chunkd/base

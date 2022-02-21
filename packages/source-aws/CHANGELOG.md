@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/blacha/chunkd/compare/v8.0.3...v8.1.0) (2022-02-21)
+
+
+### Features
+
+* remove logger a tracking source can be used instead ([151dd08](https://github.com/blacha/chunkd/commit/151dd08e2052daa09ccda1f2df55adc95cdf126f))
+
+
+
+
+
 ## [8.0.3](https://github.com/blacha/chunkd/compare/v8.0.2...v8.0.3) (2022-01-26)
 
 **Note:** Version bump only for package @chunkd/source-aws

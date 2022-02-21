@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/blacha/chunkd/compare/v8.0.3...v8.1.0) (2022-02-21)
+
+
+### Bug Fixes
+
+* **fs:** correct typing so fsa.stream can be used with fsa.write ([460a596](https://github.com/blacha/chunkd/commit/460a5960258d4c8f9278c925fc85e05b1f7213cb))
+
+
+### Features
+
+* **fs:** default to local file system when in nodejs ([#193](https://github.com/blacha/chunkd/issues/193)) ([ff908b0](https://github.com/blacha/chunkd/commit/ff908b0893cb31fb35dcf7bc063ba3ed84296fc0))
+
+
+
+
+
 ## [8.0.3](https://github.com/blacha/chunkd/compare/v8.0.2...v8.0.3) (2022-01-26)
 
 **Note:** Version bump only for package @chunkd/fs
