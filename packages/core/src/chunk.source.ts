@@ -28,7 +28,7 @@ interface TinyMap<K, V> {
  *
  * This will also handle joining of consecutive requests, even when it is semi consecutive
  */
-export class ChunkSourceBase implements ChunkSource {
+export abstract class ChunkSourceBase implements ChunkSource {
   /** By default create a new cache for every chunk source */
   static DefaultChunkCache = (): TinyMap<number, DataView> => new Map<number, DataView>();
 
