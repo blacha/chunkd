@@ -3,6 +3,12 @@ import aws from 'aws-sdk/lib/core.js';
 import S3 from 'aws-sdk/clients/s3.js';
 import { FsAwsS3 } from '@chunkd/source-aws';
 
+interface RoleObject {
+  roleArn: string;
+  externalId?: string;
+  durationSeconds?: number;
+}
+
 export class AwsCredentials {
   static DefaultRoleDurationSeconds = 3600;
   static cache: Map<string, Credentials> = new Map();
@@ -11,10 +17,18 @@ export class AwsCredentials {
    * Create a FsS3 instance from a role arn
    *
    * @example
-   * Fs3.fromRoleArn('arn:foo', externalId, 900);
-   * FsS3.fromRoleArn('arn:bar');
+   *```typescript
+   * AwsCredentials.fromRoleArn('arn:foo', externalId, 900);
+   * AwsCredentials.fromRoleArn('arn:bar');
+   * AwsCredentials.fromRoleArn({ roleArn: 'arn:foo', externalId: 'bar', 'durationSeconds': 10})
+   * ```
    */
-  static fsFromRole(roleArn: string, externalId?: string, durationSeconds?: number): FsAwsS3 {
+  static fsFromRole(roleArn: RoleObject): FsAwsS3;
+  static fsFromRole(roleArn: string, externalId?: string, durationSeconds?: number): FsAwsS3;
+  static fsFromRole(roleArn: string | RoleObject, externalId?: string, durationSeconds?: number): FsAwsS3 {
+    if (typeof roleArn === 'object') {
+      return AwsCredentials.fsFromRole(roleArn.roleArn, roleArn.externalId, roleArn.durationSeconds);
+    }
     const credentials = AwsCredentials.role(roleArn, externalId, durationSeconds);
     return new FsAwsS3(new S3({ credentials }));
   }

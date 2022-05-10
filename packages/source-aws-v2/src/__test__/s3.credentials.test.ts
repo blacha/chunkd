@@ -19,6 +19,24 @@ o.spec('AwsCredentials', () => {
     o(stub.args[1][0].params.DurationSeconds).equals(3601);
   });
 
+  o('should create a role from a object', () => {
+    const stub = sandbox.stub(aws, 'ChainableTemporaryCredentials');
+
+    AwsCredentials.fsFromRole({ roleArn: 'arn:abc', externalId: 'abc', durationSeconds: 50 });
+    o(stub.calledOnce).equals(true);
+
+    o(stub.args[0][0].params.RoleArn).equals('arn:abc');
+    o(stub.args[0][0].params.ExternalId).equals('abc');
+    o(stub.args[0][0].params.DurationSeconds).equals(50);
+
+    AwsCredentials.fsFromRole({ roleArn: 'arn:foo' });
+    o(stub.calledTwice).equals(true);
+
+    o(stub.args[1][0].params.RoleArn).equals('arn:foo');
+    o(stub.args[1][0].params.ExternalId).equals(undefined);
+    o(stub.args[1][0].params.DurationSeconds).equals(3600);
+  });
+
   o('should cache by roleArn', () => {
     const stub = sandbox.stub(aws, 'ChainableTemporaryCredentials');
     AwsCredentials.role('arn:foo:bar');
