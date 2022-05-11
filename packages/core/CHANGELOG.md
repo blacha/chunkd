@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0](https://github.com/blacha/chunkd/compare/v8.1.0...v8.2.0) (2022-05-11)
+
+
+### Bug Fixes
+
+* **core:** include .clear() in the tiny map ([a47157c](https://github.com/blacha/chunkd/commit/a47157cafad20da29de535347b3584a79c3a5874))
+
+
+
+
+
 # [8.1.0](https://github.com/blacha/chunkd/compare/v8.0.3...v8.1.0) (2022-02-21)
 
 
