@@ -18,9 +18,9 @@ export class AwsCredentials {
    *
    * @example
    *```typescript
-   * AwsCredentials.fromRoleArn('arn:foo', externalId, 900);
-   * AwsCredentials.fromRoleArn('arn:bar');
-   * AwsCredentials.fromRoleArn({ roleArn: 'arn:foo', externalId: 'bar', 'durationSeconds': 10})
+   * AwsCredentials.fsFromRole('arn:foo', externalId, 900);
+   * AwsCredentials.fsFromRole('arn:bar');
+   * AwsCredentials.fsFromRole({ roleArn: 'arn:foo', externalId: 'bar', 'durationSeconds': 10})
    * ```
    */
   static fsFromRole(roleArn: RoleConfig): FsAwsS3;
