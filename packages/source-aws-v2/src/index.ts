@@ -1,1 +1,1 @@
-export { AwsCredentials } from './s3.credentials.js';
+export { AwsCredentials, RoleConfig } from './s3.credentials.js';

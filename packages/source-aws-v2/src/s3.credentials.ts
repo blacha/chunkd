@@ -3,7 +3,7 @@ import aws from 'aws-sdk/lib/core.js';
 import S3 from 'aws-sdk/clients/s3.js';
 import { FsAwsS3 } from '@chunkd/source-aws';
 
-interface RoleObject {
+export interface RoleConfig {
   roleArn: string;
   externalId?: string;
   durationSeconds?: number;
@@ -23,9 +23,9 @@ export class AwsCredentials {
    * AwsCredentials.fromRoleArn({ roleArn: 'arn:foo', externalId: 'bar', 'durationSeconds': 10})
    * ```
    */
-  static fsFromRole(roleArn: RoleObject): FsAwsS3;
+  static fsFromRole(roleArn: RoleConfig): FsAwsS3;
   static fsFromRole(roleArn: string, externalId?: string, durationSeconds?: number): FsAwsS3;
-  static fsFromRole(roleArn: string | RoleObject, externalId?: string, durationSeconds?: number): FsAwsS3 {
+  static fsFromRole(roleArn: string | RoleConfig, externalId?: string, durationSeconds?: number): FsAwsS3 {
     if (typeof roleArn === 'object') {
       return AwsCredentials.fsFromRole(roleArn.roleArn, roleArn.externalId, roleArn.durationSeconds);
     }
