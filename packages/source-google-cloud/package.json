@@ -1,5 +1,5 @@
 {
-  "name": "@chunkd/fs",
+  "name": "@chunkd/source-google-cloud",
   "version": "8.2.0",
   "type": "module",
   "engines": {
@@ -8,27 +8,24 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/blacha/chunkd.git",
-    "directory": "packages/fs"
+    "directory": "packages/source-google-cloud"
   },
   "author": "Blayne Chard",
-  "main": "./build/index.node.js",
-  "browser": "./build/index.js",
+  "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^8.2.0",
-    "@chunkd/source-file": "^8.2.0",
-    "@chunkd/source-http": "^8.2.0"
+    "@chunkd/core": "^8.2.0"
   },
-  "optionalDependencies": {
-    "@chunkd/source-aws": "*",
-    "@chunkd/source-google-cloud": "*"
+  "peerDependencies": {
+    "@google-cloud/storage": "*"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "@google-cloud/storage": "^5.19.4",
     "@types/node": "^16.11.7"
   }
 }

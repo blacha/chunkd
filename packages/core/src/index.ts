@@ -8,3 +8,28 @@ export { FileSystem, FileInfo, WriteOptions } from './fs.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }
+
+/**
+ * Parse a s3/google storage URI into a bucket and key if the key exists
+ *
+ * @example
+ * ```typescript
+ * parseUri('s3://bucket-name') // { bucket: 'bucket-name', protocol: 's3' }
+ * parseUri('gs://bucket-name') // { bucket: 'bucket-name', protocol: 'gs' }
+ * ```
+ */
+export function parseUri(uri: string): { protocol: string; bucket: string; key?: string } | null {
+  const parts = uri.split('/');
+
+  let protocol = parts[0];
+  if (protocol == null || protocol === '') return null;
+  if (protocol.endsWith(':')) protocol = protocol.slice(0, protocol.length - 1);
+
+  const bucket = parts[2];
+  if (bucket == null || bucket.trim() === '') return null;
+  if (parts.length === 3) return { protocol, bucket };
+
+  const key = parts.slice(3).join('/');
+  if (key == null || key.trim() === '') return { protocol, bucket };
+  return { key, bucket, protocol };
+}

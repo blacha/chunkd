@@ -6,6 +6,7 @@
     { "path": "./packages/source-aws" },
     { "path": "./packages/source-aws-v2" },
     { "path": "./packages/source-aws-v3" },
+    { "path": "./packages/source-google-cloud" },
     { "path": "./packages/source-file" },
     { "path": "./packages/fs" }
   ]

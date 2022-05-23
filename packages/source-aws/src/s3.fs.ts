@@ -1,4 +1,4 @@
-import { FileInfo, FileSystem, isRecord, WriteOptions } from '@chunkd/core';
+import { FileInfo, FileSystem, isRecord, parseUri, WriteOptions } from '@chunkd/core';
 import type { Readable } from 'stream';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
@@ -34,30 +34,14 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
 
   /** Parse a s3:// URI into the bucket and key components */
-  static parse(uri: string): { bucket: string; key?: string } {
-    if (!uri.startsWith('s3://')) throw new Error(`Unable to parse s3 uri: "${uri}"`);
-    const parts = uri.split('/');
-    const bucket = parts[2];
-    if (bucket == null || bucket.trim() === '') {
-      throw new Error(`Unable to parse s3 uri: "${uri}"`);
-    }
-
-    if (parts.length === 3) return { bucket };
-
-    const key = parts.slice(3).join('/');
-    if (key == null || key.trim() === '') {
-      return { bucket };
-    }
-    return { key, bucket };
-  }
-  parse = FsAwsS3.parse;
 
   async *list(filePath: string): AsyncGenerator<string> {
     for await (const obj of this.details(filePath)) yield obj.path;
   }
 
   async *details(filePath: string): AsyncGenerator<FileInfo> {
-    const opts = this.parse(filePath);
+    const opts = parseUri(filePath);
+    if (opts == null) return;
     let ContinuationToken: string | undefined = undefined;
     const Bucket = opts.bucket;
     const Prefix = opts.key;
@@ -91,8 +75,8 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
 
   async read(filePath: string): Promise<Buffer> {
-    const opts = this.parse(filePath);
-    if (opts.key == null) throw new Error(`Failed to read:  "${filePath}"`);
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`Failed to read:  "${filePath}"`);
 
     try {
       const res = await this.s3.getObject({ Bucket: opts.bucket, Key: opts.key }).promise();
@@ -103,8 +87,8 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
 
   async write(filePath: string, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
-    const opts = this.parse(filePath);
-    if (opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
 
     try {
       await toPromise(
@@ -126,15 +110,15 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
 
   stream(filePath: string): Readable {
-    const opts = this.parse(filePath);
-    if (opts.key == null) throw new Error(`S3: Unable to read "${filePath}"`);
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`S3: Unable to read "${filePath}"`);
 
     return this.s3.getObject({ Bucket: opts.bucket, Key: opts.key }).createReadStream();
   }
 
   async head(filePath: string): Promise<FileInfo | null> {
-    const opts = this.parse(filePath);
-    if (opts.key == null) throw new Error(`Failed to exists: "${filePath}"`);
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`Failed to exists: "${filePath}"`);
     try {
       const res = await toPromise(this.s3.headObject({ Bucket: opts.bucket, Key: opts.key }));
       return { size: res.ContentLength, path: filePath };

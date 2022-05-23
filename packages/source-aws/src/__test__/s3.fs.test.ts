@@ -2,6 +2,7 @@ import { FsAwsS3 } from '../s3.fs.js';
 import o from 'ospec';
 import S3 from 'aws-sdk/clients/s3.js';
 import sinon from 'sinon';
+import { parseUri } from '@chunkd/core';
 
 /** Utility to convert async generators into arrays */
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
@@ -17,21 +18,18 @@ o.spec('file.s3', () => {
   o.afterEach(() => sandbox.restore());
 
   o.spec('parse', () => {
-    o('should only parse s3://', () => {
-      o(() => fs.parse('https://')).throws(Error);
-      o(() => fs.parse('https://google.com')).throws(Error);
-      o(() => fs.parse('/home/foo/bar')).throws(Error);
-      o(() => fs.parse('c:\\Program Files\\')).throws(Error);
-    });
-
     o('should parse s3 uris', () => {
-      o(fs.parse('s3://bucket/key')).deepEquals({ bucket: 'bucket', key: 'key' });
-      o(fs.parse('s3://bucket/key/')).deepEquals({ bucket: 'bucket', key: 'key/' });
-      o(fs.parse('s3://bucket/key/is/deep.txt')).deepEquals({ bucket: 'bucket', key: 'key/is/deep.txt' });
+      o(parseUri('s3://bucket/key')).deepEquals({ bucket: 'bucket', key: 'key', protocol: 's3' });
+      o(parseUri('s3://bucket/key/')).deepEquals({ bucket: 'bucket', key: 'key/', protocol: 's3' });
+      o(parseUri('s3://bucket/key/is/deep.txt')).deepEquals({
+        bucket: 'bucket',
+        key: 'key/is/deep.txt',
+        protocol: 's3',
+      });
     });
     o('should parse bucket only uris', () => {
-      o(fs.parse('s3://bucket')).deepEquals({ bucket: 'bucket' });
-      o(fs.parse('s3://bucket/')).deepEquals({ bucket: 'bucket' });
+      o(parseUri('s3://bucket')).deepEquals({ bucket: 'bucket', protocol: 's3' });
+      o(parseUri('s3://bucket/')).deepEquals({ bucket: 'bucket', protocol: 's3' });
     });
   });
 
