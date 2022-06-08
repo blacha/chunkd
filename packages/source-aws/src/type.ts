@@ -21,12 +21,13 @@ export type UploadReq = Location & {
 };
 export type UploadRes = unknown;
 
-export type ListReq = { Bucket: string; Prefix?: string; ContinuationToken?: string };
+export type ListReq = { Bucket: string; Prefix?: string; ContinuationToken?: string; Delimiter?: string };
 export type ListResContents = { Key?: string; Size?: number };
 export type ListRes = {
   IsTruncated?: boolean;
   NextContinuationToken?: string;
   Contents?: ListResContents[];
+  CommonPrefixes?: { Prefix?: string }[];
 };
 
 export type HeadReq = Location;

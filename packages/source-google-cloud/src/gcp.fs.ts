@@ -1,4 +1,4 @@
-import { FileInfo, FileSystem, isRecord, parseUri, WriteOptions } from '@chunkd/core';
+import { FileInfo, FileSystem, isRecord, ListOptions, parseUri, WriteOptions } from '@chunkd/core';
 import { Storage } from '@google-cloud/storage';
 import { Readable } from 'stream';
 import { SourceGoogleStorage } from './gcp.source.js';
@@ -42,25 +42,28 @@ export class FsGoogleStorage implements FileSystem<SourceGoogleStorage> {
   static parse = parseUri;
   parse = parseUri;
 
-  async *list(filePath: string): AsyncGenerator<string> {
-    for await (const obj of this.details(filePath)) yield obj.path;
+  async *list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
+    for await (const obj of this.details(filePath, opts)) yield obj.path;
   }
 
-  async *details(filePath: string): AsyncGenerator<FileInfo> {
-    const opts = this.parse(filePath);
-    if (opts == null) throw new Error(`GoogleStorage: Failed to list: "${filePath}"`);
+  async *details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo> {
+    const loc = this.parse(filePath);
+    if (loc == null) throw new Error(`GoogleStorage: Failed to list: "${filePath}"`);
 
-    const bucket = this.storage.bucket(opts.bucket);
-    const [files, , metadata] = await bucket.getFiles({ prefix: opts.key, autoPaginate: false, delimiter: '/' });
+    const bucket = this.storage.bucket(loc.bucket);
+    const [files, , metadata] = await bucket.getFiles({ prefix: loc.key, autoPaginate: false, delimiter: '/' });
     if (files != null && files.length > 0) {
       for (const file of files) {
-        yield { path: join(`gs://${opts.bucket}`, file.name), size: Number(file.metadata.size) };
+        yield { path: join(`gs://${loc.bucket}`, file.name), size: Number(file.metadata.size) };
       }
     }
 
     // Recurse down
     if (metadata != null && metadata.prefixes != null) {
-      for (const prefix of metadata.prefixes) yield* this.details(join(`gs://${opts.bucket}`, prefix));
+      for (const prefix of metadata.prefixes) {
+        if (opts?.recursive !== false) yield* this.details(join(`gs://${loc.bucket}`, prefix), opts);
+        else yield { path: join(`gs://${loc.bucket}`, prefix), isDirectory: true };
+      }
     }
   }
 

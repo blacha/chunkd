@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
-import { CompositeError, FileInfo, FileSystem, isRecord } from '@chunkd/core';
+import { CompositeError, FileInfo, FileSystem, isRecord, ListOptions } from '@chunkd/core';
 import { SourceFile } from './file.source.js';
 
 export type FsError = { code: string } & Error;
@@ -24,13 +24,13 @@ export class FsFile implements FileSystem<SourceFile> {
     return new SourceFile(filePath);
   }
 
-  async *list(filePath: string): AsyncGenerator<string> {
+  async *list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
     try {
       const files = await fs.promises.readdir(filePath, { withFileTypes: true });
       const resolve = path.resolve(filePath);
       for (const file of files) {
         const targetPath = path.join(resolve, file.name);
-        if (file.isDirectory()) yield* this.list(targetPath);
+        if (file.isDirectory() && opts?.recursive !== false) yield* this.list(targetPath);
         else yield targetPath;
       }
     } catch (e) {
@@ -38,8 +38,8 @@ export class FsFile implements FileSystem<SourceFile> {
     }
   }
 
-  async *details(filePath: string): AsyncGenerator<FileInfo> {
-    for await (const file of this.list(filePath)) {
+  async *details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo & { isDirectory: boolean }> {
+    for await (const file of this.list(filePath, opts)) {
       const res = await this.head(file);
       if (res == null) continue;
       yield res;
@@ -62,10 +62,6 @@ export class FsFile implements FileSystem<SourceFile> {
     } catch (e) {
       throw getCompositeError(e, `Failed to read: ${filePath}`);
     }
-  }
-
-  exists(filePath: string): Promise<boolean> {
-    return this.head(filePath).then((f) => f != null);
   }
 
   async write(filePath: string, buf: Buffer | Readable | string): Promise<void> {
