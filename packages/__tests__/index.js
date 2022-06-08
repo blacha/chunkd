@@ -99,7 +99,7 @@ function testPrefix(prefix) {
   });
 }
 
-// testPrefix('/tmp/blacha-chunkd-test/');
+testPrefix('/tmp/blacha-chunkd-test/');
 // testPrefix('s3://blacha-chunkd-test/v2/');
 // testPrefix('s3://blacha-chunkd-test/v3/');
 // testPrefix('gs://blacha-chunkd-test/');
