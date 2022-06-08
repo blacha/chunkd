@@ -7,7 +7,7 @@
     "build-watch": "tsc -b --pretty --watch",
     "version": "eslint lerna.json --fix",
     "bump": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
-    "lint": "eslint '.' --quiet --fix --ignore-path .gitignore",
+    "lint": "eslint . --quiet --fix --ignore-path .gitignore",
     "test": "ospec --globs 'packages/*/build/**/*.test.js'"
   },
   "type": "module",
