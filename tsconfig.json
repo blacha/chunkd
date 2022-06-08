@@ -1,7 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/source-memory" },
     { "path": "./packages/core" },
     { "path": "./packages/source-http" },
     { "path": "./packages/source-aws" },
@@ -9,6 +8,7 @@
     { "path": "./packages/source-aws-v3" },
     { "path": "./packages/source-google-cloud" },
     { "path": "./packages/source-file" },
+    { "path": "./packages/source-memory" },
     { "path": "./packages/fs" }
   ]
 }
