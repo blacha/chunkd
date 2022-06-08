@@ -25,7 +25,6 @@ export class FsHttp implements FileSystem<SourceHttp> {
   async *list(filePath: string): AsyncGenerator<string> {
     throw new Error(`Unable to "list" on ${filePath}`);
   }
-
   async *details(filePath: string): AsyncGenerator<FileInfo> {
     throw new Error(`Unable to "details" on ${filePath}`);
   }
@@ -42,21 +41,11 @@ export class FsHttp implements FileSystem<SourceHttp> {
     return Buffer.from(await res.arrayBuffer());
   }
 
-  exists(filePath: string): Promise<boolean> {
-    return this.head(filePath).then((f) => f != null);
-  }
-
   async write(filePath: string): Promise<void> {
     throw new Error(`Unable to "write" on ${filePath}`);
   }
 
   stream(filePath: string): Readable {
     throw new Error(`Unable to "stream" on ${filePath}`);
-
-    // TODO
-    // const res = await SourceHttp.fetch(filePath, { method: 'HEAD' });
-    // if (!res.ok || res.body == null) throw getCompositeError(new Error(res.statusText), `Failed to head: ${filePath}`);
-
-    // return res.body as unknown as Readable;
   }
 }

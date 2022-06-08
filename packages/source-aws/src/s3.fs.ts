@@ -1,4 +1,4 @@
-import { FileInfo, FileSystem, isRecord, parseUri, WriteOptions } from '@chunkd/core';
+import { FileInfo, FileSystem, isRecord, ListOptions, parseUri, WriteOptions } from '@chunkd/core';
 import type { Readable } from 'stream';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
@@ -35,29 +35,36 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
 
   /** Parse a s3:// URI into the bucket and key components */
 
-  async *list(filePath: string): AsyncGenerator<string> {
-    for await (const obj of this.details(filePath)) yield obj.path;
+  async *list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
+    for await (const obj of this.details(filePath, opts)) yield obj.path;
   }
 
-  async *details(filePath: string): AsyncGenerator<FileInfo> {
-    const opts = parseUri(filePath);
-    if (opts == null) return;
+  async *details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo> {
+    const loc = parseUri(filePath);
+    if (loc == null) return;
     let ContinuationToken: string | undefined = undefined;
-    const Bucket = opts.bucket;
-    const Prefix = opts.key;
+    const Delimiter: string | undefined = opts?.recursive === false ? '/' : undefined;
+    const Bucket = loc.bucket;
+    const Prefix = loc.key;
 
     let count = 0;
     try {
       while (true) {
         count++;
-        const res: ListRes = await toPromise(this.s3.listObjectsV2({ Bucket, Prefix, ContinuationToken }));
+        const res: ListRes = await toPromise(this.s3.listObjectsV2({ Bucket, Prefix, ContinuationToken, Delimiter }));
 
-        // Failed to get any content abort
-        if (res.Contents == null) break;
+        if (res.CommonPrefixes != null) {
+          for (const prefix of res.CommonPrefixes) {
+            if (prefix.Prefix == null) continue;
+            yield { path: `s3://${Bucket}/${prefix.Prefix}`, isDirectory: true };
+          }
+        }
 
-        for (const obj of res.Contents) {
-          if (obj.Key == null) continue;
-          yield { path: `s3://${Bucket}/${obj.Key}`, size: obj.Size };
+        if (res.Contents != null) {
+          for (const obj of res.Contents) {
+            if (obj.Key == null) continue;
+            yield { path: `s3://${Bucket}/${obj.Key}`, size: obj.Size };
+          }
         }
 
         // Nothing left to fetch

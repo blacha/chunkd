@@ -1,5 +1,6 @@
 import type { Readable } from 'stream';
 import { ChunkSource, FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
+import { ListOptions } from '@chunkd/core';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -96,8 +97,8 @@ export class FileSystemAbstraction implements FileSystem {
    * @param filePath file path to search
    * @returns list of files inside that path
    */
-  list(filePath: string): AsyncGenerator<string> {
-    return this.get(filePath).list(filePath);
+  list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
+    return this.get(filePath).list(filePath, opts);
   }
 
   /**
@@ -107,8 +108,8 @@ export class FileSystemAbstraction implements FileSystem {
    * @param filePath file path to search
    * @returns list of files inside that path
    */
-  details(filePath: string): AsyncGenerator<FileInfo> {
-    return this.get(filePath).details(filePath);
+  details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo> {
+    return this.get(filePath).details(filePath, opts);
   }
 
   /**
@@ -118,7 +119,9 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns true if file exists, false otherwise
    */
   exists(filePath: string): Promise<boolean> {
-    return this.get(filePath).exists(filePath);
+    return this.get(filePath)
+      .head(filePath)
+      .then((f) => f != null);
   }
 
   /**
@@ -168,3 +171,17 @@ export class FileSystemAbstraction implements FileSystem {
 }
 
 export const fsa = new FileSystemAbstraction();
+
+// async function main(): Promise<void> {
+//   for await (const f of fsa.list('')) {
+//     console.log(f);
+//   }
+
+//   for await (const f of fsa.list('', { details: true })) {
+//     console.log(f.path);
+//   }
+
+//   for await (const f of fsa.list('', { details: false, recursive: false })) {
+//     console.log(f.path);
+//   }
+// }

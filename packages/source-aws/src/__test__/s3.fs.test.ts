@@ -78,9 +78,14 @@ o.spec('file.s3', () => {
       ]);
       o(stub.callCount).equals(5);
       const [firstCall] = stub.args[0] as any;
-      o(firstCall).deepEquals({ Bucket: 'bucket', Prefix: undefined, ContinuationToken: undefined });
+      o(firstCall).deepEquals({
+        Bucket: 'bucket',
+        Prefix: undefined,
+        ContinuationToken: undefined,
+        Delimiter: undefined,
+      });
       const [secondCall] = stub.args[1] as any;
-      o(secondCall).deepEquals({ Bucket: 'bucket', Prefix: undefined, ContinuationToken: 1 });
+      o(secondCall).deepEquals({ Bucket: 'bucket', Prefix: undefined, ContinuationToken: 1, Delimiter: undefined });
     });
 
     o('should allow listing of bucket', async () => {
@@ -94,7 +99,12 @@ o.spec('file.s3', () => {
       o(data).deepEquals(['s3://bucket/FirstFile']);
       o(stub.callCount).equals(1);
       const [firstCall] = stub.args[0] as any;
-      o(firstCall).deepEquals({ Bucket: 'bucket', Prefix: undefined, ContinuationToken: undefined });
+      o(firstCall).deepEquals({
+        Bucket: 'bucket',
+        Prefix: undefined,
+        ContinuationToken: undefined,
+        Delimiter: undefined,
+      });
     });
 
     o('should allow listing of bucket with prefix', async () => {
@@ -108,7 +118,7 @@ o.spec('file.s3', () => {
       o(data).deepEquals(['s3://bucket/keyFirstFile']);
       o(stub.callCount).equals(1);
       const [firstCall] = stub.args[0] as any;
-      o(firstCall).deepEquals({ Bucket: 'bucket', Prefix: 'key', ContinuationToken: undefined });
+      o(firstCall).deepEquals({ Bucket: 'bucket', Prefix: 'key', ContinuationToken: undefined, Delimiter: undefined });
     });
   });
 

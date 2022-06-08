@@ -9,6 +9,9 @@ export interface FileInfo {
    * undefined if no size found
    */
   size?: number;
+
+  /** Is this file a directory */
+  isDirectory?: boolean;
 }
 
 export interface WriteOptions {
@@ -16,6 +19,14 @@ export interface WriteOptions {
   contentEncoding?: string;
   /** Content type of the file eg "text/plain" */
   contentType?: string;
+}
+
+export interface ListOptions {
+  /**
+   * List recursively
+   * @default true
+   */
+  recursive?: boolean;
 }
 
 export interface FileSystem<T extends ChunkSource = ChunkSource> {
@@ -33,12 +44,10 @@ export interface FileSystem<T extends ChunkSource = ChunkSource> {
   stream(filePath: string): Readable;
   /** Write a file from either a buffer or stream */
   write(filePath: string, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
-  /** Recursively list all files in path */
-  list(filePath: string): AsyncGenerator<string>;
-  /** Recursively list all files in path with additional details */
-  details(filePath: string): AsyncGenerator<FileInfo>;
-  /** Does the path exists */
-  exists(filePath: string): Promise<boolean>;
+  /** list all files in path */
+  list(filePath: string, opt?: ListOptions): AsyncGenerator<string>;
+  /** list all files with file info in path */
+  details(filePath: string, opt?: ListOptions): AsyncGenerator<FileInfo>;
   /** Get information about the path  */
   head(filePath: string): Promise<FileInfo | null>;
   /** Create a file source to read chunks out of */
