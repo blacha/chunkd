@@ -1,6 +1,5 @@
+import { ChunkSource, FileInfo, FileSystem, ListOptions, toArray, WriteOptions } from '@chunkd/core';
 import type { Readable } from 'stream';
-import { ChunkSource, FileInfo, FileSystem, WriteOptions } from '@chunkd/core';
-import { ListOptions } from '@chunkd/core';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -40,13 +39,7 @@ export class FileSystemAbstraction implements FileSystem {
     this.isOrdered = false;
   }
 
-  /** Utility to convert async generators into arrays */
-  async toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
-    const output: T[] = [];
-    for await (const o of generator) output.push(o);
-    return output;
-  }
-
+  toArray = toArray;
   /**
    * Read a file into memory
    *

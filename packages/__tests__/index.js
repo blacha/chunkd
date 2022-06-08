@@ -1,4 +1,5 @@
 import S3v3 from '@aws-sdk/client-s3';
+import { FsMemory } from '@chunkd/source-memory';
 import { FsAwsS3 } from '@chunkd/source-aws';
 import { S3LikeV3 } from '@chunkd/source-aws-v3';
 import { FsGoogleStorage } from '@chunkd/source-google-cloud';
@@ -10,6 +11,7 @@ import { fsa } from '../fs/build/index.node.js';
 fsa.register(`s3://blacha-chunkd-test/v2`, new FsAwsS3(new S3()));
 fsa.register(`s3://blacha-chunkd-test/v3`, new FsAwsS3(new S3LikeV3(new S3v3.S3())));
 fsa.register(`gs://blacha-chunkd-test/`, new FsGoogleStorage(new Storage()));
+fsa.register(`memory://blacha-chunkd-test/`, new FsMemory());
 
 const TestFiles = [
   { path: 'a/b/file-a-b-1.txt', buffer: Buffer.from('a/b/file-a-b-1.txt') },
@@ -99,7 +101,8 @@ function testPrefix(prefix) {
   });
 }
 
-testPrefix('/tmp/blacha-chunkd-test/');
+// testPrefix('/tmp/blacha-chunkd-test/');
+testPrefix('memory://blacha-chunkd-test/');
 // testPrefix('s3://blacha-chunkd-test/v2/');
 // testPrefix('s3://blacha-chunkd-test/v3/');
 // testPrefix('gs://blacha-chunkd-test/');

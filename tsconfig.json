@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "./packages/source-memory" },
     { "path": "./packages/core" },
     { "path": "./packages/source-http" },
     { "path": "./packages/source-aws" },
