@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { fstat } from 'fs';
 import o from 'ospec';
-import path, { basename, join } from 'path';
+import path from 'path';
 import 'source-map-support/register.js';
 import { fileURLToPath } from 'url';
 import { FsFile } from '../file.fs.js';
-import { SourceFile } from '../file.source.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
