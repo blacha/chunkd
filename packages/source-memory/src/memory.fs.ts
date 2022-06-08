@@ -1,6 +1,5 @@
 import { CompositeError, FileInfo, FileSystem, ListOptions, SourceMemory } from '@chunkd/core';
 import { Readable } from 'stream';
-import path from 'path';
 
 export function toReadable(r: string | Buffer | Readable): Readable {
   if (typeof r === 'string') r = Buffer.from(r);

@@ -9,7 +9,6 @@ import {
   WriteOptions,
 } from '@chunkd/core';
 import type { Readable } from 'stream';
-import path from 'path';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
