@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./build",
+    "lib": ["es2018", "DOM"]
+  },
+  "include": ["src/**/*", "src/.ts"],
+  "references": [{ "path": "../core" }]
+}

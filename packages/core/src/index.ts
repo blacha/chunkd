@@ -33,3 +33,23 @@ export function parseUri(uri: string): { protocol: string; bucket: string; key?:
   if (key == null || key.trim() === '') return { protocol, bucket };
   return { key, bucket, protocol };
 }
+
+const endsWithSlash = /\/$/;
+const startsWithSlash = /^\//;
+/** path.join removes slashes, s3:// => s3:/ which causes issues */
+export function joinUri(filePathA: string, filePathB: string): string {
+  return filePathA.replace(endsWithSlash, '') + '/' + filePathB.replace(startsWithSlash, '');
+}
+
+export function joinAllUri(filePathA: string, ...filePaths: string[]): string {
+  let output = filePathA;
+  for (let i = 0; i < filePaths.length; i++) output = joinUri(output, filePaths[i]);
+  return output;
+}
+
+/** Utility to convert async generators into arrays */
+export async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
+  const output: T[] = [];
+  for await (const o of generator) output.push(o);
+  return output;
+}
