@@ -1,5 +1,6 @@
 import { CompositeError, FileInfo, FileSystem, ListOptions, SourceMemory } from '@chunkd/core';
 import { Readable } from 'stream';
+import path from 'path';
 
 export function toReadable(r: string | Buffer | Readable): Readable {
   if (typeof r === 'string') r = Buffer.from(r);
@@ -47,11 +48,22 @@ export class FsMemory implements FileSystem<SourceMemory> {
   }
 
   async *list(filePath: string, opt?: ListOptions): AsyncGenerator<string> {
+    const folders = new Set();
     for (const file of this.files.keys()) {
-      if (opt?.recursive === false) {
-        // Extract only the valid keys
-      } else {
-        if (file.startsWith(filePath)) yield file;
+      if (file.startsWith(filePath)) {
+        if (opt?.recursive === false) {
+          const subPath = file.slice(filePath.length);
+          const parts = subPath.split('/');
+          if (parts.length === 1) yield file;
+          else {
+            const folderName = parts[0];
+            if (folders.has(folderName)) continue;
+            folders.add(folderName);
+            yield filePath + folderName + '/';
+          }
+        } else {
+          yield file;
+        }
       }
     }
   }
@@ -59,8 +71,11 @@ export class FsMemory implements FileSystem<SourceMemory> {
   async *details(filePath: string, opt?: ListOptions): AsyncGenerator<FileInfo> {
     for await (const file of this.list(filePath, opt)) {
       const data = await this.head(file);
-      if (data == null) continue;
-      yield data;
+      if (data == null) {
+        yield { path: file, isDirectory: true };
+      } else {
+        yield data;
+      }
     }
   }
 

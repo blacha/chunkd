@@ -1,5 +1,15 @@
-import { ChunkSource, FileInfo, FileSystem, ListOptions, toArray, WriteOptions } from '@chunkd/core';
+import {
+  ChunkSource,
+  FileInfo,
+  FileSystem,
+  joinAllUri,
+  joinUri,
+  ListOptions,
+  toArray,
+  WriteOptions,
+} from '@chunkd/core';
 import type { Readable } from 'stream';
+import path from 'path';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -127,10 +137,8 @@ export class FileSystemAbstraction implements FileSystem {
     return this.get(filePath).head(filePath);
   }
 
-  /** path.join removes slashes, s3:// => s3:/ which causes issues */
-  join(filePathA: string, filePathB: string): string {
-    return filePathA.replace(/\/$/, '') + '/' + filePathB.replace(/^\//, '');
-  }
+  join = joinUri;
+  joinAll = joinAllUri;
 
   /**
    * create a chunked reading source from the file path

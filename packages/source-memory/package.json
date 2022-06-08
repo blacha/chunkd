@@ -10,8 +10,7 @@
     "url": "https://github.com/blacha/chunkd.git",
     "directory": "packages/source-memory"
   },
-  "main": "./build/index.node.js",
-  "browser": "./build/index.js",
+  "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "author": "Blayne Chard",
   "license": "MIT",
