@@ -21,7 +21,7 @@
     "@types/ospec": "^4.0.2",
     "@types/sinon": "^10.0.2",
     "conventional-github-releaser": "^3.1.5",
-    "lerna": "^4.0.0",
+    "lerna": "^5.0.0",
     "ospec": "^4.1.1",
     "rimraf": "^3.0.0",
     "sinon": "^14.0.0",
