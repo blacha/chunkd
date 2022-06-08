@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-google-cloud",
-  "version": "8.2.0",
+  "version": "8.3.0",
   "type": "module",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
@@ -16,7 +16,7 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^8.2.0"
+    "@chunkd/core": "^8.3.0"
   },
   "peerDependencies": {
     "@google-cloud/storage": "*"

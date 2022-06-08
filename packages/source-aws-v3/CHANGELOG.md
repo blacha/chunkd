@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0](https://github.com/blacha/chunkd/compare/v8.2.0...v8.3.0) (2022-06-08)
+
+**Note:** Version bump only for package @chunkd/source-aws-v3
+
+
+
+
+
 # [8.2.0](https://github.com/blacha/chunkd/compare/v8.1.0...v8.2.0) (2022-05-11)
 
 **Note:** Version bump only for package @chunkd/source-aws-v3
