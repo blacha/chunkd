@@ -18,7 +18,7 @@ o.spec('LocalFileSystem', () => {
 
   o('should read a file', async () => {
     const buf = await fs.read(path.join(__dirname, 'fs.file.test.js'));
-    o(buf.toString().startsWith("import o from 'ospec'")).equals(true);
+    o(buf.toString().includes("import o from 'ospec'")).equals(true);
   });
 
   o('should 404 when file not found', async () => {
