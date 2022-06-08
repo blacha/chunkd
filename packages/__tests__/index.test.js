@@ -8,9 +8,20 @@ import { Storage } from '@google-cloud/storage';
 import S3 from 'aws-sdk/clients/s3.js';
 import o from 'ospec';
 
+function getGcp() {
+  if (process.env.GCP_ACCOUNT) {
+    const credentials = JSON.parse(Buffer.from(process.env.GCP_ACCOUNT, 'base64'));
+    return new Storage({ credentials, projectId: 'chunkd-test' });
+  }
+  return new Storage();
+}
+
+// AWS SDK v3 seems to need a region set
+if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION || 'ap-southeast-2';
+
 fsa.register(`s3://blacha-chunkd-test/v2`, new FsAwsS3(new S3()));
 fsa.register(`s3://blacha-chunkd-test/v3`, new FsAwsS3(new S3LikeV3(new S3v3.S3())));
-fsa.register(`gs://blacha-chunkd-test/`, new FsGoogleStorage(new Storage()));
+fsa.register(`gs://blacha-chunkd-test/`, new FsGoogleStorage(getGcp()));
 fsa.register(`memory://blacha-chunkd-test/`, new FsMemory());
 
 const TestFiles = [
@@ -25,15 +36,8 @@ const TestFiles = [
 ];
 
 async function setupTestData(prefix) {
-  try {
-    const existing = await fsa.toArray(fsa.list(prefix));
-    if (existing.length === TestFiles.length) return;
-  } catch (e) {
-    //noop
-  }
   for (const file of TestFiles) {
     const target = fsa.join(prefix, file.path);
-    console.log(target);
     await fsa.write(target, file.buffer);
   }
 }
@@ -46,9 +50,14 @@ function removeSlashes(f) {
 
 function testPrefix(prefix) {
   o.spec(prefix, () => {
-    o.specTimeout(5000);
+    o.specTimeout(30000);
     o.before(async () => {
+      console.time(prefix);
       await setupTestData(prefix);
+    });
+
+    o.after(() => {
+      console.timeEnd(prefix);
     });
 
     o('should list recursive:default ', async () => {
@@ -101,14 +110,11 @@ function testPrefix(prefix) {
   });
 }
 
-// testPrefix('/tmp/blacha-chunkd-test/');
+testPrefix('/tmp/blacha-chunkd-test/');
 testPrefix('memory://blacha-chunkd-test/');
-// testPrefix('s3://blacha-chunkd-test/v2/');
-// testPrefix('s3://blacha-chunkd-test/v3/');
-// testPrefix('gs://blacha-chunkd-test/');
+testPrefix('s3://blacha-chunkd-test/v2/');
+testPrefix('s3://blacha-chunkd-test/v3/');
+testPrefix('gs://blacha-chunkd-test/');
 
-// o.run();
-
-// run it directly when not included by ospec
-if (process.argv.find((f) => f.includes('.bin/ospec') == null)) o.run();
-// console.log(process.argv);
+// run the tests directly when not included by ospec
+if (process.argv.find((f) => f.includes('.bin/ospec')) == null) o.run();

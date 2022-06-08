@@ -17,7 +17,7 @@ export class FsGoogleStorage implements FileSystem<SourceGoogleStorage> {
   /** Google storage client to use */
   storage: Storage;
 
-  constructor(storage: Storage = new Storage()) {
+  constructor(storage: Storage) {
     this.storage = storage;
   }
 
@@ -52,17 +52,17 @@ export class FsGoogleStorage implements FileSystem<SourceGoogleStorage> {
 
     const bucket = this.storage.bucket(loc.bucket);
     const [files, , metadata] = await bucket.getFiles({ prefix: loc.key, autoPaginate: false, delimiter: '/' });
-    if (files != null && files.length > 0) {
-      for (const file of files) {
-        yield { path: join(`gs://${loc.bucket}`, file.name), size: Number(file.metadata.size) };
-      }
-    }
-
     // Recurse down
     if (metadata != null && metadata.prefixes != null) {
       for (const prefix of metadata.prefixes) {
         if (opts?.recursive !== false) yield* this.details(join(`gs://${loc.bucket}`, prefix), opts);
         else yield { path: join(`gs://${loc.bucket}`, prefix), isDirectory: true };
+      }
+    }
+
+    if (files != null && files.length > 0) {
+      for (const file of files) {
+        yield { path: join(`gs://${loc.bucket}`, file.name), size: Number(file.metadata.size) };
       }
     }
   }
@@ -113,7 +113,7 @@ export class FsGoogleStorage implements FileSystem<SourceGoogleStorage> {
     try {
       const file = this.storage.bucket(opts.bucket).file(opts.key);
       const res = await file.getMetadata();
-      return { size: res[0].size, path: filePath };
+      return { size: Number(res[0].size), path: filePath };
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
       throw getCompositeError(e, `Failed to head: "${filePath}"`);
