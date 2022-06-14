@@ -432,10 +432,11 @@
     tslib "^2.3.1"
 
 "@aws-sdk/lib-storage@*":
-  version "3.105.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.105.0.tgz#13832850f744ddb66b69fdd0832d09455ea5b11a"
-  integrity sha512-0kz1nxno0Wd2DRzIZsfBh4BDj8JnVTWpBfjmhtHLOWM1HlsTcFQ6lut/a5lonl9lSkj24r8dOFJ27qK5sNq4Pw==
+  version "3.109.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.109.0.tgz#10f012988d763241c87f71e188bd53f6e42fd261"
+  integrity sha512-H+yntRW7zB6cL0aQSm0ZaWbXomroNNDDtY4qODIPwHppQK1+yGPchsqumUDyQM6q+Ip/oFBrQ18TT005srd/2w==
   dependencies:
+    "@aws-sdk/smithy-client" "3.109.0"
     buffer "5.6.0"
     events "3.3.0"
     stream-browserify "3.0.0"
@@ -597,6 +598,13 @@
     "@aws-sdk/types" "3.78.0"
     tslib "^2.3.1"
 
+"@aws-sdk/middleware-stack@3.109.0":
+  version "3.109.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-stack/-/middleware-stack-3.109.0.tgz#a5838cc054c73fb045079270bfa274e9a0e4324d"
+  integrity sha512-BfQ79BJUw9o7mt+u5jBjYwdKfBkp56Ykkl/576QYSXcXcGjQu/DJObLC9GLtX/fJlEF4WRUTId2Z/e0kpuip8w==
+  dependencies:
+    tslib "^2.3.1"
+
 "@aws-sdk/middleware-stack@3.78.0":
   version "3.78.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-stack/-/middleware-stack-3.78.0.tgz#e9f42039e500bed23ec74359924ae16e7bf9c77a"
@@ -702,6 +710,15 @@
     "@aws-sdk/util-uri-escape" "3.55.0"
     tslib "^2.3.1"
 
+"@aws-sdk/smithy-client@3.109.0":
+  version "3.109.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/smithy-client/-/smithy-client-3.109.0.tgz#d7c5e7f49a65790b7caec13f68f74c3ae7447b89"
+  integrity sha512-GthXe4Y4LQloTLPSTq1ErpkuJ//fJ6Z8QuoOLjMTDOyY1Cos7x5eXabDK7sje5jp76WnXrF0QDJ+m608FQ0OLA==
+  dependencies:
+    "@aws-sdk/middleware-stack" "3.109.0"
+    "@aws-sdk/types" "3.109.0"
+    tslib "^2.3.1"
+
 "@aws-sdk/smithy-client@3.99.0":
   version "3.99.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/smithy-client/-/smithy-client-3.99.0.tgz#e9cd92e95983734b88204432a44ee52388af0e1c"
@@ -710,6 +727,11 @@
     "@aws-sdk/middleware-stack" "3.78.0"
     "@aws-sdk/types" "3.78.0"
     tslib "^2.3.1"
+
+"@aws-sdk/types@3.109.0":
+  version "3.109.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.109.0.tgz#c5518a327ed2c83c80507b6d908255cb96106c1f"
+  integrity sha512-d8B4SjYeORln0ETvlYY5DLYQw39AU1Q6Qhe0VMEUak/CpTfBMrfxfE/IkEDGFEc7IiF5PAaHVgpzWPy6SLqV1g==
 
 "@aws-sdk/types@3.78.0", "@aws-sdk/types@^3.1.0":
   version "3.78.0"
