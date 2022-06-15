@@ -19,8 +19,35 @@ o.spec('FileSystemAbstraction', () => {
     const fakeUnknown = new FakeSystem('unknown');
     fsa.register('', fakeUnknown);
 
-    o(fsa.get('fake://foo').protocol).equals('fake');
-    o(fsa.get('fake:/foo').protocol).equals('unknown');
+    o(fsa.get('fake://foo', 'r').protocol).equals('fake');
+    o(fsa.get('fake:/foo', 'r').protocol).equals('unknown');
+  });
+
+  o('should register filesystems as rw', () => {
+    const fsa = new FileSystemAbstraction();
+
+    const fakeLocal = new FakeSystem('fake');
+    fsa.register('fake://', fakeLocal);
+    o(fsa.get('fake://foo', 'rw').protocol).equals('fake');
+  });
+
+  o('should not return a read only filesystem when wanting to write', () => {
+    const fsa = new FileSystemAbstraction();
+
+    const fakeLocal = new FakeSystem('fake');
+    fsa.register('fake://', fakeLocal, 'r');
+    o(() => fsa.get('fake://foo', 'rw')).throws(Error);
+  });
+
+  o('should allow read and read-write file systems to be registered', () => {
+    const fsa = new FileSystemAbstraction();
+
+    const fakeR = new FakeSystem('r');
+    const fakeRw = new FakeSystem('rw');
+
+    fsa.register('fake://', fakeR, 'r');
+    fsa.register('fake://', fakeRw, 'rw');
+    o(fsa.get('fake://foo', 'rw').protocol).equals('rw');
   });
 
   o('should find file systems in order they were registered', () => {
@@ -31,9 +58,9 @@ o.spec('FileSystemAbstraction', () => {
     fsa.register('fake://', fakeA);
     fsa.register('fake://some-prefix-string/', fakeB);
 
-    o(fsa.get('fake://foo').protocol).equals('fake');
-    o(fsa.get('fake://some-prefix-string/').protocol).equals('fakeSpecific');
-    o(fsa.get('fake://some-prefix-string/some-key').protocol).equals('fakeSpecific');
+    o(fsa.get('fake://foo', 'r').protocol).equals('fake');
+    o(fsa.get('fake://some-prefix-string/', 'r').protocol).equals('fakeSpecific');
+    o(fsa.get('fake://some-prefix-string/some-key', 'r').protocol).equals('fakeSpecific');
   });
 
   o('should order file systems by length', () => {
@@ -44,9 +71,9 @@ o.spec('FileSystemAbstraction', () => {
     fsa.register('fake://some-prefix-string/', fakeB);
     fsa.register('fake://', fakeA);
 
-    o(fsa.get('fake://foo').protocol).equals('fake');
-    o(fsa.get('fake://some-prefix-string/').protocol).equals('fakeSpecific');
-    o(fsa.get('fake://some-prefix-string/some-key').protocol).equals('fakeSpecific');
+    o(fsa.get('fake://foo', 'r').protocol).equals('fake');
+    o(fsa.get('fake://some-prefix-string/', 'r').protocol).equals('fakeSpecific');
+    o(fsa.get('fake://some-prefix-string/some-key', 'r').protocol).equals('fakeSpecific');
   });
 
   o('should replace file systems when registering duplicates', () => {

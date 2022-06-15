@@ -18,6 +18,10 @@ function isRecord(obj: unknown): obj is Record<string, unknown> {
   return obj.constructor === Object;
 }
 
+export type Flag = FlagRead | FlagReadWrite;
+export type FlagRead = 'r';
+export type FlagReadWrite = 'rw';
+
 export class FileSystemAbstraction implements FileSystem {
   protocol = 'abstract';
   /**
@@ -25,26 +29,26 @@ export class FileSystemAbstraction implements FileSystem {
    * @see FileSystemAbstraction.sortSystems
    */
   private isOrdered = true;
-  systems: { path: string; system: FileSystem }[] = [];
+  systems: { path: string; system: FileSystem; flag: Flag }[] = [];
 
   /**
    * Register a file system to a specific path which can then be used with any `fsa` command
    *
    * @example
-   * fsa.register('s3://', fsS3)
-   * fsa.register('s3://bucket-a/key-a', specificS3)
+   * fsa.register('s3://', fsS3, 'rw')
+   * fsa.register('s3://bucket-a/key-a', specificS3, 'r')
    * fsa.register('http://', fsHttp)
    *
    */
-  register(path: string, system: FileSystem): void {
+  register(path: string, system: FileSystem, flag: Flag = 'rw'): void {
     for (let i = 0; i < this.systems.length; i++) {
       const sys = this.systems[i];
-      if (sys.path === path) {
-        this.systems.splice(i, 1, { path, system });
+      if (sys.path === path && sys.flag === flag) {
+        this.systems.splice(i, 1, { path, system, flag });
         return;
       }
     }
-    this.systems.push({ path, system });
+    this.systems.push({ path, system, flag });
     this.isOrdered = false;
   }
 
@@ -56,10 +60,11 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns Content of the file
    */
   read(filePath: string): Promise<Buffer> {
-    return this.get(filePath).read(filePath);
+    return this.get(filePath, 'r').read(filePath);
   }
 
-  /** Read a file as JSON
+  /**
+   * Read a file as JSON
    * @param filePath file to read
    * @returns JSON Content of the file
    */
@@ -75,7 +80,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns Stream of file contents
    */
   stream(filePath: string): Readable {
-    return this.get(filePath).stream(filePath);
+    return this.get(filePath, 'r').stream(filePath);
   }
 
   /**
@@ -89,9 +94,9 @@ export class FileSystemAbstraction implements FileSystem {
   write(filePath: string, buffer: FileWriteTypes, opts?: WriteOptions): Promise<void> {
     if (Array.isArray(buffer) || isRecord(buffer)) {
       const content = JSON.stringify(buffer, null, 2);
-      return this.get(filePath).write(filePath, content, { contentType: 'application/json', ...opts });
+      return this.get(filePath, 'rw').write(filePath, content, { contentType: 'application/json', ...opts });
     }
-    return this.get(filePath).write(filePath, buffer, opts);
+    return this.get(filePath, 'rw').write(filePath, buffer, opts);
   }
 
   /**
@@ -100,7 +105,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns list of files inside that path
    */
   list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
-    return this.get(filePath).list(filePath, opts);
+    return this.get(filePath, 'r').list(filePath, opts);
   }
 
   /**
@@ -111,7 +116,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns list of files inside that path
    */
   details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo> {
-    return this.get(filePath).details(filePath, opts);
+    return this.get(filePath, 'r').details(filePath, opts);
   }
 
   /**
@@ -121,7 +126,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns true if file exists, false otherwise
    */
   exists(filePath: string): Promise<boolean> {
-    return this.get(filePath)
+    return this.get(filePath, 'r')
       .head(filePath)
       .then((f) => f != null);
   }
@@ -133,7 +138,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns basic information such as file size
    */
   head(filePath: string): Promise<FileInfo | null> {
-    return this.get(filePath).head(filePath);
+    return this.get(filePath, 'r').head(filePath);
   }
 
   join = joinUri;
@@ -145,7 +150,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns
    */
   source(filePath: string): ChunkSource {
-    return this.get(filePath).source(filePath);
+    return this.get(filePath, 'r').source(filePath);
   }
 
   /**
@@ -160,10 +165,14 @@ export class FileSystemAbstraction implements FileSystem {
   }
 
   /** Find the filesystem that would be used for a given path */
-  get(filePath: string): FileSystem {
+  get(filePath: string, flag: Flag): FileSystem {
     this.sortSystems();
     for (const cfg of this.systems) {
-      if (filePath.startsWith(cfg.path)) return cfg.system;
+      if (filePath.startsWith(cfg.path)) {
+        // If we want to write to the system but only have read-only access
+        if (flag === 'rw' && cfg.flag === 'r') continue;
+        return cfg.system;
+      }
     }
 
     throw new Error(`Unable to find file system for path:${filePath}`);
@@ -171,17 +180,3 @@ export class FileSystemAbstraction implements FileSystem {
 }
 
 export const fsa = new FileSystemAbstraction();
-
-// async function main(): Promise<void> {
-//   for await (const f of fsa.list('')) {
-//     console.log(f);
-//   }
-
-//   for await (const f of fsa.list('', { details: true })) {
-//     console.log(f.path);
-//   }
-
-//   for await (const f of fsa.list('', { details: false, recursive: false })) {
-//     console.log(f.path);
-//   }
-// }
