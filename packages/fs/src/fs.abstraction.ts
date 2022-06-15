@@ -9,6 +9,7 @@ import {
   WriteOptions,
 } from '@chunkd/core';
 import type { Readable } from 'stream';
+import { Flag } from './flags.js';
 
 export type FileWriteTypes = Buffer | Readable | string | Record<string, unknown> | Array<unknown>;
 
@@ -17,10 +18,6 @@ function isRecord(obj: unknown): obj is Record<string, unknown> {
   if (obj == null) return false;
   return obj.constructor === Object;
 }
-
-export type Flag = FlagRead | FlagReadWrite;
-export type FlagRead = 'r';
-export type FlagReadWrite = 'rw';
 
 export class FileSystemAbstraction implements FileSystem {
   protocol = 'abstract';
