@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.4.0](https://github.com/blacha/chunkd/compare/v8.3.0...v8.4.0) (2022-06-21)
+
+
+### Features
+
+* **fs:** support read-only and read-write file systems ([a7f52a9](https://github.com/blacha/chunkd/commit/a7f52a98fa897759f48c8190adb7e4836a37959e))
+
+
+
+
+
 # [8.3.0](https://github.com/blacha/chunkd/compare/v8.2.0...v8.3.0) (2022-06-08)
 
 
