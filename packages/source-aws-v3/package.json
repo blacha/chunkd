@@ -29,6 +29,6 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "*",
     "@aws-sdk/lib-storage": "*",
-    "@types/node": "^17.0.35"
+    "@types/node": "^18.0.0"
   }
 }
