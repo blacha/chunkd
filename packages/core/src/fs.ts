@@ -43,7 +43,7 @@ export interface FileSystem<T extends ChunkSource = ChunkSource> {
   /** Create a read stream */
   stream(filePath: string): Readable;
   /** Write a file from either a buffer or stream */
-  write(filePath: string, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
+  write(filePath: string, buffer: Buffer | Readable | string, opts?: WriteOptions): Promise<void>;
   /** list all files in path */
   list(filePath: string, opt?: ListOptions): AsyncGenerator<string>;
   /** list all files with file info in path */
