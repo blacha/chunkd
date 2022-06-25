@@ -9,7 +9,6 @@ import {
   WriteOptions,
 } from '@chunkd/core';
 import type { Readable } from 'stream';
-import { runInThisContext } from 'vm';
 import * as actions from './actions.js';
 import { FileSystemActions } from './actions.js';
 import { Flag } from './flags.js';
@@ -41,10 +40,14 @@ export class FileSystemAbstraction implements FileSystem {
     error: [] as actions.FileSystemEventErrorHandler[],
   };
 
+  /** Are there no events registered so far */
+  isEventsEmpty = false;
   use(cbs: FileSystemActions): void {
     if (cbs.before) this.events.before.push(cbs.before);
     if (cbs.after) this.events.after.push(cbs.after);
     if (cbs.error) this.events.error.push(cbs.error);
+    this.isEventsEmpty =
+      this.events.before.length === 0 && this.events.after.length === 0 && this.events.error.length === 0;
   }
 
   /**
@@ -75,6 +78,8 @@ export class FileSystemAbstraction implements FileSystem {
         return { type: 'read', data: await fs.read(req.path) };
       case 'write':
         return { type: 'write', data: await fs.write(req.path, req.data, req.options) };
+      case 'head':
+        return { type: 'head', data: await fs.head(req.path) };
       default:
         throw new Error('Unknown request type: ' + (req as any).type);
     }
@@ -114,6 +119,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns Content of the file
    */
   read(path: string): Promise<Buffer> {
+    if (this.isEventsEmpty) return this.get(path, 'r').read(path);
     return this.action<actions.FileSystemActionRead>({ type: 'read', path }).then(getData);
   }
 
@@ -148,9 +154,10 @@ export class FileSystemAbstraction implements FileSystem {
   write(path: string, buffer: FileWriteTypes, options?: WriteOptions): Promise<void> {
     if (Array.isArray(buffer) || isRecord(buffer)) {
       const data = JSON.stringify(buffer, null, 2);
+      if (this.isEventsEmpty) return this.get(path, 'rw').write(path, data, options);
       return this.action<actions.FileSystemActionWrite>({ type: 'write', path, data, options }).then(getData);
     }
-
+    if (this.isEventsEmpty) return this.get(path, 'rw').write(path, buffer, options);
     return this.action<actions.FileSystemActionWrite>({ type: 'write', path, data: buffer, options }).then(getData);
   }
 
@@ -159,19 +166,24 @@ export class FileSystemAbstraction implements FileSystem {
    * @param filePath file path to search
    * @returns list of files inside that path
    */
-  list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
-    return this.get(filePath, 'r').list(filePath, opts);
+  list(path: string, options?: ListOptions): AsyncGenerator<string> {
+    if (this.isEventsEmpty) return this.get(path, 'r').list(path, options);
+    return this.get(path, 'r').list(path, options);
+    // return this.action<actions.FileSystemActionList>({ type: 'details', path, options }).then(getData);
   }
 
   /**
    * List recursively all files starting with the filePath with basic
    * file information such as size
    *
-   * @param filePath file path to search
+   * @param path file path to search
    * @returns list of files inside that path
    */
-  details(filePath: string, opts?: ListOptions): AsyncGenerator<FileInfo> {
-    return this.get(filePath, 'r').details(filePath, opts);
+  details(path: string, options?: ListOptions): AsyncGenerator<FileInfo> {
+    if (this.isEventsEmpty) return this.get(path, 'r').details(path, options);
+    return this.get(path, 'r').details(path, options);
+    // TODO how to handle async generators here
+    // return this.action<actions.FileSystemActionDetails>({ type: 'details', path, options }).then(getData);
   }
 
   /**
@@ -189,11 +201,12 @@ export class FileSystemAbstraction implements FileSystem {
   /**
    * Fetch basic information about the file
    *
-   * @param filePath path to check
+   * @param path path to check
    * @returns basic information such as file size
    */
-  head(filePath: string): Promise<FileInfo | null> {
-    return this.action<actions.FileSystemActionHead>({ type: 'head', path: filePath }).then(getData);
+  head(path: string): Promise<FileInfo | null> {
+    if (!this.isEventsEmpty) return this.get(path, 'r').head(path);
+    return this.action<actions.FileSystemActionHead>({ type: 'head', path }).then(getData);
   }
 
   join = joinUri;

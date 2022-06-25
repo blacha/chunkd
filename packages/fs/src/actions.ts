@@ -2,7 +2,13 @@ import { FileInfo, WriteOptions } from '@chunkd/core';
 import { Readable } from 'stream';
 import { FileSystemAbstraction } from './fs.abstraction';
 
-export type FileSystemAction = FileSystemActionRead | FileSystemActionWrite | FileSystemActionHead;
+/** All possible actions */
+export type FileSystemAction =
+  | FileSystemActionRead
+  | FileSystemActionWrite
+  | FileSystemActionHead
+  | FileSystemActionList
+  | FileSystemActionDetails;
 
 /** @see FileSystemAbstraction.read */
 export interface FileSystemActionRead {
@@ -28,6 +34,18 @@ export interface FileSystemActionWrite {
 export interface FileSystemActionHead {
   request: { type: 'head'; path: string };
   response: { type: 'head'; data: FileInfo | null };
+}
+
+/** @see FileSystemAbstraction.list */
+export interface FileSystemActionList {
+  request: { type: 'list'; path: string };
+  response: { type: 'list'; data: AsyncGenerator<string> };
+}
+
+/** @see FileSystemAbstraction.details */
+export interface FileSystemActionDetails {
+  request: { type: 'details'; path: string };
+  response: { type: 'details'; data: AsyncGenerator<FileInfo> };
 }
 
 export type FileSystemEventRequestHandler<T extends FileSystemAction = FileSystemAction> = (
