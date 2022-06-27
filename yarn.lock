@@ -432,9 +432,9 @@
     tslib "^2.3.1"
 
 "@aws-sdk/lib-storage@*":
-  version "3.113.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.113.0.tgz#12dbbdce99e6d2241ee1405268a7225378bf5060"
-  integrity sha512-xZhMiYZH9Bfkc1DT7cv/FEZSH5jHEZUXmM0cApH8QlDEhT3sYN/K3vvQSKnLkVkDd2MQiXguwELX0qFwUL8dww==
+  version "3.118.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.118.0.tgz#caa30f0f5ddc9a868e0ae9cb9a6f8d81533cd2f1"
+  integrity sha512-eO3Z1CeL5j1iJdM3/jyWFA5BgCtrnBHktTKqts3Zrv9pzoZqMHZ7YcuBDUjg8UgzUp+d+24eUuZibbsTiuDnIQ==
   dependencies:
     "@aws-sdk/smithy-client" "3.110.0"
     buffer "5.6.0"
