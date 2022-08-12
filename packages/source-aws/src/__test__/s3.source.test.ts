@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import o from 'ospec';
-import 'source-map-support/register.js';
 import { SourceAwsS3 } from '../index.js';
 import { FakeRemote } from './fake.s3.js';
 

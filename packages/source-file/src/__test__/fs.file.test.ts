@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import o from 'ospec';
 import path from 'path';
-import 'source-map-support/register.js';
 import { fileURLToPath } from 'url';
 import { FsFile } from '../file.fs.js';
 

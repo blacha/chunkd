@@ -1,6 +1,5 @@
 import { isRecord } from '@chunkd/core';
 import o from 'ospec';
-import 'source-map-support/register.js';
 import { FetchLikeOptions, SourceHttp } from '../http.source.js';
 
 export interface HttpHeaders {
