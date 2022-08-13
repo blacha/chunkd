@@ -6,8 +6,7 @@
     "clean": "tsc -b --clean && rimraf 'packages/*/build'",
     "build": "tsc -b --pretty",
     "version": "eslint lerna.json --fix",
-    "lint": "eslint . --quiet --fix --ignore-path .gitignore",
-    "test": "ospec --globs 'packages/*/build/**/*.test.js'"
+    "lint": "eslint . --quiet --fix --ignore-path .gitignore"
   },
   "type": "module",
   "private": true,

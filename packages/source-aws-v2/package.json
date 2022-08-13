@@ -14,7 +14,9 @@
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "ospec --globs 'build/**/*.test.js'"
+  },
   "dependencies": {
     "@chunkd/core": "^8.4.0",
     "@chunkd/source-aws": "^8.4.0"

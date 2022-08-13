@@ -15,7 +15,9 @@
   "browser": "./build/index.js",
   "types": "./build/index.d.ts",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "ospec --globs 'build/**/*.test.js'"
+  },
   "dependencies": {
     "@chunkd/core": "^8.4.0",
     "@chunkd/source-file": "^8.4.0",
