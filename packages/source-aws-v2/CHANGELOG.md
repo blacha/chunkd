@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.5.0](https://github.com/blacha/chunkd/compare/v8.4.0...v8.5.0) (2022-08-23)
+
+
+### Features
+
+* **source-aws:** create a credential provider ([#514](https://github.com/blacha/chunkd/issues/514)) ([167b585](https://github.com/blacha/chunkd/commit/167b585bd57ae845bf93d5351be9054ca5e80625))
+
+
+
+
+
 # [8.4.0](https://github.com/blacha/chunkd/compare/v8.3.0...v8.4.0) (2022-06-21)
 
 **Note:** Version bump only for package @chunkd/source-aws-v2
