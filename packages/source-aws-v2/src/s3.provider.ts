@@ -5,16 +5,20 @@ import { AwsCredentials } from './s3.credentials.js';
 export interface CredentialSource {
   /** Prefix type generally s3 */
   type: 's3';
-  /** FileSystem prefix should always start with `s3://...` */
+  /** Prefix should always start with `s3://${bucket}` */
   prefix: string;
   /** Role to use to access */
   roleArn: string;
+  /** Aws account this bucket belongs to */
+  accountId: string;
+  /** Bucket name */
+  bucket: string;
   /** ExternalId if required */
   externalId?: string;
   /** Max role session duration */
   roleSessionDuration?: number;
   /** Can this be used for "read" or "read-write" access */
-  flags: 'r' | 'rw';
+  flags?: 'r' | 'rw';
 }
 
 export interface CredentialSourceJson {
@@ -47,6 +51,10 @@ export class FsAwsS3ProviderV2 implements FsAwsS3Provider {
     const cfg = await this.config;
     if (cfg == null) return null;
 
+    if (cfg.v !== 2) throw new Error('Invalid bucket config version: ' + cfg.v + ' from ' + this.path);
+    if (cfg.prefixes == null || !Array.isArray(cfg.prefixes)) {
+      throw new Error('Invalid bucket config missing "prefixes" from ' + this.path);
+    }
     const ro = cfg.prefixes.find((f) => path.startsWith(f.prefix));
 
     if (ro == null) return null;
