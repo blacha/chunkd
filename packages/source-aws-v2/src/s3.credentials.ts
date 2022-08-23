@@ -1,7 +1,7 @@
-import { Credentials } from 'aws-sdk/lib/credentials.js';
-import aws from 'aws-sdk/lib/core.js';
-import S3 from 'aws-sdk/clients/s3.js';
 import { FsAwsS3 } from '@chunkd/source-aws';
+import S3 from 'aws-sdk/clients/s3.js';
+import aws from 'aws-sdk/lib/core.js';
+import { Credentials } from 'aws-sdk/lib/credentials.js';
 
 export interface RoleConfig {
   roleArn: string;

@@ -1,5 +1,6 @@
 import { FileInfo, FileSystem, isRecord, ListOptions, parseUri, WriteOptions } from '@chunkd/core';
 import type { Readable } from 'stream';
+import { FsAwsS3Provider } from './credentials.js';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
 
@@ -9,11 +10,14 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   /** Max list requests to run before erroring */
   static MaxListCount = 100;
 
+  credentials: FsAwsS3Provider | undefined;
+
   /** AWS-SDK s3 to use */
   s3: S3Like;
 
-  constructor(s3: S3Like) {
+  constructor(s3: S3Like, credentials?: FsAwsS3Provider) {
     this.s3 = s3;
+    this.credentials = credentials;
   }
 
   source(filePath: string): SourceAwsS3 {
@@ -77,7 +81,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
         ContinuationToken = res.NextContinuationToken;
       }
     } catch (e) {
-      throw getCompositeError(e, `Failed to list: "${filePath}"`);
+      const ce = getCompositeError(e, `Failed to list: "${filePath}"`);
+      if (this.credentials != null && ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs.details(filePath, opts);
+      }
+      throw ce;
     }
   }
 
@@ -89,7 +98,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       const res = await this.s3.getObject({ Bucket: opts.bucket, Key: opts.key }).promise();
       return res.Body as Buffer;
     } catch (e) {
-      throw getCompositeError(e, `Failed to read: "${filePath}"`);
+      const ce = getCompositeError(e, `Failed to read: "${filePath}"`);
+      if (this.credentials != null && ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs.read(filePath);
+      }
+      throw ce;
     }
   }
 
@@ -108,7 +122,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
         }),
       );
     } catch (e) {
-      throw getCompositeError(e, `Failed to write: "${filePath}"`);
+      const ce = getCompositeError(e, `Failed to write: "${filePath}"`);
+      if (this.credentials != null && ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs.write(filePath, buf, ctx);
+      }
+      throw ce;
     }
   }
 
@@ -125,13 +144,19 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
 
   async head(filePath: string): Promise<FileInfo | null> {
     const opts = parseUri(filePath);
-    if (opts == null || opts.key == null) throw new Error(`Failed to exists: "${filePath}"`);
+    if (opts == null || opts.key == null) throw new Error(`Failed to head: "${filePath}"`);
     try {
       const res = await toPromise(this.s3.headObject({ Bucket: opts.bucket, Key: opts.key }));
       return { size: res.ContentLength, path: filePath };
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
-      throw getCompositeError(e, `Failed to exists: "${filePath}"`);
+
+      const ce = getCompositeError(e, `Failed to head: "${filePath}"`);
+      if (this.credentials != null && ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs.head(filePath);
+      }
+      throw ce;
     }
   }
 }
