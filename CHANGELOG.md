@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.1](https://github.com/blacha/chunkd/compare/v8.5.0...v8.5.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* **source-aws:** yeild all of the listed files ([0a152d0](https://github.com/blacha/chunkd/commit/0a152d0d516b1ab23b40ee36b1c1878cc61932bc))
+
+
+
+
+
 # [8.5.0](https://github.com/blacha/chunkd/compare/v8.4.0...v8.5.0) (2022-08-23)
 
 
