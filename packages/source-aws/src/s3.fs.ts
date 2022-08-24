@@ -84,7 +84,10 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       const ce = getCompositeError(e, `Failed to list: "${filePath}"`);
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(filePath);
-        if (newFs) return newFs.details(filePath, opts);
+        if (newFs) {
+          yield* newFs.details(filePath, opts);
+          return;
+        }
       }
       throw ce;
     }
