@@ -45,21 +45,27 @@ export class FsAwsS3ProviderV2 implements FsAwsS3Provider {
     return this._config;
   }
 
-  async find(path: string): Promise<FsAwsS3 | null> {
+  /** Look up the credentials for a path */
+  async findCredentials(path: string): Promise<CredentialSource | null> {
     if (this.path === path) return null;
 
     const cfg = await this.config;
     if (cfg == null) return null;
-
-    if (cfg.v !== 2) throw new Error('Invalid bucket config version: ' + cfg.v + ' from ' + this.path);
+    if (cfg.v !== 2) throw new Error('Invalid bucket config version: ' + cfg.v + ' from: ' + this.path);
     if (cfg.prefixes == null || !Array.isArray(cfg.prefixes)) {
-      throw new Error('Invalid bucket config missing "prefixes" from ' + this.path);
+      throw new Error('Invalid bucket config missing "prefixes" from: ' + this.path);
     }
-    const ro = cfg.prefixes.find((f) => path.startsWith(f.prefix));
+    for (const pref of cfg.prefixes) {
+      if (path.startsWith(pref.prefix)) return pref;
+    }
+    return null;
+  }
 
-    if (ro == null) return null;
-    const fs = AwsCredentials.fsFromRole(ro.roleArn, ro.externalId, ro.roleSessionDuration);
-    if (this.onFileSystemCreated) this.onFileSystemCreated(ro, fs);
+  async find(path: string): Promise<FsAwsS3 | null> {
+    const cs = await this.findCredentials(path);
+    if (cs == null) return null;
+    const fs = AwsCredentials.fsFromRole(cs.roleArn, cs.externalId, cs.roleSessionDuration);
+    if (this.onFileSystemCreated) this.onFileSystemCreated(cs, fs);
     return fs;
   }
 }
