@@ -17,15 +17,13 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@linzjs/style": "^3.1.1",
+    "@linzjs/style": "^3.11.0",
     "@types/ospec": "^4.0.2",
     "@types/sinon": "^10.0.2",
-    "conventional-github-releaser": "^3.1.5",
     "lerna": "^5.0.0",
     "ospec": "^4.1.1",
     "rimraf": "^3.0.0",
-    "sinon": "^14.0.0",
-    "source-map-support": "^0.5.19"
+    "sinon": "^14.0.0"
   },
   "workspaces": {
     "packages": [
