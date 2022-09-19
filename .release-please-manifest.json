@@ -1,7 +1,7 @@
 {
   "packages/core": "8.4.0",
   "packages/fs": "8.5.1",
-  "packages/source-aws-v2": "8.5.1",
+  "packages/source-aws-v2": "8.6.0",
   "packages/source-aws-v3": "8.5.1",
   "packages/source-aws": "8.5.1",
   "packages/source-file": "8.4.0",
