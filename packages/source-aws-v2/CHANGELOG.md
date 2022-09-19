@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.6.0](https://github.com/blacha/chunkd/compare/source-aws-v2-v8.5.1...source-aws-v2-v8.6.0) (2022-09-19)
+
+
+### Features
+
+* **source-aws-v2:** expose method to get the roleArn and externalId for a path ([42752e7](https://github.com/blacha/chunkd/commit/42752e79f0f59830bec14bb8a9db1963dec52da4))
+
 ## [8.5.1](https://github.com/blacha/chunkd/compare/v8.5.0...v8.5.1) (2022-08-24)
 
 **Note:** Version bump only for package @chunkd/source-aws-v2
