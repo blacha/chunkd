@@ -1,5 +1,4 @@
 import o from 'ospec';
-import 'source-map-support/register.js';
 import { SourceGoogleStorage } from '../gcp.source.js';
 import { Storage } from '@google-cloud/storage';
 

@@ -1,5 +1,4 @@
 import o from 'ospec';
-import 'source-map-support/register.js';
 import { ByteSize } from '../bytes.js';
 import { ChunkId } from '../chunk.source.js';
 import { SourceMemory } from '../chunk.source.memory.js';

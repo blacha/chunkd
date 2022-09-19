@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import o from 'ospec';
 import { basename, join } from 'path';
-import 'source-map-support/register.js';
 import { fileURLToPath } from 'url';
 import { SourceFile } from '../file.source.js';
 
