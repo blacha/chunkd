@@ -1,0 +1,13 @@
+{
+  "packages": {
+    "packages/core": {},
+    "packages/fs": {},
+    "packages/source-aws": {},
+    "packages/source-aws-v2": {},
+    "packages/source-aws-v3": {},
+    "packages/source-file": {},
+    "packages/source-google-cloud": {},
+    "packages/source-http": {},
+    "packages/source-memory": {}
+  }
+}
