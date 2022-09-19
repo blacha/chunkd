@@ -1,0 +1,11 @@
+{
+  "packages/core": "8.4.0",
+  "packages/fs": "8.5.1",
+  "packages/source-aws-v2": "8.5.1",
+  "packages/source-aws-v3": "8.5.1",
+  "packages/source-aws": "8.5.1",
+  "packages/source-file": "8.4.0",
+  "packages/source-google-cloud": "8.4.0",
+  "packages/source-http": "8.4.0",
+  "packages/source-memory": "8.4.0"
+}
