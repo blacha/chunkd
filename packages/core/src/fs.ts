@@ -52,4 +52,6 @@ export interface FileSystem<T extends ChunkSource = ChunkSource> {
   head(filePath: string): Promise<FileInfo | null>;
   /** Create a file source to read chunks out of */
   source(filePath: string): T;
+  /** Delete a file from the location */
+  delete(filePath: string): Promise<void>;
 }

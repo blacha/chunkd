@@ -45,6 +45,10 @@ export class FsHttp implements FileSystem<SourceHttp> {
     throw new Error(`Unable to "write" on ${filePath}`);
   }
 
+  async delete(filePath: string): Promise<void> {
+    throw new Error(`Unable to "delete" on ${filePath}`);
+  }
+
   stream(filePath: string): Readable {
     throw new Error(`Unable to "stream" on ${filePath}`);
   }

@@ -133,7 +133,21 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       throw ce;
     }
   }
-
+  async delete(filePath: string): Promise<void> {
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
+    try {
+      await toPromise(this.s3.deleteObject({ Bucket: opts.bucket, Key: opts.key }));
+      return;
+    } catch (e) {
+      const ce = getCompositeError(e, `Failed to delete: "${filePath}"`);
+      if (this.credentials != null && ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs.delete(filePath);
+      }
+      throw ce;
+    }
+  }
   exists(filePath: string): Promise<boolean> {
     return this.head(filePath).then((f) => f != null);
   }

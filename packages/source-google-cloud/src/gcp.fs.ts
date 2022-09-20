@@ -80,6 +80,17 @@ export class FsGoogleStorage implements FileSystem<SourceGoogleStorage> {
     }
   }
 
+  async delete(filePath: string): Promise<void> {
+    const opts = parseUri(filePath);
+    if (opts == null || opts.key == null) throw new Error(`GoogleStorage: Failed to read: "${filePath}"`);
+    try {
+      const fileData = this.storage.bucket(opts.bucket).file(opts.key);
+      await fileData.delete();
+    } catch (e) {
+      throw getCompositeError(e, `Failed to delete: "${filePath}"`);
+    }
+  }
+
   async write(filePath: string, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
     const opts = parseUri(filePath);
     if (opts == null || opts.key == null) throw new Error(`GoogleStorage: Failed to write: "${filePath}"`);

@@ -97,6 +97,15 @@ export class FileSystemAbstraction implements FileSystem {
   }
 
   /**
+   * Delete a file from a location
+   *
+   * @param filePath file to delete
+   */
+  delete(filePath: string): Promise<void> {
+    return this.get(filePath, 'rw').delete(filePath);
+  }
+
+  /**
    * List recursively all files starting with the filePath
    * @param filePath file path to search
    * @returns list of files inside that path

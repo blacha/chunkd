@@ -83,6 +83,14 @@ export class FsFile implements FileSystem<SourceFile> {
     }
   }
 
+  async delete(filePath: string): Promise<void> {
+    try {
+      return await fs.promises.unlink(filePath);
+    } catch (e) {
+      throw getCompositeError(e, `Failed to read: ${filePath}`);
+    }
+  }
+
   stream(filePath: string): fs.ReadStream {
     return fs.createReadStream(filePath);
   }

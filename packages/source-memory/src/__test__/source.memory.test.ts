@@ -33,4 +33,16 @@ o.spec('FsMemory', () => {
 
     o(await toArray(memory.list('memory://a/b'))).deepEquals(['memory://a/b/c.png']);
   });
+
+  o('should delete files', async () => {
+    await memory.write('memory://a/b/c.png', Buffer.from('a'));
+    await memory.write('memory://a/d.png', Buffer.from('a'));
+    o(await toArray(memory.list('memory://a/b'))).deepEquals(['memory://a/b/c.png']);
+
+    await memory.delete('memory://a/b/c.png');
+    o(await toArray(memory.list('memory://a/'))).deepEquals(['memory://a/d.png']);
+
+    await memory.delete('memory://a/d.png');
+    o(await toArray(memory.list('memory://a/'))).deepEquals([]);
+  });
 });

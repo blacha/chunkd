@@ -1,7 +1,13 @@
-import { GetObjectCommand, HeadObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { PassThrough, Readable } from 'stream';
 import type {
+  DeleteObjectRes,
   GetObjectReq,
   GetObjectRes,
   HeadRes,
@@ -9,9 +15,11 @@ import type {
   ListRes,
   Location,
   S3Like,
+  S3LikeResponse,
   S3LikeResponseStream,
   UploadReq,
 } from '@chunkd/source-aws/build/type.js';
+import { PassThrough, Readable } from 'stream';
 
 function streamToBuffer(stream?: Readable): Promise<Buffer | undefined> {
   if (stream == null) return Promise.resolve(undefined);
@@ -67,6 +75,10 @@ export class S3LikeV3 implements S3Like {
         return pt;
       },
     };
+  }
+
+  deleteObject(req: Location): S3LikeResponse<DeleteObjectRes> {
+    return this.client.send(new DeleteObjectCommand(req));
   }
   headObject(req: Location): Promise<HeadRes> {
     return this.client.send(new HeadObjectCommand(req));

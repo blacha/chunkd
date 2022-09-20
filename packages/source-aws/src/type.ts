@@ -11,6 +11,9 @@ export interface S3LikeResponseStream<T> extends S3LikeV2Response<T> {
 
 export type Location = { Bucket: string; Key: string };
 
+export type DeleteObjectReq = Location;
+export type DeleteObjectRes = { DeleteMarker?: boolean };
+
 export type GetObjectReq = Location & { Range?: string };
 export type GetObjectRes = { Body?: Buffer | unknown; ContentRange?: string };
 
@@ -35,6 +38,7 @@ export type HeadRes = { ContentLength?: number };
 
 /** Minimal typing for a s3 like interface to make it easier to work across aws-sdk versions */
 export interface S3Like {
+  deleteObject(req: DeleteObjectReq): S3LikeResponse<DeleteObjectRes>;
   getObject(req: GetObjectReq): S3LikeResponseStream<GetObjectRes>;
   headObject(req: HeadReq): S3LikeResponse<HeadRes>;
   listObjectsV2(req: ListReq): S3LikeResponse<ListRes>;

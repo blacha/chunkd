@@ -89,6 +89,10 @@ export class FsMemory implements FileSystem<SourceMemory> {
     return { path: filePath, size: buf.length };
   }
 
+  async delete(filePath: string): Promise<void> {
+    this.files.delete(filePath);
+  }
+
   source(filePath: string): SourceMemory {
     const bytes = this.files.get(filePath);
     if (bytes == null) throw new CompositeError('File not found', 404, new Error());

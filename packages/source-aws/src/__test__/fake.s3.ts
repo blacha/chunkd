@@ -16,6 +16,11 @@ export class FakeRemote implements s3like.S3Like {
     throw new Error('Method not implemented. ' + req.Key);
   }
 
+  deleteObject(ctx: s3like.Location): s3like.S3LikeResponse<s3like.DeleteObjectRes> {
+    this.requests.push(ctx);
+    return { promise: (): any => Promise.resolve({}) };
+  }
+
   getObject(ctx: s3like.GetObjectReq): s3like.S3LikeResponseStream<s3like.GetObjectRes> {
     this.requests.push(ctx);
 
