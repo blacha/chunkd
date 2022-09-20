@@ -1,9 +1,22 @@
-# Change Log
+# Changelog
+
+## [9.0.0](https://github.com/blacha/chunkd/compare/source-memory-v8.4.0...source-memory-v9.0.0) (2022-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* add a .delete to remove files from locations
+
+### Features
+
+* add a .delete to remove files from locations ([f93d09b](https://github.com/blacha/chunkd/commit/f93d09b9cee02bf1b97089ce756883643fdcf0e6))
+
+## Change Log
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [8.4.0](https://github.com/blacha/chunkd/compare/v8.3.0...v8.4.0) (2022-06-21)
+## [8.4.0](https://github.com/blacha/chunkd/compare/v8.3.0...v8.4.0) (2022-06-21)
 
 **Note:** Version bump only for package @chunkd/source-memory
 
@@ -11,7 +24,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [8.3.0](https://github.com/blacha/chunkd/compare/v8.2.0...v8.3.0) (2022-06-08)
+## [8.3.0](https://github.com/blacha/chunkd/compare/v8.2.0...v8.3.0) (2022-06-08)
 
 
 ### Features

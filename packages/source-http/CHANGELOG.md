@@ -41,6 +41,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [9.0.0](https://github.com/blacha/chunkd/compare/source-http-v8.4.0...source-http-v9.0.0) (2022-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* add a .delete to remove files from locations
+
+### Features
+
+* add a .delete to remove files from locations ([f93d09b](https://github.com/blacha/chunkd/commit/f93d09b9cee02bf1b97089ce756883643fdcf0e6))
+
 ## [8.0.3](https://github.com/blacha/chunkd/compare/v8.0.2...v8.0.3) (2022-01-26)
 
 **Note:** Version bump only for package @chunkd/source-http
