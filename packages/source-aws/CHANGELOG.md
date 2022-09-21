@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.0](https://github.com/blacha/chunkd/compare/source-aws-v8.5.1...source-aws-v9.0.0) (2022-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* add a .delete to remove files from locations
+
+### Features
+
+* add a .delete to remove files from locations ([f93d09b](https://github.com/blacha/chunkd/commit/f93d09b9cee02bf1b97089ce756883643fdcf0e6))
+
 ## [8.5.1](https://github.com/blacha/chunkd/compare/v8.5.0...v8.5.1) (2022-08-24)
 
 
