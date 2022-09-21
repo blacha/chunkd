@@ -20,7 +20,7 @@ jobs:
   publish-release:
     needs: release-please
     runs-on: ubuntu-latest
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ needs.release-please.outputs.releases_created }}
     steps:
       - name: Build and test
         uses: linz/action-typescript@v1
