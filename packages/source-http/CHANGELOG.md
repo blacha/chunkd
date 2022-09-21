@@ -41,6 +41,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [9.0.1](https://github.com/blacha/chunkd/compare/source-http-v9.0.0...source-http-v9.0.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* foce all chunkd deps to 9.0.0 ([27b11be](https://github.com/blacha/chunkd/commit/27b11be8e730ef84a406798f2b6751d70f81041d))
+
 ## [9.0.0](https://github.com/blacha/chunkd/compare/source-http-v8.4.0...source-http-v9.0.0) (2022-09-20)
 
 
