@@ -17,13 +17,13 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^8.4.0",
-    "@chunkd/source-file": "^8.4.0",
-    "@chunkd/source-http": "^8.4.0"
+    "@chunkd/core": "^9.0.0",
+    "@chunkd/source-file": "^9.0.0",
+    "@chunkd/source-http": "^9.0.0"
   },
   "optionalDependencies": {
-    "@chunkd/source-aws": "^8.5.1",
-    "@chunkd/source-google-cloud": "^8.4.0"
+    "@chunkd/source-aws": "^9.0.0",
+    "@chunkd/source-google-cloud": "^9.0.0"
   },
   "publishConfig": {
     "access": "public"

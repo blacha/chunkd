@@ -16,7 +16,7 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^8.4.0"
+    "@chunkd/core": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0"
