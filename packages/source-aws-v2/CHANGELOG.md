@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^9.0.0 to ^9.0.1
+    * @chunkd/source-aws bumped from ^9.0.1 to ^9.0.2
+
 ## [8.6.1](https://github.com/blacha/chunkd/compare/source-aws-v2-v8.6.0...source-aws-v2-v8.6.1) (2022-09-21)
 
 

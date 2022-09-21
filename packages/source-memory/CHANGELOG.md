@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^9.0.0 to ^9.0.1
+
 ## [9.0.1](https://github.com/blacha/chunkd/compare/source-memory-v9.0.0...source-memory-v9.0.1) (2022-09-21)
 
 

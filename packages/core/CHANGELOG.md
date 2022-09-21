@@ -54,6 +54,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [9.0.1](https://github.com/blacha/chunkd/compare/core-v9.0.0...core-v9.0.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* update references to other sources ([3c17db7](https://github.com/blacha/chunkd/commit/3c17db77040c7a04300f70a74b0053d63edb075a))
+
 ## [9.0.0](https://github.com/blacha/chunkd/compare/core-v8.4.0...core-v9.0.0) (2022-09-20)
 
 
