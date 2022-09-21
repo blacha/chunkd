@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.1](https://github.com/blacha/chunkd/compare/source-google-cloud-v9.0.0...source-google-cloud-v9.0.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* foce all chunkd deps to 9.0.0 ([27b11be](https://github.com/blacha/chunkd/commit/27b11be8e730ef84a406798f2b6751d70f81041d))
+
 ## [9.0.0](https://github.com/blacha/chunkd/compare/source-google-cloud-v8.4.0...source-google-cloud-v9.0.0) (2022-09-20)
 
 

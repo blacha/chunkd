@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.6.1](https://github.com/blacha/chunkd/compare/source-aws-v2-v8.6.0...source-aws-v2-v8.6.1) (2022-09-21)
+
+
+### Bug Fixes
+
+* foce all chunkd deps to 9.0.0 ([27b11be](https://github.com/blacha/chunkd/commit/27b11be8e730ef84a406798f2b6751d70f81041d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source-aws bumped from ^9.0.0 to ^9.0.1
+
 ## [8.6.0](https://github.com/blacha/chunkd/compare/source-aws-v2-v8.5.1...source-aws-v2-v8.6.0) (2022-09-19)
 
 

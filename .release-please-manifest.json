@@ -1,11 +1,11 @@
 {
   "packages/core": "9.0.0",
-  "packages/fs": "9.0.0",
-  "packages/source-aws-v2": "8.6.0",
-  "packages/source-aws-v3": "9.0.0",
-  "packages/source-aws": "9.0.0",
-  "packages/source-file": "9.0.0",
-  "packages/source-google-cloud": "9.0.0",
-  "packages/source-http": "9.0.0",
-  "packages/source-memory": "9.0.0"
+  "packages/fs": "9.0.1",
+  "packages/source-aws-v2": "8.6.1",
+  "packages/source-aws-v3": "9.0.1",
+  "packages/source-aws": "9.0.1",
+  "packages/source-file": "9.0.1",
+  "packages/source-google-cloud": "9.0.1",
+  "packages/source-http": "9.0.1",
+  "packages/source-memory": "9.0.1"
 }
