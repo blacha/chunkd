@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^9.0.0 to ^9.0.1
+    * @chunkd/source-file bumped from ^9.0.1 to ^9.0.2
+    * @chunkd/source-http bumped from ^9.0.1 to ^9.0.2
+  * optionalDependencies
+    * @chunkd/source-aws bumped from ^9.0.1 to ^9.0.2
+    * @chunkd/source-google-cloud bumped from ^9.0.1 to ^9.0.2
+
 ## [9.0.1](https://github.com/blacha/chunkd/compare/fs-v9.0.0...fs-v9.0.1) (2022-09-21)
 
 
