@@ -4,8 +4,10 @@ Split up a file into chunks and then read the chunks as needed.
 
 ## Example Sources
 - File - [@chunkd/source-file](https://www.npmjs.com/package/@chunkd/source-file)
-- AWS - [@chunkd/source-aws](https://www.npmjs.com/package/@chunkd/source-aws)
+- AWS S3 - [@chunkd/source-aws](https://www.npmjs.com/package/@chunkd/source-aws)
 - Url - [@chunkd/source-url](https://www.npmjs.com/package/@chunkd/source-url)
+- Google Cloud - [@chunkd/source-google-cloud](https://www.npmjs.com/package/@chunkd/source-google-cloud)
+- Memory - [@chunkd/source-memory](https://www.npmjs.com/package/@chunkd/source-memory)
 
 ### Example Usage
 Fetching Data
