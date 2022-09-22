@@ -10,6 +10,27 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
     * @chunkd/source-aws bumped from ^9.0.1 to ^9.0.2
 
+## [9.2.0](https://github.com/blacha/chunkd/compare/source-aws-v2-v9.1.0...source-aws-v2-v9.2.0) (2022-09-21)
+
+
+### Features
+
+* force all version numbers to be the same ([4c1b7b6](https://github.com/blacha/chunkd/commit/4c1b7b6bb92b4586826b6b4c20eef5ee848eaf7b))
+* **source-aws-v2:** expose method to get the roleArn and externalId for a path ([42752e7](https://github.com/blacha/chunkd/commit/42752e79f0f59830bec14bb8a9db1963dec52da4))
+
+
+### Bug Fixes
+
+* foce all chunkd deps to 9.0.0 ([27b11be](https://github.com/blacha/chunkd/commit/27b11be8e730ef84a406798f2b6751d70f81041d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^9.1.0 to ^10.0.0
+    * @chunkd/source-aws bumped from ^9.1.0 to ^10.0.0
+
 ## [8.6.1](https://github.com/blacha/chunkd/compare/source-aws-v2-v8.6.0...source-aws-v2-v8.6.1) (2022-09-21)
 
 

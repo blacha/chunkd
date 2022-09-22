@@ -54,6 +54,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [10.0.0](https://github.com/blacha/chunkd/compare/core-v9.1.0...core-v10.0.0) (2022-09-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* add a .delete to remove files from locations
+
+### Features
+
+* add a .delete to remove files from locations ([f93d09b](https://github.com/blacha/chunkd/commit/f93d09b9cee02bf1b97089ce756883643fdcf0e6))
+* force all version numbers to be the same ([4c1b7b6](https://github.com/blacha/chunkd/commit/4c1b7b6bb92b4586826b6b4c20eef5ee848eaf7b))
+
+
+### Bug Fixes
+
+* update references to other sources ([3c17db7](https://github.com/blacha/chunkd/commit/3c17db77040c7a04300f70a74b0053d63edb075a))
+
 ## [9.0.1](https://github.com/blacha/chunkd/compare/core-v9.0.0...core-v9.0.1) (2022-09-21)
 
 
