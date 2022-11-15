@@ -9,6 +9,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * dependencies
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
 
+## [10.0.1](https://github.com/blacha/chunkd/compare/source-aws-v10.0.0...source-aws-v10.0.1) (2022-11-15)
+
+
+### Bug Fixes
+
+* **source-aws:** streams cannot be read twice ([#684](https://github.com/blacha/chunkd/issues/684)) ([59369b1](https://github.com/blacha/chunkd/commit/59369b151eec981099c4c7ad859f6a3060252c5e))
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-aws-v9.1.0...source-aws-v10.0.0) (2022-09-21)
 
 
