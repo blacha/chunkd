@@ -27,8 +27,6 @@ export interface CredentialSourceJson {
 }
 
 export class FsAwsS3ProviderV2 implements FsAwsS3Provider {
-  /** Should the resulting file system be registered onto the top level file system */
-  isRegisterable = true;
   path: string;
   fs: FileSystem;
 
