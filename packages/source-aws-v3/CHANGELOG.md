@@ -10,6 +10,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
     * @chunkd/source-aws bumped from ^9.0.1 to ^9.0.2
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source-aws bumped from ^10.0.0 to ^10.0.1
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-aws-v3-v9.1.0...source-aws-v3-v10.0.0) (2022-09-21)
 
 

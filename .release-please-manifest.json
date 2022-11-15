@@ -1,9 +1,9 @@
 {
   "packages/core": "10.0.0",
-  "packages/fs": "10.0.0",
-  "packages/source-aws-v2": "9.2.0",
-  "packages/source-aws-v3": "10.0.0",
-  "packages/source-aws": "10.0.0",
+  "packages/fs": "10.0.1",
+  "packages/source-aws-v2": "9.3.0",
+  "packages/source-aws-v3": "10.0.1",
+  "packages/source-aws": "10.0.1",
   "packages/source-file": "10.0.0",
   "packages/source-google-cloud": "10.0.0",
   "packages/source-http": "10.0.0",
