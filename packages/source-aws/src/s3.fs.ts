@@ -4,13 +4,26 @@ import { FsAwsS3Provider } from './credentials.js';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
 
+function isReadable(r: any): r is Readable {
+  return typeof r['read'] === 'function';
+}
+
 export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static protocol = 's3';
   protocol = FsAwsS3.protocol;
   /** Max list requests to run before erroring */
   static MaxListCount = 100;
 
+  /** When testing write permissions add a suffix to the file name, this file will be cleaned up after */
+  static WriteTestSuffix = '';
+
+  /** Attempt to lookup credentials when permission failures happen */
   credentials: FsAwsS3Provider | undefined;
+
+  /** Buckets we have already tested writing too and should skip testing multiple times */
+  writeTests = new Set<string>();
+  /** When testing write permissions add a suffix to the file name, this file will be cleaned up after */
+  writeTestSuffix = FsAwsS3.WriteTestSuffix;
 
   /** AWS-SDK s3 to use */
   s3: S3Like;
@@ -36,8 +49,6 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     if (path == null) return false;
     return path.startsWith('s3://');
   }
-
-  /** Parse a s3:// URI into the bucket and key components */
 
   async *list(filePath: string, opts?: ListOptions): AsyncGenerator<string> {
     for await (const obj of this.details(filePath, opts)) yield obj.path;
@@ -110,9 +121,39 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     }
   }
 
+  /** Test writing a small text file to a bucket to see if we have write permissions. */
+  async _writeTest(bucket: string, key: string): Promise<void | FsAwsS3> {
+    /** No credential provider so cannot lookup credentials if it fails */
+    if (this.credentials == null) return;
+    // Already tested this bucket no need to test again.
+    if (this.writeTests.has(bucket)) return;
+
+    const filePath = `s3://${bucket}/${key}${this.writeTestSuffix}`;
+
+    try {
+      await toPromise(this.s3.upload({ Bucket: bucket, Key: key + this.writeTestSuffix, Body: Buffer.from('test') }));
+      this.writeTests.add(bucket); // Write test worked!
+      // Suffix was added so cleanup the file
+      if (this.writeTestSuffix !== '') await this.delete(filePath);
+    } catch (e) {
+      const ce = getCompositeError(e, `Failed to write to "s3://${bucket}/${key}"`);
+      if (ce.code === 403) {
+        const newFs = await this.credentials.find(filePath);
+        if (newFs) return newFs;
+      }
+      throw ce;
+    }
+  }
+
   async write(filePath: string, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
     const opts = parseUri(filePath);
     if (opts == null || opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
+
+    // Streams cannot be read twice, so we cannot try to upload the file, fail then attempt to upload it again with new credentials
+    if (this.credentials != null && isReadable(buf)) {
+      const newFs = await this._writeTest(opts.key, opts.bucket);
+      if (newFs) return newFs.write(filePath, buf, ctx);
+    }
 
     try {
       await toPromise(
