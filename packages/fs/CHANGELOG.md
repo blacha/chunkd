@@ -20,6 +20,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * optionalDependencies
     * @chunkd/source-aws bumped from ^10.0.0 to ^10.0.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * optionalDependencies
+    * @chunkd/source-aws bumped from ^10.0.1 to ^10.0.2
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/fs-v9.1.0...fs-v10.0.0) (2022-09-21)
 
 
