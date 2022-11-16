@@ -122,23 +122,28 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
 
   /** Test writing a small text file to a bucket to see if we have write permissions. */
-  async _writeTest(bucket: string, key: string): Promise<void | FsAwsS3> {
+  async _writeTest(testPath: string): Promise<void | FsAwsS3> {
+    const opts = parseUri(testPath);
+    if (opts == null || opts.key == null) throw new Error(`Failed to write: "${testPath}"`);
+
     /** No credential provider so cannot lookup credentials if it fails */
     if (this.credentials == null) return;
     // Already tested this bucket no need to test again.
-    if (this.writeTests.has(bucket)) return;
+    if (this.writeTests.has(opts.bucket)) return;
 
-    const filePath = `s3://${bucket}/${key}${this.writeTestSuffix}`;
+    const filePath = `${testPath}${this.writeTestSuffix}`;
 
     try {
-      await toPromise(this.s3.upload({ Bucket: bucket, Key: key + this.writeTestSuffix, Body: Buffer.from('test') }));
-      this.writeTests.add(bucket); // Write test worked!
+      await toPromise(
+        this.s3.upload({ Bucket: opts.bucket, Key: opts.key + this.writeTestSuffix, Body: Buffer.from('test') }),
+      );
+      this.writeTests.add(opts.bucket); // Write test worked!
       // Suffix was added so cleanup the file
       if (this.writeTestSuffix !== '') await this.delete(filePath);
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to write to "s3://${bucket}/${key}"`);
+      const ce = getCompositeError(e, `Failed to write to "s3://${filePath}"`);
       if (ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
+        const newFs = await this.credentials.find(testPath);
         if (newFs) return newFs;
       }
       throw ce;
@@ -151,7 +156,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
 
     // Streams cannot be read twice, so we cannot try to upload the file, fail then attempt to upload it again with new credentials
     if (this.credentials != null && isReadable(buf)) {
-      const newFs = await this._writeTest(opts.key, opts.bucket);
+      const newFs = await this._writeTest(filePath);
       if (newFs) return newFs.write(filePath, buf, ctx);
     }
 

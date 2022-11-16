@@ -2,7 +2,9 @@ import { FsAwsS3 } from '../s3.fs.js';
 import o from 'ospec';
 import S3 from 'aws-sdk/clients/s3.js';
 import sinon from 'sinon';
+import { FsMemory } from '@chunkd/source-memory';
 import { parseUri } from '@chunkd/core';
+import { PassThrough } from 'stream';
 
 /** Utility to convert async generators into arrays */
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
@@ -176,6 +178,61 @@ o.spec('file.s3', () => {
       } catch (e: any) {
         o(e.message.includes('s3://bucket')).equals(true)('Should include s3://bucket');
       }
+    });
+
+    o('should test writing not using the stream', async () => {
+      const stub = sandbox.stub(s3, 'upload').returns({
+        async promise() {
+          throw { statusCode: 403 };
+        },
+      } as any);
+
+      const memoryFs = new FsMemory();
+      fs.credentials = { find: async () => memoryFs } as any;
+
+      const stream = new PassThrough();
+      stream.write(Buffer.from('Hello'));
+      stream.end();
+
+      // Write the file
+      await fs.write('s3://bucket/key', stream);
+
+      // Should have written a test file which fails
+      o(stub.callCount).equals(1);
+      o(stub.args[0][0].Body?.toString()).equals('test');
+
+      // A file called hello should have been written
+      o(memoryFs.files.size).equals(1);
+
+      const buf = await memoryFs.read('s3://bucket/key');
+      o(buf.toString()).equals('Hello');
+    });
+
+    o('should test writing not using the stream with suffix', async () => {
+      fs.writeTestSuffix = '.chunkd-test';
+      const stub = sandbox.stub(s3, 'upload').returns({
+        async promise() {
+          throw { statusCode: 403 };
+        },
+      } as any);
+
+      const memoryFs = new FsMemory();
+      fs.credentials = { find: async () => memoryFs } as any;
+
+      const stream = new PassThrough();
+      stream.write(Buffer.from('Hello'));
+      stream.end();
+      await fs.write('s3://bucket/key', stream);
+
+      // Should have written a test file which fails
+      o(stub.callCount).equals(1);
+      o(stub.args[0][0].Body?.toString()).equals('test');
+      o(stub.args[0][0].Key.endsWith('.chunkd-test')).equals(true);
+
+      // A file called hello should have been written
+      o(memoryFs.files.size).equals(1);
+      const buf = await memoryFs.read('s3://bucket/key');
+      o(buf.toString()).equals('Hello');
     });
   });
 
