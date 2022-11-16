@@ -9,6 +9,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * dependencies
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
 
+## [10.0.2](https://github.com/blacha/chunkd/compare/source-aws-v10.0.1...source-aws-v10.0.2) (2022-11-16)
+
+
+### Bug Fixes
+
+* **source-aws:** correct parameter order for writeTest ([#687](https://github.com/blacha/chunkd/issues/687)) ([72ac028](https://github.com/blacha/chunkd/commit/72ac028b1877cf92fe9fb5bc4745ae5918d3703f))
+
 ## [10.0.1](https://github.com/blacha/chunkd/compare/source-aws-v10.0.0...source-aws-v10.0.1) (2022-11-15)
 
 
