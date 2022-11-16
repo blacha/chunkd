@@ -4,6 +4,7 @@ import S3 from 'aws-sdk/clients/s3.js';
 import sinon from 'sinon';
 import { FsMemory } from '@chunkd/source-memory';
 import { parseUri } from '@chunkd/core';
+import { PassThrough } from 'stream';
 
 /** Utility to convert async generators into arrays */
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
@@ -187,23 +188,14 @@ o.spec('file.s3', () => {
       } as any);
 
       const memoryFs = new FsMemory();
-      fs.credentials = {
-        find() {
-          return Promise.resolve(memoryFs);
-        },
-      } as any;
+      fs.credentials = { find: async () => memoryFs } as any;
+
+      const stream = new PassThrough();
+      stream.write(Buffer.from('Hello'));
+      stream.end();
 
       // Write the file
-      await fs.write('s3://bucket/key', {
-        read: () => {
-          // MemoryFS never uses "read"
-          throw new Error('Not Implemented');
-        },
-        on: (evt: string, cb: (x?: unknown) => void) => {
-          if (evt === 'data') cb(Buffer.from('Hello'));
-          if (evt === 'end') cb();
-        },
-      } as any);
+      await fs.write('s3://bucket/key', stream);
 
       // Should have written a test file which fails
       o(stub.callCount).equals(1);
@@ -225,23 +217,12 @@ o.spec('file.s3', () => {
       } as any);
 
       const memoryFs = new FsMemory();
-      fs.credentials = {
-        find() {
-          return Promise.resolve(memoryFs);
-        },
-      } as any;
+      fs.credentials = { find: async () => memoryFs } as any;
 
-      // Write the file
-      await fs.write('s3://bucket/key', {
-        read: () => {
-          // MemoryFS never uses "read"
-          throw new Error('Not Implemented');
-        },
-        on: (evt: string, cb: (x?: unknown) => void) => {
-          if (evt === 'data') cb(Buffer.from('Hello'));
-          if (evt === 'end') cb();
-        },
-      } as any);
+      const stream = new PassThrough();
+      stream.write(Buffer.from('Hello'));
+      stream.end();
+      await fs.write('s3://bucket/key', stream);
 
       // Should have written a test file which fails
       o(stub.callCount).equals(1);
