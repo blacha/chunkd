@@ -23,7 +23,7 @@
     "lerna": "^5.0.0",
     "ospec": "^4.1.1",
     "rimraf": "^3.0.0",
-    "sinon": "^14.0.0"
+    "sinon": "^15.0.0"
   },
   "workspaces": {
     "packages": [
