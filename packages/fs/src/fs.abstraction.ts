@@ -2,6 +2,7 @@ import {
   ChunkSource,
   FileInfo,
   FileSystem,
+  FileSystemProvider,
   joinAllUri,
   joinUri,
   ListOptions,
@@ -28,6 +29,11 @@ export class FileSystemAbstraction implements FileSystem {
   private isOrdered = true;
   systems: { path: string; system: FileSystem; flag: Flag }[] = [];
 
+  providers: FileSystemProvider[] = [];
+
+  registerProvider(provider: FileSystemProvider): void {
+    this.providers.push(provider);
+  }
   /**
    * Register a file system to a specific path which can then be used with any `fsa` command
    *

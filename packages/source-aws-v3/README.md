@@ -20,10 +20,12 @@ await source.fetchBytes(0, 1024);
 
 ```typescript
 import { fsa } from '@chunkd/fs';
+import { FsAwsS3 } from '@chunkd/source-aws';
 import { S3LikeV3 } from '@chunkd/source-aws-v3';
+
 import { S3Client } from '@aws-sdk/clients-s3';
 
 const s3 = new S3Client()
 
-fsa.register('s3://', new FsAwsS3(s3));
+fsa.register('s3://', new FsAwsS3(new S3LikeV3(s3)));
 ```

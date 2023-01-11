@@ -6,19 +6,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import type {
-  DeleteObjectRes,
-  GetObjectReq,
-  GetObjectRes,
-  HeadRes,
-  ListReq,
-  ListRes,
-  Location,
-  S3Like,
-  S3LikeResponse,
-  S3LikeResponseStream,
-  UploadReq,
-} from '@chunkd/source-aws/build/type.js';
+import { Requests } from '@chunkd/source-aws';
 import { PassThrough, Readable } from 'stream';
 
 function streamToBuffer(stream?: Readable): Promise<Buffer | undefined> {
@@ -39,7 +27,7 @@ const OneMegaByte = 1024 * 1204;
  *
  * Once v3 SDK becomes more common place the S3Like API can be switched to the v3 version
  */
-export class S3LikeV3 implements S3Like {
+export class S3LikeV3 implements Requests.S3Like {
   /** Concurrency for uploads */
   uploadQueueSize = 4;
   /** Number of bytes to split uploads on */
@@ -50,7 +38,7 @@ export class S3LikeV3 implements S3Like {
     this.client = client;
   }
 
-  getObject(req: GetObjectReq): S3LikeResponseStream<GetObjectRes> {
+  getObject(req: Requests.GetObjectReq): Requests.S3LikeResponseStream<Requests.GetObjectRes> {
     const client = this.client;
     const cmd = new GetObjectCommand(req);
     return {
@@ -77,16 +65,16 @@ export class S3LikeV3 implements S3Like {
     };
   }
 
-  deleteObject(req: Location): S3LikeResponse<DeleteObjectRes> {
+  deleteObject(req: Requests.Location): Requests.S3LikeResponse<Requests.DeleteObjectRes> {
     return this.client.send(new DeleteObjectCommand(req));
   }
-  headObject(req: Location): Promise<HeadRes> {
+  headObject(req: Requests.Location): Promise<Requests.HeadRes> {
     return this.client.send(new HeadObjectCommand(req));
   }
-  listObjectsV2(req: ListReq): Promise<ListRes> {
+  listObjectsV2(req: Requests.ListReq): Promise<Requests.ListRes> {
     return this.client.send(new ListObjectsV2Command(req));
   }
-  upload(req: UploadReq): Promise<unknown> {
+  upload(req: Requests.UploadReq): Promise<unknown> {
     return new Upload({
       client: this.client,
       queueSize: this.uploadQueueSize,

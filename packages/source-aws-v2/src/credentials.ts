@@ -50,7 +50,7 @@ export class AwsCredentials {
         params: {
           RoleArn: roleArn,
           ExternalId: externalId,
-          RoleSessionName: 'fsa-' + Math.random().toString(32) + '-' + Date.now(),
+          RoleSessionName: `fsa-v2-${Date.now()}-${Math.random().toString(32).slice(2)}`,
           DurationSeconds: durationSeconds,
         },
       });
