@@ -2,7 +2,6 @@ import {
   ChunkSource,
   FileInfo,
   FileSystem,
-  FileSystemProvider,
   joinAllUri,
   joinUri,
   ListOptions,
