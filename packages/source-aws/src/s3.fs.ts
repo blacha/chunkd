@@ -91,11 +91,9 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       }
     } catch (e) {
       const ce = getCompositeError(e, `Failed to list: "${filePath}"`);
-      console.log('FindProvider', this.credentials);
 
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(filePath);
-        console.log('LookupCredentials', { newFs });
         if (newFs) {
           yield* newFs.details(filePath, opts);
           return;
@@ -142,7 +140,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       // Suffix was added so cleanup the file
       if (this.writeTestSuffix !== '') await this.delete(filePath);
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to write to "s3://${filePath}"`);
+      const ce = getCompositeError(e, `Failed to write to "${filePath}"`);
       if (ce.code === 403) {
         const newFs = await this.credentials.find(testPath);
         if (newFs) return newFs;

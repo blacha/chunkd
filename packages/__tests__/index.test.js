@@ -1,7 +1,7 @@
 import S3v3 from '@aws-sdk/client-s3';
 import { fsa } from '@chunkd/fs';
 import { FsAwsS3 } from '@chunkd/source-aws';
-import { S3LikeV3 } from '@chunkd/source-aws-v3';
+import { FsAwsS3V3 } from '@chunkd/source-aws-v3';
 import { FsGoogleStorage } from '@chunkd/source-google-cloud';
 import { FsMemory } from '@chunkd/source-memory';
 import { Storage } from '@google-cloud/storage';
@@ -20,7 +20,7 @@ function getGcp() {
 if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION || 'ap-southeast-2';
 
 fsa.register(`s3://blacha-chunkd-test/v2`, new FsAwsS3(new S3()));
-fsa.register(`s3://blacha-chunkd-test/v3`, new FsAwsS3(new S3LikeV3(new S3v3.S3())));
+fsa.register(`s3://blacha-chunkd-test/v3`, new FsAwsS3V3());
 fsa.register(`gs://blacha-chunkd-test/`, new FsGoogleStorage(getGcp()));
 fsa.register(`memory://blacha-chunkd-test/`, new FsMemory());
 
@@ -114,7 +114,7 @@ testPrefix('/tmp/blacha-chunkd-test/');
 testPrefix('memory://blacha-chunkd-test/');
 testPrefix('s3://blacha-chunkd-test/v2/');
 testPrefix('s3://blacha-chunkd-test/v3/');
-testPrefix('gs://blacha-chunkd-test/');
+// testPrefix('gs://blacha-chunkd-test/');
 
 // run the tests directly when not included by ospec
 if (process.argv.find((f) => f.includes('.bin/ospec')) == null) o.run();

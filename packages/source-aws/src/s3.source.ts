@@ -3,7 +3,7 @@ import { S3Like, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
   if (!isRecord(e)) return new CompositeError(msg, 500, e);
-  if (typeof e.statusCode === 'number') new CompositeError(msg, e.statusCode, e);
+  if (typeof e.statusCode === 'number') return new CompositeError(msg, e.statusCode, e);
   if (isRecord(e.$metadata) && typeof e.$metadata.httpStatusCode === 'number') {
     return new CompositeError(msg, e.$metadata.httpStatusCode, e);
   }
