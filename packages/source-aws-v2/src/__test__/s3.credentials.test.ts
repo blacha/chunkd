@@ -1,7 +1,7 @@
 import o from 'ospec';
 import Sinon from 'sinon';
 import aws from 'aws-sdk/lib/core.js';
-import { AwsCredentials } from '../s3.credentials.js';
+import { AwsCredentials } from '../credentials.js';
 
 o.spec('AwsCredentials', () => {
   const sandbox = Sinon.createSandbox();

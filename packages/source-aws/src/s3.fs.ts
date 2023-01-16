@@ -1,6 +1,5 @@
-import { FileInfo, FileSystem, isRecord, ListOptions, parseUri, WriteOptions } from '@chunkd/core';
+import { FileInfo, FileSystem, FileSystemProvider, isRecord, ListOptions, parseUri, WriteOptions } from '@chunkd/core';
 import type { Readable } from 'stream';
-import { FsAwsS3Provider } from './credentials.js';
 import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
 
@@ -18,7 +17,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static WriteTestSuffix = '';
 
   /** Attempt to lookup credentials when permission failures happen */
-  credentials: FsAwsS3Provider | undefined;
+  credentials: FileSystemProvider<FsAwsS3>;
 
   /** Buckets we have already tested writing too and should skip testing multiple times */
   writeTests = new Set<string>();
@@ -28,9 +27,8 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   /** AWS-SDK s3 to use */
   s3: S3Like;
 
-  constructor(s3: S3Like, credentials?: FsAwsS3Provider) {
+  constructor(s3: S3Like) {
     this.s3 = s3;
-    this.credentials = credentials;
   }
 
   source(filePath: string): SourceAwsS3 {
@@ -93,6 +91,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       }
     } catch (e) {
       const ce = getCompositeError(e, `Failed to list: "${filePath}"`);
+
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(filePath);
         if (newFs) {
@@ -141,7 +140,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       // Suffix was added so cleanup the file
       if (this.writeTestSuffix !== '') await this.delete(filePath);
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to write to "s3://${filePath}"`);
+      const ce = getCompositeError(e, `Failed to write to "${filePath}"`);
       if (ce.code === 403) {
         const newFs = await this.credentials.find(testPath);
         if (newFs) return newFs;
@@ -181,7 +180,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   }
   async delete(filePath: string): Promise<void> {
     const opts = parseUri(filePath);
-    if (opts == null || opts.key == null) throw new Error(`Failed to write: "${filePath}"`);
+    if (opts == null || opts.key == null) throw new Error(`Failed to delete: "${filePath}"`);
     try {
       await toPromise(this.s3.deleteObject({ Bucket: opts.bucket, Key: opts.key }));
       return;
@@ -194,6 +193,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       throw ce;
     }
   }
+
   exists(filePath: string): Promise<boolean> {
     return this.head(filePath).then((f) => f != null);
   }
@@ -215,6 +215,8 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       if (isRecord(e) && e.code === 'NotFound') return null;
 
       const ce = getCompositeError(e, `Failed to head: "${filePath}"`);
+      if (ce.code === 404) return null;
+
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(filePath);
         if (newFs) return newFs.head(filePath);
