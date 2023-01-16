@@ -9,11 +9,11 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
     steps:
-      - uses: linz/action-typescript@v1
+      - uses: linz/action-typescript@v2
 
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: linz/action-typescript@v1
+      - uses: linz/action-typescript@v2
       - uses: blacha/hyperfine-action@v1
