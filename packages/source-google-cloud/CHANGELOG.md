@@ -6,6 +6,12 @@
   * dependencies
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.0.0 to ^10.1.0
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-google-cloud-v9.1.0...source-google-cloud-v10.0.0) (2022-09-21)
 
 

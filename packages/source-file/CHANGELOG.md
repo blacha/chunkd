@@ -44,6 +44,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * dependencies
     * @chunkd/core bumped from ^9.0.0 to ^9.0.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.0.0 to ^10.1.0
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-file-v9.1.0...source-file-v10.0.0) (2022-09-21)
 
 

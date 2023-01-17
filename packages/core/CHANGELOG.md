@@ -54,6 +54,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [10.1.0](https://github.com/blacha/chunkd/compare/core-v10.0.0...core-v10.1.0) (2023-01-17)
+
+
+### Features
+
+* **source-aws:** automatically assume roles if actions fails ([#783](https://github.com/blacha/chunkd/issues/783)) ([19735e4](https://github.com/blacha/chunkd/commit/19735e4701e1a1eb18ae2087892bc46771fb60b2))
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/core-v9.1.0...core-v10.0.0) (2022-09-21)
 
 

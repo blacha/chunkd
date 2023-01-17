@@ -16,6 +16,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * dependencies
     * @chunkd/source-aws bumped from ^10.0.1 to ^10.0.2
 
+## [9.4.0](https://github.com/blacha/chunkd/compare/source-aws-v2-v9.3.1...source-aws-v2-v9.4.0) (2023-01-17)
+
+
+### Features
+
+* **source-aws:** automatically assume roles if actions fails ([#783](https://github.com/blacha/chunkd/issues/783)) ([19735e4](https://github.com/blacha/chunkd/commit/19735e4701e1a1eb18ae2087892bc46771fb60b2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.0.0 to ^10.1.0
+    * @chunkd/source-aws bumped from ^10.0.2 to ^10.1.0
+
 ## [9.3.0](https://github.com/blacha/chunkd/compare/source-aws-v2-v9.2.0...source-aws-v2-v9.3.0) (2022-11-15)
 
 
