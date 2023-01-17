@@ -1,41 +1,4 @@
-# Change Log
-
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @chunkd/core bumped from ^9.0.0 to ^9.0.1
-    * @chunkd/source-file bumped from ^9.0.1 to ^9.0.2
-    * @chunkd/source-http bumped from ^9.0.1 to ^9.0.2
-  * optionalDependencies
-    * @chunkd/source-aws bumped from ^9.0.1 to ^9.0.2
-    * @chunkd/source-google-cloud bumped from ^9.0.1 to ^9.0.2
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * optionalDependencies
-    * @chunkd/source-aws bumped from ^10.0.0 to ^10.0.1
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * optionalDependencies
-    * @chunkd/source-aws bumped from ^10.0.1 to ^10.0.2
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @chunkd/core bumped from ^10.0.0 to ^10.1.0
-    * @chunkd/source-file bumped from ^10.0.0 to ^10.0.1
-    * @chunkd/source-http bumped from ^10.0.0 to ^10.0.1
-  * optionalDependencies
-    * @chunkd/source-aws bumped from ^10.0.2 to ^10.1.0
-    * @chunkd/source-google-cloud bumped from ^10.0.0 to ^10.0.1
+# Changelog
 
 ## [10.0.0](https://github.com/blacha/chunkd/compare/fs-v9.1.0...fs-v10.0.0) (2022-09-21)
 

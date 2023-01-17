@@ -1,42 +1,4 @@
-# Change Log
-
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
-# [8.4.0](https://github.com/blacha/chunkd/compare/v8.3.0...v8.4.0) (2022-06-21)
-
-**Note:** Version bump only for package @chunkd/source-file
-
-
-
-
-
-# [8.3.0](https://github.com/blacha/chunkd/compare/v8.2.0...v8.3.0) (2022-06-08)
-
-
-### Features
-
-* **fs:** support non recursive file listing ([#370](https://github.com/blacha/chunkd/issues/370)) ([a2828fe](https://github.com/blacha/chunkd/commit/a2828fec18db247ef89fc7becd5a57ed78090290))
-
-
-
-
-
-# [8.2.0](https://github.com/blacha/chunkd/compare/v8.1.0...v8.2.0) (2022-05-11)
-
-**Note:** Version bump only for package @chunkd/source-file
-
-
-
-
-
-# [8.1.0](https://github.com/blacha/chunkd/compare/v8.0.3...v8.1.0) (2022-02-21)
-
-**Note:** Version bump only for package @chunkd/source-file
-
-
-
-
+# Changelog
 
 ### Dependencies
 

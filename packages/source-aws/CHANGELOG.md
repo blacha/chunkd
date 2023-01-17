@@ -1,13 +1,4 @@
-# Change Log
-
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
-### Dependencies
-
-* The following workspace dependencies were updated
-  * dependencies
-    * @chunkd/core bumped from ^9.0.0 to ^9.0.1
+# Changelog
 
 ## [10.1.0](https://github.com/blacha/chunkd/compare/source-aws-v10.0.2...source-aws-v10.1.0) (2023-01-17)
 
