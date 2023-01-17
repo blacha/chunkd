@@ -1,5 +1,25 @@
 # Changelog
 
+## [10.0.4](https://github.com/blacha/chunkd/compare/fs-v10.0.3...fs-v10.0.4) (2023-01-17)
+
+
+### Bug Fixes
+
+* ensure readme examples work ([33b792c](https://github.com/blacha/chunkd/commit/33b792c8e2bf00e41a2d4ee28bde1fcb199dab01))
+* reset all changelogs so release-please will add entries in the right spot ([a4aad5a](https://github.com/blacha/chunkd/commit/a4aad5ab537805055efbf943b8df53f65d6b6ddb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.0 to ^10.1.1
+    * @chunkd/source-file bumped from ^10.0.1 to ^10.0.2
+    * @chunkd/source-http bumped from ^10.0.1 to ^10.0.2
+  * optionalDependencies
+    * @chunkd/source-aws bumped from ^10.1.0 to ^10.1.1
+    * @chunkd/source-google-cloud bumped from ^10.0.1 to ^10.0.2
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/fs-v9.1.0...fs-v10.0.0) (2022-09-21)
 
 

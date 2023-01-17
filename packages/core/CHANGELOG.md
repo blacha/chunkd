@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.1](https://github.com/blacha/chunkd/compare/core-v10.1.0...core-v10.1.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* reset all changelogs so release-please will add entries in the right spot ([a4aad5a](https://github.com/blacha/chunkd/commit/a4aad5ab537805055efbf943b8df53f65d6b6ddb))
+
 ## [10.1.0](https://github.com/blacha/chunkd/compare/core-v10.0.0...core-v10.1.0) (2023-01-17)
 
 
