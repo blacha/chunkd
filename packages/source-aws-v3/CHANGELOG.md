@@ -19,6 +19,21 @@
   * dependencies
     * @chunkd/source-aws bumped from ^10.0.1 to ^10.0.2
 
+## [10.1.1](https://github.com/blacha/chunkd/compare/source-aws-v3-v10.1.0...source-aws-v3-v10.1.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* reset all changelogs so release-please will add entries in the right spot ([a4aad5a](https://github.com/blacha/chunkd/commit/a4aad5ab537805055efbf943b8df53f65d6b6ddb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.0 to ^10.1.1
+    * @chunkd/source-aws bumped from ^10.1.0 to ^10.1.1
+
 ## [10.1.0](https://github.com/blacha/chunkd/compare/source-aws-v3-v10.0.2...source-aws-v3-v10.1.0) (2023-01-17)
 
 

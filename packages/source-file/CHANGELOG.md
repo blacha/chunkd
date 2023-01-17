@@ -12,6 +12,20 @@
   * dependencies
     * @chunkd/core bumped from ^10.0.0 to ^10.1.0
 
+## [10.0.2](https://github.com/blacha/chunkd/compare/source-file-v10.0.1...source-file-v10.0.2) (2023-01-17)
+
+
+### Bug Fixes
+
+* reset all changelogs so release-please will add entries in the right spot ([a4aad5a](https://github.com/blacha/chunkd/commit/a4aad5ab537805055efbf943b8df53f65d6b6ddb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.0 to ^10.1.1
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-file-v9.1.0...source-file-v10.0.0) (2022-09-21)
 
 
