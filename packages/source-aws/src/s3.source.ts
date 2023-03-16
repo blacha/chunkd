@@ -115,6 +115,8 @@ export class SourceAwsS3 extends ChunkSourceBase {
       const buffer = resp.Body;
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     } catch (err) {
+      // Already a composite error just rethrow
+      if (err instanceof CompositeError) throw err;
       throw getCompositeError(err, `Failed to fetch ${this.name} ${fetchRange}`);
     }
   }
