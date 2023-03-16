@@ -1,5 +1,5 @@
-import { ChunkSource } from './source.js';
 import { ByteSize } from './bytes.js';
+import { ChunkSource } from './source.js';
 export type ChunkId = number & { _type: 'chunkId' };
 
 /** Shifting `<< 32` does not work in javascript */
@@ -32,7 +32,18 @@ export abstract class ChunkSourceBase implements ChunkSource {
   /** By default create a new cache for every chunk source */
   static DefaultChunkCache = (): TinyMap<number, DataView> => new Map<number, DataView>();
 
-  /** By default wait this amount of ms before running a fetch */
+  /**
+   * Number of non requested chunks to load
+   *
+   * This allows one fetch for semi sparse requests eg requesting [1,5]
+   * instead of two fetches [1] & [5] run one fetch [1,2,3,4,5]
+   */
+  static DefaultBlankFillCount = 16;
+
+  /** Maximum number of outstanding chunks requests to be allowed before erroring */
+  static DefaultMaxConcurrentRequests = 50;
+
+  /** By default wait this amount of ms before running a fetch, if set to 0 no delay is used */
   static DefaultDelayMs = 1;
 
   /** size of chunks to fetch (Bytes) */
@@ -69,10 +80,16 @@ export abstract class ChunkSourceBase implements ChunkSource {
    *
    * This allows one fetch for semi sparse requests eg requested [1,5]
    * instead of two fetches [1] & [5] run one fetch [1,2,3,4,5]
+   *
+   * @see {ChunkSourceBase.DefaultBlankFillCount}
    */
-  blankFillCount = 16;
+  blankFillCount = ChunkSourceBase.DefaultBlankFillCount;
 
-  /** Maximum number of chunks to be requested at one time */
+  /**
+   * Maximum number of chunks to be requested at one time
+   *
+   * @see {ChunkSourceBase.DefaultMaxConcurrentRequests}
+   */
   maxConcurrentRequests = 50;
 
   /* List of chunk ids to fetch */
@@ -86,10 +103,11 @@ export abstract class ChunkSourceBase implements ChunkSource {
    *
    *
    * @example
-   *  source.fetchBytes(0, 1024)
-   *  source.fetchBytes(1024, 20)
-   *  source.fetchBytes(-1024)
-   *
+   * ```typescript
+   *  source.fetchBytes(0, 1024) // load the first 1024 bytes
+   *  source.fetchBytes(1024, 20) // read 20 bytes at offset 1024
+   *  source.fetchBytes(-1024) // load the last 1024 bytes
+   * ```
    * @param offset Byte to start reading form
    * @param length optional number of bytes to read
    */
@@ -102,12 +120,11 @@ export abstract class ChunkSourceBase implements ChunkSource {
   close?(): Promise<void>;
 
   /**
-     * Split the ranges into a consecutive chunks
-
-     * @param ranges list of chunks to fetch
-
-     * @param maxChunks maximum number of chunks to load
-     */
+   * Split the ranges into a consecutive chunks
+   *
+   * @param ranges list of chunks to fetch
+   * @param maxChunks maximum number of chunks to load
+   */
   static getByteRanges(
     ranges: Set<number>,
     chunkCount = 32,
@@ -328,7 +345,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
 
   getUint8(byteOffset: number): number {
     const chunkId = Math.floor(byteOffset / this.chunkSize) as ChunkId;
-    const view = this.chunks.get(chunkId);
+    const view = this.getView(chunkId);
     if (view == null) throw new Error(`Chunk:${chunkId} is not ready`);
     return view.getUint8(byteOffset - chunkId * this.chunkSize);
   }
@@ -365,7 +382,7 @@ export abstract class ChunkSourceBase implements ChunkSource {
    * Read a uint64 at the offset
    *
    * This is not precise for large numbers
-   * @see uint64be
+   * @see {ChunkSourceBase.getBigUint64}
    * @param offset offset to read
    */
   getUint64(offset: number): number {
