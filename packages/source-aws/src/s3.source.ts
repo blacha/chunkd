@@ -99,7 +99,6 @@ export class SourceAwsS3 extends ChunkSourceBase {
         this._headRequest = Promise.resolve(headReq);
         this._headRequestSync = headReq;
       }
-      console.log(resp, this._headRequestSync);
 
       const lastEtag = this._headRequestSync?.ETag;
 
