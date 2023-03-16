@@ -1,5 +1,5 @@
-import { ChunkSource, ChunkSourceBase, CompositeError, isRecord, parseUri } from '@chunkd/core';
-import { S3Like, toPromise } from './type.js';
+import { ChunkSource, ChunkSourceBase, CompositeError, ErrorCodes, isRecord, parseUri } from '@chunkd/core';
+import { HeadRes, S3Like, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
   if (!isRecord(e)) return new CompositeError(msg, 500, e);
@@ -45,21 +45,32 @@ export class SourceAwsS3 extends ChunkSourceBase {
     return source.type === SourceAwsS3.type;
   }
 
-  _size: Promise<number> | undefined;
+  /** Either use the last request or a dedicated head request */
+  private _headRequestSync: HeadRes | undefined;
+  private _headRequest: Promise<HeadRes> | undefined;
+  get head(): Promise<HeadRes> {
+    if (this._headRequest == null) {
+      this._headRequest = toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key }));
+      this._headRequest.then((hr) => (this._headRequestSync = hr));
+    }
+    return this._headRequest;
+  }
+
+  /** Read the content length from the last request */
   get size(): Promise<number> {
-    if (this._size) return this._size;
-    this._size = Promise.resolve().then(async () => {
-      const res = await toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key }));
-      return res.ContentLength || -1;
-    });
-    return this._size;
+    return this.head.then((f) => f.ContentLength ?? -1);
+  }
+
+  /** Read the last response ETag if it exists */
+  get etag(): Promise<string | null> {
+    return this.head.then((f) => f.ETag ?? '');
   }
 
   /**
    * Parse a URI and create a source
    *
    * @example
-   * ```
+   * ```typescript
    * fromUri('s3://foo/bar/baz.tiff')
    * ```
    *
@@ -78,9 +89,27 @@ export class SourceAwsS3 extends ChunkSourceBase {
       const resp = await this.remote.getObject({ Bucket: this.bucket, Key: this.key, Range: fetchRange }).promise();
       if (!Buffer.isBuffer(resp.Body)) throw new Error('Failed to fetch object, Body is not a buffer');
 
-      // Set the size of this object now that we know how big it is
-      if (resp.ContentRange != null && this._size == null) {
-        this._size = Promise.resolve(this.parseContentRange(resp.ContentRange));
+      if (this._headRequest == null) {
+        const headReq: HeadRes = {};
+        // Set the size of this object now that we know how big it is
+        if (resp.ContentRange != null) headReq.ContentLength = this.parseContentRange(resp.ContentRange);
+        if (resp.ETag) headReq.ETag = resp.ETag;
+        if (resp.LastModified) headReq.LastModified = resp.LastModified;
+
+        this._headRequest = Promise.resolve(headReq);
+        this._headRequestSync = headReq;
+      }
+      console.log(resp, this._headRequestSync);
+
+      const lastEtag = this._headRequestSync?.ETag;
+
+      // If the file has been modified since the last time we requested data this can cause conflicts so error out
+      if (lastEtag && lastEtag !== resp.ETag) {
+        throw new CompositeError(
+          `ETag conflict ${this.name} ${fetchRange} expected: ${lastEtag} got: ${resp.ETag}`,
+          ErrorCodes.Conflict,
+          undefined,
+        );
       }
 
       const buffer = resp.Body;

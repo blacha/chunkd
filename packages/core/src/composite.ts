@@ -1,6 +1,8 @@
 export const enum ErrorCodes {
   PermissionDenied = 403,
   NotFound = 404,
+  /** A file conflict was found, generally the source file was modified while reading a chunk of it */
+  Conflict = 409,
   InternalError = 500,
 }
 /**

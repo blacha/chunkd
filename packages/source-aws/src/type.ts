@@ -15,7 +15,7 @@ export type DeleteObjectReq = Location;
 export type DeleteObjectRes = { DeleteMarker?: boolean };
 
 export type GetObjectReq = Location & { Range?: string };
-export type GetObjectRes = { Body?: Buffer | unknown; ContentRange?: string };
+export type GetObjectRes = { Body?: Buffer | unknown; ContentRange?: string; ETag?: string; LastModified?: Date };
 
 export type UploadReq = Location & {
   Body?: Buffer | string | Readable;
@@ -34,7 +34,7 @@ export type ListRes = {
 };
 
 export type HeadReq = Location;
-export type HeadRes = { ContentLength?: number };
+export type HeadRes = { ContentLength?: number; ETag?: string; LastModified?: Date };
 
 /** Minimal typing for a s3 like interface to make it easier to work across aws-sdk versions */
 export interface S3Like {
