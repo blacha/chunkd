@@ -17,10 +17,11 @@ export interface ChunkSource extends DataView {
    * **Warning** this method will bypass any caching or chunking
    *
    * @example
-   *  source.fetchBytes(0, 1024)
-   *  source.fetchBytes(1024, 20)
-   *  source.fetchBytes(-1024)
-   *
+   * ```typescript
+   *  source.fetchBytes(0, 1024) // load the first 1024 bytes
+   *  source.fetchBytes(1024, 20) // read 20 bytes at offset 1024
+   *  source.fetchBytes(-1024) // load the last 1024 bytes
+   *```
    * @param offset Byte to start reading form
    * @param length optional number of bytes to read
    */
