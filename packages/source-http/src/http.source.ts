@@ -1,4 +1,4 @@
-import { ChunkSource, ChunkSourceBase } from '@chunkd/core';
+import { ChunkSource, ChunkSourceBase, ChunkSourceMetadata, CompositeError, ErrorCodes } from '@chunkd/core';
 
 export interface FetchLikeOptions {
   method?: string;
@@ -31,14 +31,29 @@ export class SourceHttp extends ChunkSourceBase {
     return source.type === 'url';
   }
 
-  _size: Promise<number> | undefined;
-  get size(): Promise<number> {
-    if (this._size) return this._size;
-    this._size = Promise.resolve().then(async () => {
-      const res = await SourceHttp.fetch(this.uri, { method: 'HEAD' });
-      return Number(res.headers.get('content-length'));
+  metadata: ChunkSourceMetadata | null;
+  /** Load the ETag and content-range from the response */
+  parseResponse(response: FetchLikeResponse): ChunkSourceMetadata {
+    const metadata: ChunkSourceMetadata = {};
+    const contentRange = response.headers.get('content-range');
+    if (contentRange != null) metadata.size = this.parseContentRange(contentRange);
+    metadata.etag = response.headers.get('etag') ?? undefined;
+    return metadata;
+  }
+
+  private _head: Promise<FetchLikeResponse> | null;
+  head(): Promise<FetchLikeResponse> {
+    if (this._head) return this._head;
+    this._head = SourceHttp.fetch(this.uri, { method: 'HEAD' }).then((res) => {
+      this.metadata = this.parseResponse(res);
+      return res;
     });
-    return this._size;
+    return this._head;
+  }
+
+  get size(): Promise<number> {
+    if (this.metadata?.size) return Promise.resolve(this.metadata.size);
+    return this.head().then(() => this.metadata?.size ?? -1);
   }
 
   async fetchBytes(offset: number, length?: number): Promise<ArrayBuffer> {
@@ -47,14 +62,18 @@ export class SourceHttp extends ChunkSourceBase {
     const response = await SourceHttp.fetch(this.uri, { headers });
 
     if (response.ok) {
-      const contentRange = response.headers.get('content-range');
-      if (this._size == null && contentRange != null) {
-        this._size = Promise.resolve(this.parseContentRange(contentRange));
-      }
+      const metadata = this.parseResponse(response);
+      if (this.metadata == null) this.metadata = metadata;
+      else if (this.metadata.etag && this.metadata.etag !== metadata.etag)
+        throw new CompositeError(
+          `ETag conflict ${this.uri} ${Range} expected: ${this.metadata.etag} got: ${metadata.etag}`,
+          ErrorCodes.Conflict,
+          null,
+        );
       return response.arrayBuffer();
     }
 
-    throw new Error('Failed to fetch');
+    throw new CompositeError(`Failed to fetch ${this.uri} ${Range}`, response.status, response.statusText);
   }
 
   // Allow overwriting the fetcher used (eg testing/node-js)

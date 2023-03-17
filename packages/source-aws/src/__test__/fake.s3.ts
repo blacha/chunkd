@@ -37,6 +37,6 @@ export class FakeRemote implements s3like.S3Like {
 
   headObject(ctx: s3like.HeadReq): s3like.S3LikeResponse<s3like.HeadRes> {
     this.requests.push(ctx);
-    return { promise: (): any => Promise.resolve({ ContentLength: this.data.byteLength }) };
+    return { promise: (): any => Promise.resolve({ ContentLength: this.data.byteLength, ETag: this.etag }) };
   }
 }

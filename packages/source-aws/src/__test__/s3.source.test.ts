@@ -25,8 +25,8 @@ o.spec('SourceAwsS3', () => {
     source.chunkSize = 1024;
 
     await source.loadBytes(0, 1024);
-
-    const etag = await source.etag;
+    await source.head();
+    const etag = source.metadata?.etag;
     o(etag).equals('47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU');
     fakeRemote.etag = 'abc123';
 

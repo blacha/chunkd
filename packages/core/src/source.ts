@@ -39,3 +39,12 @@ export interface ChunkSource extends DataView {
   /** close the source */
   close?(): Promise<void>;
 }
+
+/** Metadata returned from some sources like HTTP or AWS */
+export interface ChunkSourceMetadata {
+  /** number of bytes of the file */
+  size?: number;
+
+  /** Entity tag */
+  etag?: string;
+}

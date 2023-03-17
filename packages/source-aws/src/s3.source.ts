@@ -1,5 +1,13 @@
-import { ChunkSource, ChunkSourceBase, CompositeError, ErrorCodes, isRecord, parseUri } from '@chunkd/core';
-import { HeadRes, S3Like, toPromise } from './type.js';
+import {
+  ChunkSource,
+  ChunkSourceBase,
+  ChunkSourceMetadata,
+  CompositeError,
+  ErrorCodes,
+  isRecord,
+  parseUri,
+} from '@chunkd/core';
+import { GetObjectRes, HeadRes, S3Like, toPromise } from './type.js';
 
 export function getCompositeError(e: unknown, msg: string): CompositeError {
   if (!isRecord(e)) return new CompositeError(msg, 500, e);
@@ -45,25 +53,28 @@ export class SourceAwsS3 extends ChunkSourceBase {
     return source.type === SourceAwsS3.type;
   }
 
-  /** Either use the last request or a dedicated head request */
-  private _headRequestSync: HeadRes | undefined;
-  private _headRequest: Promise<HeadRes> | undefined;
-  get head(): Promise<HeadRes> {
-    if (this._headRequest == null) {
-      this._headRequest = toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key }));
-      this._headRequest.then((hr) => (this._headRequestSync = hr));
-    }
-    return this._headRequest;
+  metadata: ChunkSourceMetadata | null;
+  parseResponse(res: HeadRes | GetObjectRes): ChunkSourceMetadata {
+    const metadata: ChunkSourceMetadata = {};
+    if ('ContentRange' in res && res.ContentRange != null) metadata.size = this.parseContentRange(res.ContentRange);
+    if ('ContentLength' in res && res.ContentLength != null) metadata.size = res.ContentLength;
+    if (res.ETag) metadata.etag = res.ETag;
+    return metadata;
+  }
+
+  private _head: Promise<HeadRes> | null;
+  head(): Promise<HeadRes> {
+    if (this._head) return this._head;
+    this._head = toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key })).then((res) => {
+      this.metadata = this.parseResponse(res);
+      return res;
+    });
+    return this._head;
   }
 
   /** Read the content length from the last request */
   get size(): Promise<number> {
-    return this.head.then((f) => f.ContentLength ?? -1);
-  }
-
-  /** Read the last response ETag if it exists */
-  get etag(): Promise<string | null> {
-    return this.head.then((f) => f.ETag ?? '');
+    return this.head().then(() => this.metadata?.size ?? -1);
   }
 
   /**
@@ -89,21 +100,12 @@ export class SourceAwsS3 extends ChunkSourceBase {
       const resp = await this.remote.getObject({ Bucket: this.bucket, Key: this.key, Range: fetchRange }).promise();
       if (!Buffer.isBuffer(resp.Body)) throw new Error('Failed to fetch object, Body is not a buffer');
 
-      if (this._headRequest == null) {
-        const headReq: HeadRes = {};
-        // Set the size of this object now that we know how big it is
-        if (resp.ContentRange != null) headReq.ContentLength = this.parseContentRange(resp.ContentRange);
-        if (resp.ETag) headReq.ETag = resp.ETag;
-        if (resp.LastModified) headReq.LastModified = resp.LastModified;
+      if (this.metadata == null) this.metadata = this.parseResponse(resp);
 
-        this._headRequest = Promise.resolve(headReq);
-        this._headRequestSync = headReq;
-      }
-
-      const lastEtag = this._headRequestSync?.ETag;
+      const lastEtag = this.metadata?.etag;
 
       // If the file has been modified since the last time we requested data this can cause conflicts so error out
-      if (lastEtag && lastEtag !== resp.ETag) {
+      if (lastEtag && resp.ETag && lastEtag !== resp.ETag) {
         throw new CompositeError(
           `ETag conflict ${this.name} ${fetchRange} expected: ${lastEtag} got: ${resp.ETag}`,
           ErrorCodes.Conflict,
