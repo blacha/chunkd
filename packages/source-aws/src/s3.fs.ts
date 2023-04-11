@@ -11,7 +11,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static protocol = 's3';
   protocol = FsAwsS3.protocol;
   /** Max list requests to run before erroring */
-  static MaxListCount = 100;
+  static MaxListCount = -1;
 
   /** When testing write permissions add a suffix to the file name, this file will be cleaned up after */
   static WriteTestSuffix = '';
@@ -84,8 +84,10 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
         if (!res.IsTruncated) break;
 
         // Abort if too many lists
-        if (count >= FsAwsS3.MaxListCount) {
-          throw new Error(`Failed to finish listing within ${FsAwsS3.MaxListCount} list attempts`);
+        if (FsAwsS3.MaxListCount > 0 && count >= FsAwsS3.MaxListCount) {
+          throw new Error(
+            `Failed to finish listing within ${FsAwsS3.MaxListCount} list attempts, see FsAwsS3.MaxListCount`,
+          );
         }
         ContinuationToken = res.NextContinuationToken;
       }
