@@ -4,16 +4,16 @@ import { getCompositeError, SourceAwsS3 } from './s3.source.js';
 import { ListRes, S3Like, toPromise } from './type.js';
 
 function isReadable(r: any): r is Readable {
-  return typeof r['read'] === 'function';
+  return r != null && typeof r['read'] === 'function';
 }
 
 export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   static protocol = 's3';
   protocol = FsAwsS3.protocol;
-  /** Max list requests to run before erroring */
+  /** Max number of list requests to run before throwing a error */
   static MaxListCount = -1;
 
-  /** When testing write permissions add a suffix to the file name, this file will be cleaned up after */
+  /** When testing write permissions add a suffix to the file name, this file will be deleted up after writing completes*/
   static WriteTestSuffix = '';
 
   /** Attempt to lookup credentials when permission failures happen */
@@ -21,7 +21,11 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
 
   /** Buckets we have already tested writing too and should skip testing multiple times */
   writeTests = new Set<string>();
-  /** When testing write permissions add a suffix to the file name, this file will be cleaned up after */
+
+  /**
+   * When testing write permissions add a suffix to the file name, this file will be deleted up after writing completes
+   * @see {FsAwsS3.WriteTestSuffix}
+   **/
   writeTestSuffix = FsAwsS3.WriteTestSuffix;
 
   /** AWS-SDK s3 to use */
