@@ -37,6 +37,7 @@ o.spec('file.s3', () => {
 
   o.spec('exists', () => {
     o('should throw if max call count is reached', async () => {
+      fs.maxListCount = 5;
       let callCount = 0;
       const stub = sandbox.stub(s3, 'listObjectsV2').returns({
         async promise() {
@@ -52,8 +53,8 @@ o.spec('file.s3', () => {
         o(true).equals(false)('Should error on invalid reads');
       } catch (e: any) {
         o(e.message).equals('Failed to list: "s3://bucket"');
-        o(e.reason.message).equals('Failed to finish listing within 100 list attempts');
-        o(stub.callCount).equals(100);
+        o(e.reason.message).equals('Failed to finish listing within 5 list attempts, see FsAwsS3.MaxListCount');
+        o(stub.callCount).equals(5);
       }
     });
     o('should allow listing of bucket using multiple requests', async () => {

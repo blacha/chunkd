@@ -28,6 +28,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
    **/
   writeTestSuffix = FsAwsS3.WriteTestSuffix;
 
+  /** Max number of list requests to run before throwing a error
+   *
+   * @see {FsAwsS3.MaxListCount}
+   */
+  maxListCount = FsAwsS3.MaxListCount;
+
   /** AWS-SDK s3 to use */
   s3: S3Like;
 
@@ -88,9 +94,9 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
         if (!res.IsTruncated) break;
 
         // Abort if too many lists
-        if (FsAwsS3.MaxListCount > 0 && count >= FsAwsS3.MaxListCount) {
+        if (this.maxListCount > 0 && count >= this.maxListCount) {
           throw new Error(
-            `Failed to finish listing within ${FsAwsS3.MaxListCount} list attempts, see FsAwsS3.MaxListCount`,
+            `Failed to finish listing within ${this.maxListCount} list attempts, see FsAwsS3.MaxListCount`,
           );
         }
         ContinuationToken = res.NextContinuationToken;
