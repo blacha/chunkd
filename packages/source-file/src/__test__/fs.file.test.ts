@@ -29,6 +29,16 @@ o.spec('LocalFileSystem', () => {
     }
   });
 
+  o('should throw when writing from a bad stream', async () => {
+    try {
+      await fs.write(path.join(__dirname, 'fs.test'), fs.stream('missing-file-goes-here.txt'));
+      o(true).equals(false);
+    } catch (e: any) {
+      o(e.code).equals(404);
+      o(String(e)).equals('CompositeError: Failed to write: ' + path.join(__dirname, 'fs.test'));
+    }
+  });
+
   o('should head/exists a file', async () => {
     const ref = await fs.head(path.join(__dirname, 'fs.file.test.js'));
     o(ref).notEquals(null);

@@ -65,17 +65,17 @@ export class FsFile implements FileSystem<SourceFile> {
   }
 
   async write(filePath: string, buf: Buffer | Readable | string): Promise<void> {
-    const folderPath = path.dirname(filePath);
-    await fs.promises.mkdir(folderPath, { recursive: true });
     try {
       if (Buffer.isBuffer(buf) || typeof buf === 'string') {
+        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
         await fs.promises.writeFile(filePath, buf);
       } else {
-        const st = fs.createWriteStream(filePath);
-        await new Promise((resolve, reject) => {
+        await new Promise(async (resolve, reject) => {
+          buf.once('error', reject); // Has to be run before any awaits
+          await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+          const st = fs.createWriteStream(filePath);
           st.on('finish', resolve);
           st.on('error', reject);
-          buf.pipe(st);
         });
       }
     } catch (e) {
