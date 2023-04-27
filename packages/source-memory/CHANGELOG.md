@@ -6,6 +6,12 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.0 to ^10.1.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.1 to ^10.2.0
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-memory-v9.1.0...source-memory-v10.0.0) (2022-09-21)
 
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.2.0](https://github.com/blacha/chunkd/compare/core-v10.1.1...core-v10.2.0) (2023-04-27)
+
+
+### Features
+
+* **core:** allow more properties to be overriden by defaults ([35d76ba](https://github.com/blacha/chunkd/commit/35d76baa6ebe2e6ad8e7ed05c36ef1d2bc8670d7))
+* **source-aws:** detect if the file ETag has changed between requests and error with 409 conflict. ([b6be429](https://github.com/blacha/chunkd/commit/b6be4295bf6458a3156837aa9a50be99a888b3d0))
+* **source-http:** support etag matching if etags are returned ([f08bb9c](https://github.com/blacha/chunkd/commit/f08bb9c2ae894026155074161161182f78efa30b))
+
+
+### Bug Fixes
+
+* **core:** add missing ".js" extension ([eb40285](https://github.com/blacha/chunkd/commit/eb4028541eee303290b7064da75e9a4776e6dd36))
+
 ## [10.1.1](https://github.com/blacha/chunkd/compare/core-v10.1.0...core-v10.1.1) (2023-01-17)
 
 
