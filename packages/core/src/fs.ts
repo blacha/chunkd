@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { ChunkSource } from './source';
+import { ChunkSource } from './source.js';
 
 export interface FileInfo {
   /** file path */
