@@ -1,5 +1,23 @@
 [
   {
+    "hash": "8b7b761283bf2c09c58d0f6e990dc726ee96b049",
+    "createdAt": "2023-04-27T21:43:16.931Z",
+    "results": [
+      {
+        "name": "Chunk Reading",
+        "count": 10,
+        "command": "node packages/core/build/__benchmark__/benchmark.js",
+        "mean": 0.6253131226349999,
+        "stddev": 0.005944597953207667,
+        "median": 0.6231852369349999,
+        "user": 0.62951096,
+        "system": 0.015348765,
+        "min": 0.619050136435,
+        "max": 0.638880577435
+      }
+    ]
+  },
+  {
     "hash": "eb4028541eee303290b7064da75e9a4776e6dd36",
     "createdAt": "2023-04-27T21:39:54.501Z",
     "results": [
