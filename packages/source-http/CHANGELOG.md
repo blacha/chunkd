@@ -6,6 +6,21 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.0 to ^10.1.1
 
+## [10.1.0](https://github.com/blacha/chunkd/compare/source-http-v10.0.2...source-http-v10.1.0) (2023-04-27)
+
+
+### Features
+
+* **source-http:** support etag matching if etags are returned ([f08bb9c](https://github.com/blacha/chunkd/commit/f08bb9c2ae894026155074161161182f78efa30b))
+* **source-http:** use built in fetch with node&gt;18 ([52529a3](https://github.com/blacha/chunkd/commit/52529a35fe72612915fac9c06893a871ffc4e392))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.1 to ^10.2.0
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-http-v9.1.0...source-http-v10.0.0) (2022-09-21)
 
 

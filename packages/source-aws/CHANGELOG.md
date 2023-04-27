@@ -1,5 +1,26 @@
 # Changelog
 
+## [10.2.0](https://github.com/blacha/chunkd/compare/source-aws-v10.1.1...source-aws-v10.2.0) (2023-04-27)
+
+
+### Features
+
+* **source-aws:** detect if the file ETag has changed between requests and error with 409 conflict. ([b6be429](https://github.com/blacha/chunkd/commit/b6be4295bf6458a3156837aa9a50be99a888b3d0))
+* **source-aws:** support per file system max list count ([2f2ff57](https://github.com/blacha/chunkd/commit/2f2ff576fd44c1332ac8afcbe9186c1c8db76578))
+* **source-http:** support etag matching if etags are returned ([f08bb9c](https://github.com/blacha/chunkd/commit/f08bb9c2ae894026155074161161182f78efa30b))
+
+
+### Bug Fixes
+
+* **source-aws:** disable MaxListCount by default ([8479d0b](https://github.com/blacha/chunkd/commit/8479d0b07ab5f24ad5ae83aff9a2ada09e072e90))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.1.1 to ^10.2.0
+
 ## [10.1.1](https://github.com/blacha/chunkd/compare/source-aws-v10.1.0...source-aws-v10.1.1) (2023-01-17)
 
 
