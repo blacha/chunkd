@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.0 to ^10.1.1
 
+## [10.1.1](https://github.com/blacha/chunkd/compare/source-http-v10.1.0...source-http-v10.1.1) (2023-04-27)
+
+
+### Bug Fixes
+
+* **source-http:** correct import as index.node.js no longer exists ([023c90e](https://github.com/blacha/chunkd/commit/023c90ed57499ea103a314e6760451ad153cc35b))
+
 ## [10.1.0](https://github.com/blacha/chunkd/compare/source-http-v10.0.2...source-http-v10.1.0) (2023-04-27)
 
 
