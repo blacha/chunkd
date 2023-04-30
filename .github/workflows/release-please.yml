@@ -22,10 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.releases_created }}
     steps:
-      - name: Build and test
-        uses: linz/action-typescript@v2
-        with:
-          package-manager: 'npm'
+      - uses: linz/action-typescript@v2
 
       - name: Publish to NPM
         run: npx lerna publish from-package --no-push --no-private --yes

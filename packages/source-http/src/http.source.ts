@@ -1,5 +1,6 @@
-import { ChunkSource, ChunkSourceBase, ChunkSourceMetadata, CompositeError, ErrorCodes } from '@chunkd/core';
+import { ContentRange, Source, SourceMetadata } from '@chunkd/source';
 
+/** Minimal typings for fetch */
 export interface FetchLikeOptions {
   method?: string;
   headers?: Record<string, string>;
@@ -11,69 +12,65 @@ export interface FetchLikeResponse {
   headers: { get(k: string): string | null };
   arrayBuffer(): Promise<ArrayBuffer>;
 }
-export type FetchLike = (url: string, opts?: FetchLikeOptions) => Promise<FetchLikeResponse>;
+export type FetchLike = (url: string | URL, opts?: FetchLikeOptions) => Promise<FetchLikeResponse>;
 
-export class SourceHttp extends ChunkSourceBase {
-  type = 'url';
-  protocol = 'http';
+/** Load the ETag and content-range from the response */
+export function getMetadataFromResponse(response: FetchLikeResponse): SourceMetadata {
+  const metadata: SourceMetadata = { size: -1 };
+  const contentRange = response.headers.get('content-range');
+  if (contentRange != null) metadata.size = ContentRange.parseSize(contentRange);
+  metadata.eTag = response.headers.get('etag') ?? undefined;
+  metadata.contentType = response.headers.get('content-type') ?? undefined;
+  metadata.contentDisposition = response.headers.get('content-disposition') ?? undefined;
+  return metadata;
+}
 
-  static DefaultChunkSize = 32 * 1024;
-  chunkSize: number = SourceHttp.DefaultChunkSize;
+export class SourceHttp implements Source {
+  type = 'http';
+  url: URL;
 
-  uri: string;
-
-  constructor(uri: string) {
-    super();
-    this.uri = uri;
+  constructor(url: URL) {
+    this.url = typeof url === 'string' ? new URL(url) : url;
   }
 
-  static isSource(source: ChunkSource): source is SourceHttp {
-    return source.type === 'url';
-  }
+  /** Optional metadata, only populated if a .head() or .fetchBytes() has already been returned */
+  metadata?: SourceMetadata;
 
-  metadata: ChunkSourceMetadata | null;
-  /** Load the ETag and content-range from the response */
-  parseResponse(response: FetchLikeResponse): ChunkSourceMetadata {
-    const metadata: ChunkSourceMetadata = {};
-    const contentRange = response.headers.get('content-range');
-    if (contentRange != null) metadata.size = this.parseContentRange(contentRange);
-    metadata.etag = response.headers.get('etag') ?? undefined;
-    return metadata;
-  }
-
-  private _head: Promise<FetchLikeResponse> | null;
-  head(): Promise<FetchLikeResponse> {
+  private _head?: Promise<SourceMetadata>;
+  head(): Promise<SourceMetadata> {
     if (this._head) return this._head;
-    this._head = SourceHttp.fetch(this.uri, { method: 'HEAD' }).then((res) => {
-      this.metadata = this.parseResponse(res);
-      return res;
+    this._head = SourceHttp.fetch(this.url, { method: 'HEAD' }).then((res) => {
+      if (!res.ok) {
+        delete this._head;
+        throw new Error(`Failed to HEAD ${this.url}`, { cause: { statusCode: res.status, msg: res.statusText } });
+      }
+      this.metadata = getMetadataFromResponse(res);
+      return this.metadata;
     });
     return this._head;
   }
 
-  get size(): Promise<number> {
-    if (this.metadata?.size) return Promise.resolve(this.metadata.size);
-    return this.head().then(() => this.metadata?.size ?? -1);
-  }
-
-  async fetchBytes(offset: number, length?: number): Promise<ArrayBuffer> {
-    const Range = this.toRange(offset, length);
+  async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
+    const Range = ContentRange.toRange(offset, length);
     const headers = { Range };
-    const response = await SourceHttp.fetch(this.uri, { headers });
+    const response = await SourceHttp.fetch(this.url, { headers });
 
-    if (response.ok) {
-      const metadata = this.parseResponse(response);
-      if (this.metadata == null) this.metadata = metadata;
-      else if (this.metadata.etag && this.metadata.etag !== metadata.etag)
-        throw new CompositeError(
-          `ETag conflict ${this.uri} ${Range} expected: ${this.metadata.etag} got: ${metadata.etag}`,
-          ErrorCodes.Conflict,
-          null,
-        );
-      return response.arrayBuffer();
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${this.url} ${Range}`, {
+        cause: { statusCode: response.status, message: response.statusText },
+      });
     }
 
-    throw new CompositeError(`Failed to fetch ${this.uri} ${Range}`, response.status, response.statusText);
+    const metadata = getMetadataFromResponse(response);
+    if (this.metadata == null) {
+      this.metadata = metadata;
+    } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
+      // ETag has changed since the last read!
+      throw new Error(`ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`, {
+        cause: { statusCode: 409 },
+      });
+    }
+    return response.arrayBuffer();
   }
 
   // Allow overwriting the fetcher used (eg testing/node-js)

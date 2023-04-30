@@ -1,124 +1,99 @@
-import {
-  ChunkSource,
-  ChunkSourceBase,
-  ChunkSourceMetadata,
-  CompositeError,
-  ErrorCodes,
-  isRecord,
-  parseUri,
-} from '@chunkd/core';
-import { GetObjectRes, HeadRes, S3Like, toPromise } from './type.js';
+import { S3Client, GetObjectCommand, HeadObjectCommand, GetObjectOutput, HeadObjectOutput } from '@aws-sdk/client-s3';
+import { ContentRange, Source, SourceMetadata } from '@chunkd/source';
 
-export function getCompositeError(e: unknown, msg: string): CompositeError {
-  if (!isRecord(e)) return new CompositeError(msg, 500, e);
-  if (typeof e.statusCode === 'number') return new CompositeError(msg, e.statusCode, e);
-  if (isRecord(e.$metadata) && typeof e.$metadata.httpStatusCode === 'number') {
-    return new CompositeError(msg, e.$metadata.httpStatusCode, e);
-  }
-  return new CompositeError(msg, 500, e);
+function parseMetadata(res: GetObjectOutput | HeadObjectOutput): SourceMetadata {
+  const metadata: SourceMetadata = {};
+  if ('ContentRange' in res && res.ContentRange) metadata.size = ContentRange.parseSize(res.ContentRange);
+  else if (res.ContentLength) metadata.size = res.ContentLength;
+
+  if (res.ETag) metadata.eTag = res.ETag;
+  if (res.Metadata && Object.keys(res.Metadata).length > 0) metadata.metadata = res.Metadata;
+  if (res.ContentType) metadata.contentType = res.ContentType;
+  if (res.ContentDisposition) metadata.contentDisposition = res.ContentDisposition;
+  if (res.LastModified) metadata.lastModified = res.LastModified.toISOString();
+  Object.defineProperty(metadata, '$response', {
+    enumerable: false,
+    value: res,
+  });
+  return metadata;
 }
 
-export class SourceAwsS3 extends ChunkSourceBase {
-  static type = 'aws:s3';
-  type = SourceAwsS3.type;
-  protocol = 's3';
+function getStatusCode(e: unknown): number | null {
+  if (typeof e !== 'object' || e == null) return null;
+  if ('statusCode' in e && typeof e.statusCode === 'number') return e.statusCode;
+  if ('$metadata' in e) {
+    const metadata = e.$metadata;
+    if (typeof metadata !== 'object' || metadata == null) return null;
+    if ('httpStatusCode' in metadata && typeof metadata.httpStatusCode === 'number') return metadata.httpStatusCode;
+  }
+  return null;
+}
 
-  static DefaultChunkSize = 64 * 1024;
-  static DefaultMaxChunkCount = 32;
+export class SourceAwsS3 implements Source {
+  type = 'aws:s3';
+  url: URL;
+  client: S3Client;
+  metadata?: SourceMetadata | undefined;
 
-  // HTTP gets are slow, get a larger amount
-  chunkSize: number = SourceAwsS3.DefaultChunkSize;
-  maxChunkCount = SourceAwsS3.DefaultMaxChunkCount;
-
-  bucket: string;
-  key: string;
-  remote: S3Like;
-
-  constructor(bucket: string, key: string, remote: S3Like) {
-    super();
-    this.bucket = bucket;
-    this.key = key;
-    this.remote = remote;
+  static getBucketKey(url: URL): { Bucket: string; Key: string } {
+    return {
+      Bucket: url.hostname,
+      // pathnames start with "/" AWS does not like that
+      // Also AWS will take files called "%F0%9F%A6%84.json" over the UTF-8 "🦄.json"
+      Key: decodeURI(url.pathname.slice(1)),
+    };
   }
 
-  get uri(): string {
-    return this.name;
+  /** optionally set this source as requesterPays */
+  requestPayer?: 'requester';
+
+  constructor(url: URL, client: S3Client = new S3Client({})) {
+    this.url = url;
+    this.client = client;
   }
 
-  get name(): string {
-    return `s3://${this.bucket}/${this.key}`;
-  }
-
-  static isSource(source: ChunkSource): source is SourceAwsS3 {
-    return source.type === SourceAwsS3.type;
-  }
-
-  metadata: ChunkSourceMetadata | null;
-  parseResponse(res: HeadRes | GetObjectRes): ChunkSourceMetadata {
-    const metadata: ChunkSourceMetadata = {};
-    if ('ContentRange' in res && res.ContentRange != null) metadata.size = this.parseContentRange(res.ContentRange);
-    if ('ContentLength' in res && res.ContentLength != null) metadata.size = res.ContentLength;
-    if (res.ETag) metadata.etag = res.ETag;
-    return metadata;
-  }
-
-  private _head: Promise<HeadRes> | null;
-  head(): Promise<HeadRes> {
+  _head?: Promise<SourceMetadata>;
+  head(): Promise<SourceMetadata> {
     if (this._head) return this._head;
-    this._head = toPromise(this.remote.headObject({ Bucket: this.bucket, Key: this.key })).then((res) => {
-      this.metadata = this.parseResponse(res);
-      return res;
+
+    const request = new HeadObjectCommand({
+      ...SourceAwsS3.getBucketKey(this.url),
+      Key: this.url.pathname.slice(1),
+      RequestPayer: this.requestPayer,
+    });
+    this._head = this.client.send(request).then((response) => {
+      this.metadata = parseMetadata(response);
+      return parseMetadata(response);
     });
     return this._head;
   }
 
-  /** Read the content length from the last request */
-  get size(): Promise<number> {
-    return this.head().then(() => this.metadata?.size ?? -1);
-  }
+  async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
+    const fetchRange = ContentRange.toRange(offset, length);
 
-  /**
-   * Parse a URI and create a source
-   *
-   * @example
-   * ```typescript
-   * fromUri('s3://foo/bar/baz.tiff')
-   * ```
-   *
-   * @param uri URI to parse
-   */
-  static fromUri(uri: string, remote: S3Like): SourceAwsS3 | null {
-    const res = parseUri(uri);
-    if (res == null || res.key == null) return null;
-    if (res.protocol !== 's3') return null;
-    return new SourceAwsS3(res.bucket, res.key, remote);
-  }
-
-  async fetchBytes(offset: number, length?: number): Promise<ArrayBuffer> {
-    const fetchRange = this.toRange(offset, length);
     try {
-      const resp = await this.remote.getObject({ Bucket: this.bucket, Key: this.key, Range: fetchRange }).promise();
-      if (!Buffer.isBuffer(resp.Body)) throw new Error('Failed to fetch object, Body is not a buffer');
+      const request = new GetObjectCommand({
+        ...SourceAwsS3.getBucketKey(this.url),
+        Range: fetchRange,
+        RequestPayer: this.requestPayer,
+      });
 
-      if (this.metadata == null) this.metadata = this.parseResponse(resp);
+      const response = await this.client.send(request);
+      if (this.metadata == null) this.metadata = parseMetadata(response);
 
-      const lastEtag = this.metadata?.etag;
-
+      const lastEtag = this.metadata?.eTag;
       // If the file has been modified since the last time we requested data this can cause conflicts so error out
-      if (lastEtag && resp.ETag && lastEtag !== resp.ETag) {
-        throw new CompositeError(
-          `ETag conflict ${this.name} ${fetchRange} expected: ${lastEtag} got: ${resp.ETag}`,
-          ErrorCodes.Conflict,
-          undefined,
-        );
+      if (lastEtag && response.ETag && lastEtag !== response.ETag) {
+        throw new Error(`ETag conflict ${this.url} ${fetchRange} expected: ${lastEtag} got: ${response.ETag}`, {
+          cause: { statusCode: 409 },
+        });
       }
-
-      const buffer = resp.Body;
-      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
-    } catch (err) {
-      // Already a composite error just rethrow
-      if (err instanceof CompositeError) throw err;
-      throw getCompositeError(err, `Failed to fetch ${this.name} ${fetchRange}`);
+      // Use `fetch` response object to convert stream to arrayBuffer
+      return new Response(response.Body as unknown as BodyInit).arrayBuffer();
+    } catch (e) {
+      throw new Error(`Failed to fetchBytes from:${this.url} range: ${fetchRange}`, {
+        cause: { statusCode: getStatusCode(e) ?? 500, error: e },
+      });
     }
   }
 }

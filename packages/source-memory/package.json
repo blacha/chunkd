@@ -10,18 +10,23 @@
     "url": "https://github.com/blacha/chunkd.git",
     "directory": "packages/source-memory"
   },
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "author": "Blayne Chard",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
-    "@chunkd/core": "^10.2.0"
+    "@chunkd/source": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "build/src"
+  ]
 }

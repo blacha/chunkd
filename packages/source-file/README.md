@@ -1,7 +1,7 @@
 # @chunkd/source-file
 
 
-Load a COG from a file using `fs`
+Load chunks of data from a file using `node:fs`
 
 ## Usage
 
