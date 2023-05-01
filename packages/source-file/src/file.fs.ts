@@ -76,6 +76,7 @@ export class FsFile implements FileSystem<SourceFile> {
           const st = fs.createWriteStream(filePath);
           st.on('finish', resolve);
           st.on('error', reject);
+          buf.pipe(st);
         });
       }
     } catch (e) {

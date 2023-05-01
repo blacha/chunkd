@@ -20,6 +20,18 @@ o.spec('LocalFileSystem', () => {
     o(buf.toString().includes("import o from 'ospec'")).equals(true);
   });
 
+  o('should stream a file', async () => {
+    const buf = fs.stream(path.join(__dirname, 'fs.file.test.js'));
+
+    const targetFile = path.join(__dirname, '.fs.file.test.js');
+    await fs.write(targetFile, buf);
+
+    const after = await fs.read(targetFile);
+    o(after.toString().includes("import o from 'ospec'")).equals(true);
+
+    await fs.delete(targetFile);
+  });
+
   o('should 404 when file not found', async () => {
     try {
       await fs.read(path.join(__dirname, 'NOT A FILE.js'));
