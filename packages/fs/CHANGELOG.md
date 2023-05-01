@@ -17,6 +17,12 @@
   * dependencies
     * @chunkd/source-http bumped from ^10.1.0 to ^10.1.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source-file bumped from ^10.0.3 to ^10.0.4
+
 ## [10.0.4](https://github.com/blacha/chunkd/compare/fs-v10.0.3...fs-v10.0.4) (2023-01-17)
 
 

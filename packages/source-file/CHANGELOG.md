@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.1 to ^10.2.0
 
+## [10.0.4](https://github.com/blacha/chunkd/compare/source-file-v10.0.3...source-file-v10.0.4) (2023-05-01)
+
+
+### Bug Fixes
+
+* **source-file:** actually pipe the stream into output file ([25f5147](https://github.com/blacha/chunkd/commit/25f5147d5cc5ba750cc9985f24c1c84150587803))
+
 ## [10.0.2](https://github.com/blacha/chunkd/compare/source-file-v10.0.1...source-file-v10.0.2) (2023-01-17)
 
 
