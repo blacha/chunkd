@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.1 to ^10.2.0
 
+## [10.0.5](https://github.com/blacha/chunkd/compare/source-file-v10.0.4...source-file-v10.0.5) (2023-05-01)
+
+
+### Bug Fixes
+
+* **source-file:** test delete ([be8144c](https://github.com/blacha/chunkd/commit/be8144cab18147116836ede6123fb528c4817461))
+
 ## [10.0.4](https://github.com/blacha/chunkd/compare/source-file-v10.0.3...source-file-v10.0.4) (2023-05-01)
 
 
