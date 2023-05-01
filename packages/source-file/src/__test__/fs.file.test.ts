@@ -32,6 +32,16 @@ o.spec('LocalFileSystem', () => {
     await fs.delete(targetFile);
   });
 
+  o('should delete a file', async () => {
+    const toDelete = path.join(__dirname, 'to.delete');
+    o(await fs.head(toDelete)).equals(null);
+    await fs.write(toDelete, Buffer.from('TO_DELETE'));
+    o(await fs.head(toDelete)).notEquals(null);
+
+    await fs.delete(toDelete);
+    o(await fs.head(toDelete)).equals(null);
+  });
+
   o('should 404 when file not found', async () => {
     try {
       await fs.read(path.join(__dirname, 'NOT A FILE.js'));
