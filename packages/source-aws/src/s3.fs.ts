@@ -91,7 +91,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
         if (res.Contents != null) {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
-            yield { path: `s3://${Bucket}/${obj.Key}`, size: obj.Size };
+            yield {
+              path: `s3://${Bucket}/${obj.Key}`,
+              size: obj.Size,
+              eTag: obj.ETag,
+              lastModified: obj.LastModified?.toISOString(),
+            };
           }
         }
 

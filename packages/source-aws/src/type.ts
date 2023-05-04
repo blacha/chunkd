@@ -32,7 +32,7 @@ export type ListReq = {
   Delimiter?: string;
   RequestPayer?: string;
 };
-export type ListResContents = { Key?: string; Size?: number };
+export type ListResContents = { Key?: string; Size?: number; ETag?: string; LastModified?: Date };
 export type ListRes = {
   IsTruncated?: boolean;
   NextContinuationToken?: string;
