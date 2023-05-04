@@ -17,6 +17,17 @@ o.spec('FsMemory', () => {
     o(b.toString()).equals('a');
   });
 
+  o('should write with metadata', async () => {
+    await memory.write('memory://foo.png', Buffer.from('a'), {
+      contentType: 'text/plain',
+      metadata: { 'X-LINZ-TEST': '123' },
+    });
+
+    const head = await memory.head('memory://foo.png');
+    o(head?.contentType).equals('text/plain');
+    o(head?.metadata).deepEquals({ 'X-LINZ-TEST': '123' });
+  });
+
   o('should stream files', async () => {
     await memory.write('memory://foo.png', Buffer.from('a'));
 

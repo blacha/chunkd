@@ -1,9 +1,15 @@
-import { CompositeError, FileInfo, FileSystem, ListOptions, SourceMemory } from '@chunkd/core';
+import { CompositeError, FileInfo, FileSystem, ListOptions, SourceMemory, WriteOptions } from '@chunkd/core';
 import { Readable } from 'stream';
 
 export function toReadable(r: string | Buffer | Readable): Readable {
   if (typeof r === 'string') r = Buffer.from(r);
   return Readable.from(r);
+}
+
+async function getBuffer(buffer: string | Buffer | Readable): Promise<Buffer> {
+  if (typeof buffer === 'string') return Buffer.from(buffer);
+  if (Buffer.isBuffer(buffer)) return buffer;
+  return await toBuffer(buffer);
 }
 
 export async function toBuffer(stream: Readable): Promise<Buffer> {
@@ -19,31 +25,22 @@ export async function toBuffer(stream: Readable): Promise<Buffer> {
 export class FsMemory implements FileSystem<SourceMemory> {
   protocol = 'memory';
 
-  files: Map<string, Buffer> = new Map();
+  files: Map<string, { buffer: Buffer; opts?: WriteOptions }> = new Map();
 
   async read(filePath: string): Promise<Buffer> {
     const data = this.files.get(filePath);
     if (data == null) throw new CompositeError('Not found', 404, new Error());
-    return data;
+    return data.buffer;
   }
 
   stream(filePath: string): Readable {
     const buf = this.files.get(filePath);
     if (buf == null) throw new CompositeError('Not found', 404, new Error());
-    return toReadable(buf);
+    return toReadable(buf.buffer);
   }
 
-  async write(filePath: string, buffer: string | Buffer | Readable): Promise<void> {
-    if (typeof buffer === 'string') {
-      this.files.set(filePath, Buffer.from(buffer));
-      return;
-    }
-    if (Buffer.isBuffer(buffer)) {
-      this.files.set(filePath, buffer);
-      return;
-    }
-    const buf = await toBuffer(buffer);
-    this.files.set(filePath, buf);
+  async write(filePath: string, buffer: string | Buffer | Readable, opts?: WriteOptions): Promise<void> {
+    this.files.set(filePath, { opts: opts, buffer: await getBuffer(buffer) });
   }
 
   async *list(filePath: string, opt?: ListOptions): AsyncGenerator<string> {
@@ -84,9 +81,15 @@ export class FsMemory implements FileSystem<SourceMemory> {
   }
 
   async head(filePath: string): Promise<FileInfo | null> {
-    const buf = this.files.get(filePath);
-    if (buf == null) return null;
-    return { path: filePath, size: buf.length };
+    const obj = this.files.get(filePath);
+    if (obj == null) return null;
+    return {
+      path: filePath,
+      size: obj.buffer.length,
+      metadata: obj.opts?.metadata,
+      contentType: obj.opts?.contentType,
+      contentEncoding: obj.opts?.contentEncoding,
+    };
   }
 
   async delete(filePath: string): Promise<void> {
@@ -94,9 +97,9 @@ export class FsMemory implements FileSystem<SourceMemory> {
   }
 
   source(filePath: string): SourceMemory {
-    const bytes = this.files.get(filePath);
-    if (bytes == null) throw new CompositeError('File not found', 404, new Error());
-    const source = new SourceMemory(filePath, bytes);
+    const obj = this.files.get(filePath);
+    if (obj == null) throw new CompositeError('File not found', 404, new Error());
+    const source = new SourceMemory(filePath, obj.buffer);
     return source;
   }
 }
