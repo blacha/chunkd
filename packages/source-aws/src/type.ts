@@ -9,7 +9,7 @@ export interface S3LikeResponseStream<T> extends S3LikeV2Response<T> {
   createReadStream(): Readable;
 }
 
-export type Location = { Bucket: string; Key: string };
+export type Location = { Bucket: string; Key: string; RequestPayer?: string };
 
 export type DeleteObjectReq = Location;
 export type DeleteObjectRes = { DeleteMarker?: boolean };
@@ -24,7 +24,13 @@ export type UploadReq = Location & {
 };
 export type UploadRes = unknown;
 
-export type ListReq = { Bucket: string; Prefix?: string; ContinuationToken?: string; Delimiter?: string };
+export type ListReq = {
+  Bucket: string;
+  Prefix?: string;
+  ContinuationToken?: string;
+  Delimiter?: string;
+  RequestPayer?: string;
+};
 export type ListResContents = { Key?: string; Size?: number };
 export type ListRes = {
   IsTruncated?: boolean;

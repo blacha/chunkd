@@ -22,6 +22,9 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
   /** Buckets we have already tested writing too and should skip testing multiple times */
   writeTests = new Set<string>();
 
+  /** Request Payment option */
+  requestPayer?: 'requester';
+
   /**
    * When testing write permissions add a suffix to the file name, this file will be deleted up after writing completes
    * @see {FsAwsS3.WriteTestSuffix}
@@ -74,7 +77,9 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     try {
       while (true) {
         count++;
-        const res: ListRes = await toPromise(this.s3.listObjectsV2({ Bucket, Prefix, ContinuationToken, Delimiter }));
+        const res: ListRes = await toPromise(
+          this.s3.listObjectsV2({ Bucket, Prefix, ContinuationToken, Delimiter, RequestPayer: this.requestPayer }),
+        );
 
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
@@ -120,7 +125,9 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     if (opts == null || opts.key == null) throw new Error(`Failed to read:  "${filePath}"`);
 
     try {
-      const res = await this.s3.getObject({ Bucket: opts.bucket, Key: opts.key }).promise();
+      const res = await this.s3
+        .getObject({ Bucket: opts.bucket, Key: opts.key, RequestPayer: this.requestPayer })
+        .promise();
       return res.Body as Buffer;
     } catch (e) {
       const ce = getCompositeError(e, `Failed to read: "${filePath}"`);
@@ -146,7 +153,12 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
 
     try {
       await toPromise(
-        this.s3.upload({ Bucket: opts.bucket, Key: opts.key + this.writeTestSuffix, Body: Buffer.from('test') }),
+        this.s3.upload({
+          Bucket: opts.bucket,
+          Key: opts.key + this.writeTestSuffix,
+          Body: Buffer.from('test'),
+          RequestPayer: this.requestPayer,
+        }),
       );
       this.writeTests.add(opts.bucket); // Write test worked!
       // Suffix was added so cleanup the file
@@ -177,6 +189,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
           Bucket: opts.bucket,
           Key: opts.key,
           Body: buf,
+          RequestPayer: this.requestPayer,
           ContentEncoding: ctx?.contentEncoding,
           ContentType: ctx?.contentType,
         }),
@@ -194,7 +207,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     const opts = parseUri(filePath);
     if (opts == null || opts.key == null) throw new Error(`Failed to delete: "${filePath}"`);
     try {
-      await toPromise(this.s3.deleteObject({ Bucket: opts.bucket, Key: opts.key }));
+      await toPromise(this.s3.deleteObject({ Bucket: opts.bucket, Key: opts.key, RequestPayer: this.requestPayer }));
       return;
     } catch (e) {
       const ce = getCompositeError(e, `Failed to delete: "${filePath}"`);
@@ -214,14 +227,18 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
     const opts = parseUri(filePath);
     if (opts == null || opts.key == null) throw new Error(`S3: Unable to read "${filePath}"`);
 
-    return this.s3.getObject({ Bucket: opts.bucket, Key: opts.key }).createReadStream();
+    return this.s3
+      .getObject({ Bucket: opts.bucket, Key: opts.key, RequestPayer: this.requestPayer })
+      .createReadStream();
   }
 
   async head(filePath: string): Promise<FileInfo | null> {
     const opts = parseUri(filePath);
     if (opts == null || opts.key == null) throw new Error(`Failed to head: "${filePath}"`);
     try {
-      const res = await toPromise(this.s3.headObject({ Bucket: opts.bucket, Key: opts.key }));
+      const res = await toPromise(
+        this.s3.headObject({ Bucket: opts.bucket, Key: opts.key, RequestPayer: this.requestPayer }),
+      );
       return { size: res.ContentLength, path: filePath };
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;

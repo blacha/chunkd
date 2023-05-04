@@ -86,9 +86,16 @@ o.spec('file.s3', () => {
         Prefix: undefined,
         ContinuationToken: undefined,
         Delimiter: undefined,
+        RequestPayer: undefined,
       });
       const [secondCall] = stub.args[1] as any;
-      o(secondCall).deepEquals({ Bucket: 'bucket', Prefix: undefined, ContinuationToken: 1, Delimiter: undefined });
+      o(secondCall).deepEquals({
+        Bucket: 'bucket',
+        Prefix: undefined,
+        ContinuationToken: 1,
+        Delimiter: undefined,
+        RequestPayer: undefined,
+      });
     });
 
     o('should allow listing of bucket', async () => {
@@ -107,6 +114,7 @@ o.spec('file.s3', () => {
         Prefix: undefined,
         ContinuationToken: undefined,
         Delimiter: undefined,
+        RequestPayer: undefined,
       });
     });
 
@@ -121,7 +129,13 @@ o.spec('file.s3', () => {
       o(data).deepEquals(['s3://bucket/keyFirstFile']);
       o(stub.callCount).equals(1);
       const [firstCall] = stub.args[0] as any;
-      o(firstCall).deepEquals({ Bucket: 'bucket', Prefix: 'key', ContinuationToken: undefined, Delimiter: undefined });
+      o(firstCall).deepEquals({
+        Bucket: 'bucket',
+        Prefix: 'key',
+        ContinuationToken: undefined,
+        Delimiter: undefined,
+        RequestPayer: undefined,
+      });
     });
   });
 
@@ -135,7 +149,7 @@ o.spec('file.s3', () => {
       const data = await fs.read('s3://bucket/key');
 
       o(getObjectStub.callCount).equals(1);
-      o(getObjectStub.args[0]).deepEquals([{ Bucket: 'bucket', Key: 'key' }] as any);
+      o(getObjectStub.args[0]).deepEquals([{ Bucket: 'bucket', Key: 'key', RequestPayer: undefined }] as any);
       o(data.toString()).equals('Hello World');
     });
     o('should error if no key was provided', async () => {
