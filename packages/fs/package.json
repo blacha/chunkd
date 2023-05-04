@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs",
-  "version": "10.0.8",
+  "version": "10.0.9",
   "type": "module",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
@@ -17,13 +17,13 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^10.2.0",
-    "@chunkd/source-file": "^10.0.5",
-    "@chunkd/source-http": "^10.1.1"
+    "@chunkd/core": "^10.3.0",
+    "@chunkd/source-file": "^10.0.6",
+    "@chunkd/source-http": "^10.1.2"
   },
   "optionalDependencies": {
-    "@chunkd/source-aws": "^10.2.0",
-    "@chunkd/source-google-cloud": "^10.0.3"
+    "@chunkd/source-aws": "^10.3.0",
+    "@chunkd/source-google-cloud": "^10.0.4"
   },
   "publishConfig": {
     "access": "public"

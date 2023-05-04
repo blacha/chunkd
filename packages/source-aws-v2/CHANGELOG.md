@@ -1,5 +1,12 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.2.0 to ^10.3.0
+    * @chunkd/source-aws bumped from ^10.2.0 to ^10.3.0
+
 ## [9.4.2](https://github.com/blacha/chunkd/compare/source-aws-v2-v9.4.1...source-aws-v2-v9.4.2) (2023-04-27)
 
 

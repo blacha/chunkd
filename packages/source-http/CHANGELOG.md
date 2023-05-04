@@ -6,6 +6,12 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.0 to ^10.1.1
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.2.0 to ^10.3.0
+
 ## [10.1.1](https://github.com/blacha/chunkd/compare/source-http-v10.1.0...source-http-v10.1.1) (2023-04-27)
 
 

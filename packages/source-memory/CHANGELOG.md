@@ -12,6 +12,20 @@
   * dependencies
     * @chunkd/core bumped from ^10.1.1 to ^10.2.0
 
+## [10.1.0](https://github.com/blacha/chunkd/compare/source-memory-v10.0.3...source-memory-v10.1.0) (2023-05-04)
+
+
+### Features
+
+* **source-memory:** support writing with metadata ([5001dcc](https://github.com/blacha/chunkd/commit/5001dcce15f2d32af833e91c2253bec65cee49ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.2.0 to ^10.3.0
+
 ## [10.0.0](https://github.com/blacha/chunkd/compare/source-memory-v9.1.0...source-memory-v10.0.0) (2022-09-21)
 
 

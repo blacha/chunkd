@@ -1,5 +1,21 @@
 # Changelog
 
+## [10.3.0](https://github.com/blacha/chunkd/compare/source-aws-v10.2.0...source-aws-v10.3.0) (2023-05-04)
+
+
+### Features
+
+* **source-aws:** include more metadata when listing ([c4d7803](https://github.com/blacha/chunkd/commit/c4d7803daf8aadde7be2eb44affd1749e1b7195c))
+* **source-aws:** support requster pays buckets ([380bc66](https://github.com/blacha/chunkd/commit/380bc660ee858dab6f7fbe1f391fbcf20966ba57))
+* **source-aws:** support s3 metadata via head/write ([fd9a7c1](https://github.com/blacha/chunkd/commit/fd9a7c1f3b393fc50c624bf6c5f3b646991099b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.2.0 to ^10.3.0
+
 ## [10.2.0](https://github.com/blacha/chunkd/compare/source-aws-v10.1.1...source-aws-v10.2.0) (2023-04-27)
 
 
