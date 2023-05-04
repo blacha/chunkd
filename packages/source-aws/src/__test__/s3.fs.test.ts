@@ -186,6 +186,25 @@ o.spec('file.s3', () => {
       o(stub.args[0][0].Body?.toString()).deepEquals('Hello World');
     });
 
+    o('should write with metadata', async () => {
+      const stub = sandbox.stub(s3, 'upload').returns({
+        async promise() {
+          return '';
+        },
+      } as any);
+
+      await fs.write('s3://bucket/key.txt', Buffer.from('Hello World'), {
+        contentType: 'application/json',
+        metadata: { 'X-LINZ-TEST': '123' },
+      });
+      o(stub.callCount).equals(1);
+      o(stub.lastCall.args[0].Bucket).deepEquals('bucket');
+      o(stub.lastCall.args[0].Key).deepEquals('key.txt');
+      o(stub.lastCall.args[0].Body?.toString()).deepEquals('Hello World');
+      o(stub.lastCall.args[0].Metadata).deepEquals({ 'X-LINZ-TEST': '123' });
+      o(stub.lastCall.args[0].ContentType).deepEquals('application/json');
+    });
+
     o('should error if no key was provided', async () => {
       try {
         await fs.write('s3://bucket', Buffer.from('Hello World'));

@@ -192,6 +192,7 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
           RequestPayer: this.requestPayer,
           ContentEncoding: ctx?.contentEncoding,
           ContentType: ctx?.contentType,
+          Metadata: ctx?.metadata,
         }),
       );
     } catch (e) {
@@ -239,7 +240,14 @@ export class FsAwsS3 implements FileSystem<SourceAwsS3> {
       const res = await toPromise(
         this.s3.headObject({ Bucket: opts.bucket, Key: opts.key, RequestPayer: this.requestPayer }),
       );
-      return { size: res.ContentLength, path: filePath };
+      const info: FileInfo = { size: res.ContentLength, path: filePath };
+      if (res.Metadata && Object.keys(res.Metadata).length > 0) info.metadata = res.Metadata;
+      if (res.ContentEncoding) info.contentEncoding = res.ContentEncoding;
+      if (res.ContentType) info.contentType = res.ContentType;
+      if (res.ETag) info.eTag = res.ETag;
+      if (res.LastModified) info.lastModified = res.LastModified.toISOString();
+
+      return info;
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
 

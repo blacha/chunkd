@@ -21,6 +21,7 @@ export type UploadReq = Location & {
   Body?: Buffer | string | Readable;
   ContentEncoding?: string;
   ContentType?: string;
+  Metadata?: Record<string, string>;
 };
 export type UploadRes = unknown;
 
@@ -40,7 +41,14 @@ export type ListRes = {
 };
 
 export type HeadReq = Location;
-export type HeadRes = { ContentLength?: number; ETag?: string; LastModified?: Date };
+export type HeadRes = {
+  ContentLength?: number;
+  ETag?: string;
+  ContentType?: string;
+  ContentEncoding?: string;
+  LastModified?: Date;
+  Metadata?: Record<string, string>;
+};
 
 /** Minimal typing for a s3 like interface to make it easier to work across aws-sdk versions */
 export interface S3Like {

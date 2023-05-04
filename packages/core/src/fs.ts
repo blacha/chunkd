@@ -9,9 +9,18 @@ export interface FileInfo {
    * undefined if no size found
    */
   size?: number;
-
   /** Is this file a directory */
   isDirectory?: boolean;
+  /** Additional metadata returned from the request */
+  metadata?: Record<string, string>;
+  /** Encoding of the file eg "gzip" */
+  contentEncoding?: string;
+  /** Content type of the file eg "text/plain" */
+  contentType?: string;
+  /** Entity tag */
+  eTag?: string;
+  /** ISO String of when the file was last modified */
+  lastModified?: string;
 }
 
 export interface WriteOptions {
@@ -19,6 +28,8 @@ export interface WriteOptions {
   contentEncoding?: string;
   /** Content type of the file eg "text/plain" */
   contentType?: string;
+  /** Additional metadata to be written */
+  metadata?: Record<string, string>;
 }
 
 export interface ListOptions {
