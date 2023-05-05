@@ -29,6 +29,17 @@
   * dependencies
     * @chunkd/source-file bumped from ^10.0.4 to ^10.0.5
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/core bumped from ^10.2.0 to ^10.3.0
+    * @chunkd/source-file bumped from ^10.0.5 to ^10.0.6
+    * @chunkd/source-http bumped from ^10.1.1 to ^10.1.2
+  * optionalDependencies
+    * @chunkd/source-aws bumped from ^10.2.0 to ^10.3.0
+    * @chunkd/source-google-cloud bumped from ^10.0.3 to ^10.0.4
+
 ## [10.0.4](https://github.com/blacha/chunkd/compare/fs-v10.0.3...fs-v10.0.4) (2023-01-17)
 
 

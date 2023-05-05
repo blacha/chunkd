@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-http",
-  "version": "10.1.1",
+  "version": "10.1.2",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -16,7 +16,7 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^10.2.0"
+    "@chunkd/core": "^10.3.0"
   },
   "devDependencies": {},
   "publishConfig": {

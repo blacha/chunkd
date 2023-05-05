@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.3.0](https://github.com/blacha/chunkd/compare/core-v10.2.0...core-v10.3.0) (2023-05-04)
+
+
+### Features
+
+* **source-aws:** support s3 metadata via head/write ([fd9a7c1](https://github.com/blacha/chunkd/commit/fd9a7c1f3b393fc50c624bf6c5f3b646991099b7))
+
 ## [10.2.0](https://github.com/blacha/chunkd/compare/core-v10.1.1...core-v10.2.0) (2023-04-27)
 
 

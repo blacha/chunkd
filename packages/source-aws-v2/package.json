@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-aws-v2",
-  "version": "9.4.2",
+  "version": "9.4.3",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -16,8 +16,8 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@chunkd/core": "^10.2.0",
-    "@chunkd/source-aws": "^10.2.0"
+    "@chunkd/core": "^10.3.0",
+    "@chunkd/source-aws": "^10.3.0"
   },
   "peerDependencies": {
     "aws-sdk": "*"
