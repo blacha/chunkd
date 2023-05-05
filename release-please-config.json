@@ -2,14 +2,13 @@
   "bootstrap-sha": "4c1b7b6bb92b4586826b6b4c20eef5ee848eaf7b",
   "plugins": ["node-workspace"],
   "packages": {
-    "packages/core": {},
-    "packages/fs": {},
+    "packages/source": {},
     "packages/source-aws": {},
-    "packages/source-aws-v2": {},
-    "packages/source-aws-v3": {},
     "packages/source-file": {},
-    "packages/source-google-cloud": {},
     "packages/source-http": {},
-    "packages/source-memory": {}
+    "packages/source-memory": {},
+    "packages/view": {},
+    "packages/fs": {},
+    "packages/fs-aws": {}
   }
 }

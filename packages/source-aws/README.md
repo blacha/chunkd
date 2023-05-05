@@ -1,15 +1,15 @@
 # @chunkd/source-aws
 
-Load a chunks of a file from a AWS using `aws-sdk`
+
+Load chunks of data from s3 using `@aws-sdk/client-s3`
 
 ## Usage
 
-```typescript
+```javascript
 import { SourceAwsS3 } from '@chunkd/source-aws';
-import S3 from 'aws-sdk/clients/s3';
 
-const source = new SourceAwsS3('bucket', 'path/to/cog.tif', new S3());
+const source = new SourceAwsS3(new URL("s3://linz-imagery/catalog.json"));
 
-// Load the first 1KB
-await source.fetchBytes(0, 1024);
+// Read in the first 1KB of data
+const bytes = await source.fetchBytes(0, 1024);
 ```

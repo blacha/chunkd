@@ -1,104 +1,67 @@
-import { isRecord } from '@chunkd/core';
-import o from 'ospec';
-import { FetchLikeOptions, SourceHttp } from '../http.source.js';
+import assert from 'node:assert';
+import { after, before, beforeEach, describe, it } from 'node:test';
+import { FetchLikeOptions, SourceHttp } from '../index.js';
+
+export function assertObject(o: unknown, message: string): asserts o is Record<string, unknown> {
+  if (o == null) throw new Error(`Object is null: ${message}`);
+}
 
 export interface HttpHeaders {
   Range: string;
 }
 
-function getCB(source: SourceHttp, index: number): DataView {
-  const chunk = source.chunks.get(index);
-  if (chunk != null) return chunk;
-  throw Error(`Missing chunk ${index}`);
-}
-
-o.spec('SourceHttp', () => {
+describe('SourceHttp', () => {
   let source: SourceHttp;
   let ranges: string[];
 
-  // Fake fetch that returns the number of the byte that was requested
-  SourceHttp.fetch = (input, obj?: FetchLikeOptions): any => {
-    if (!isRecord(obj) || !isRecord<string>(obj.headers)) throw new Error('Invalid fetch');
-    const [startByte, endByte] = obj.headers.Range.split('=')[1]
-      .split('-')
-      .map((i) => parseInt(i, 10));
-    const bytes = [];
-    ranges.push(obj.headers.Range);
-    for (let i = startByte; i < endByte; i++) {
-      bytes.push(i);
-    }
-    const buffer = new Uint8Array(bytes).buffer;
-    const arrayBuffer = (): any => Promise.resolve(buffer);
-    return Promise.resolve({ arrayBuffer, ok: true, headers: new Map() }) as any;
-  };
+  before(() => {
+    // Fake fetch that returns the number of the byte that was requested
+    SourceHttp.fetch = (_, obj?: FetchLikeOptions): any => {
+      const rangeHeader = obj?.headers?.Range;
+      if (rangeHeader == null) throw new Error('No headers');
+      const [startByte, endByte] = rangeHeader
+        .split('=')[1]
+        .split('-')
+        .map((i) => parseInt(i, 10));
+      const bytes = [];
+      ranges.push(rangeHeader);
+      for (let i = startByte; i < endByte; i++) {
+        bytes.push(i);
+      }
+      const buffer = new Uint8Array(bytes).buffer;
+      const arrayBuffer = (): any => Promise.resolve(buffer);
+      return Promise.resolve({ arrayBuffer, ok: true, headers: new Map() }) as any;
+    };
+  });
 
-  o.beforeEach(() => {
-    source = new SourceHttp('https://foo');
-    source.chunkSize = 1;
+  after(() => {
+    SourceHttp.fetch = fetch;
+  });
+
+  beforeEach(() => {
+    source = new SourceHttp(new URL('https://foo'));
     ranges = [];
   });
 
-  o('should group fetches together', async () => {
-    await source.loadBytes(0, 2);
-
-    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1]);
-    o(source.getUint8(0)).equals(0);
-    o(source.getUint8(1)).equals(1);
+  it('should fetch part of the file', async () => {
+    await source.fetch(0, 1024);
+    assert.equal(ranges[0], 'bytes=0-1023');
   });
 
-  o('should group big fetches', async () => {
-    await source.loadBytes(0, 2);
-    await source.loadBytes(0, 5);
-
-    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1, 2, 3, 4]);
-
-    for (let i = 0; i < 5; i++) {
-      o(source.getUint8(i)).equals(i);
-      o(source.chunks.get(i)?.getUint8(0)).equals(i);
-    }
+  it('should fetch part of the file multiple times', async () => {
+    await source.fetch(0, 1024);
+    assert.equal(ranges[0], 'bytes=0-1023');
+    await source.fetch(0, 1024);
+    assert.equal(ranges[1], 'bytes=0-1023');
   });
 
-  o('should handle bigger buffers', async () => {
-    const MAX_BYTE = 256;
-    source.chunkSize = 32;
-
-    await source.loadBytes(0, MAX_BYTE);
-
-    o([...(source.chunks as Map<number, DataView>).keys()]).deepEquals([0, 1, 2, 3, 4, 5, 6, 7]);
-
-    for (let i = 0; i < MAX_BYTE; i++) {
-      o(source.getUint8(i)).equals(i);
-    }
-
-    for (let i = 0; i < MAX_BYTE / source.chunkSize; i++) {
-      const view = getCB(source, i);
-      for (let x = 0; x < source.chunkSize; x++) {
-        o(view.getUint8(x)).equals(i * source.chunkSize + x);
-      }
-    }
+  it('should fetch negative parts', async () => {
+    await source.fetch(-1024);
+    assert.equal(ranges[0], 'bytes=-1024');
   });
 
-  o('should handle part requests', async () => {
-    source.chunkSize = 2;
-    await source.loadBytes(2, 3);
-
-    o(source.getUint8(2)).equals(2);
-    o(source.getUint8(3)).equals(3);
-    o(source.getUint8(4)).equals(4);
-
-    o(getCB(source, 1).byteLength).equals(2);
-    o(getCB(source, 2).byteLength).equals(2);
-  });
-
-  o('should handle out of order requests', async () => {
-    source.chunkSize = 2;
-    await Promise.all([source.loadBytes(8, 3), source.loadBytes(1, 3)]);
-
-    o(source.getUint8(0)).equals(0);
-    o(source.getUint8(1)).equals(1);
-    o(source.getUint8(2)).equals(2);
-    o(source.getUint8(8)).equals(8);
-    o(source.getUint8(9)).equals(9);
-    o(source.getUint8(10)).equals(10);
+  it('should fetch at offsets parts', async () => {
+    await source.fetch(1024, 1024);
+    assert.equal(ranges[0], 'bytes=1024-2047');
   });
 });

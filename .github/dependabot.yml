@@ -1,18 +1,18 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-    time: '17:00'
-  open-pull-requests-limit: 10
-  versioning-strategy: increase-if-necessary
-  ignore:
-    - dependency-name: "aws-sdk"
-      update-types: ["version-update:semver-patch"]
-    - dependency-name: "@aws-sdk/*"
-      update-types: ["version-update:semver-patch"]
-    - dependency-name: "@google-cloud/*"
-      update-types: ["version-update:semver-patch"]
-    - dependency-name: "@types/node"
-      update-types: ["version-update:semver-patch"]
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '17:00'
+    open-pull-requests-limit: 10
+    versioning-strategy: increase-if-necessary
+    ignore:
+      - dependency-name: 'aws-sdk'
+        update-types: ['version-update:semver-patch']
+      - dependency-name: '@aws-sdk/*'
+        update-types: ['version-update:semver-patch']
+      - dependency-name: '@google-cloud/*'
+        update-types: ['version-update:semver-patch']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-patch']
