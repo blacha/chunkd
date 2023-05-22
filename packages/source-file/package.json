@@ -19,7 +19,7 @@
     "@chunkd/core": "^10.3.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0"
+    "@types/node": "^20.2.3"
   },
   "publishConfig": {
     "access": "public"
