@@ -29,6 +29,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0"
+    "@types/node": "^20.3.3"
   }
 }
