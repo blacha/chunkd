@@ -4,7 +4,7 @@ import { describe, it, afterEach } from 'node:test';
 import { FsMemory } from '../memory.js';
 import { toArray } from '../../generator.js';
 
-function toHref(s: URL[]) {
+function toHref(s: URL[]): string[] {
   return s.map((url) => url.href);
 }
 
