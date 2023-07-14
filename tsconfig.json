@@ -8,6 +8,8 @@
     { "path": "./packages/source-aws" },
     { "path": "./packages/view" },
     { "path": "./packages/fs" },
-    { "path": "./packages/fs-aws" }
+    { "path": "./packages/fs-aws" },
+    { "path": "./packages/cli" }
+
   ]
 }

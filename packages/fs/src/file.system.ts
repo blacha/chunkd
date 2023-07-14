@@ -56,7 +56,7 @@ export interface FileSystem {
   /** Read a file into a buffer */
   read(filePath: URL): Promise<Buffer>;
   /** Create a read stream */
-  stream(filePath: URL): Readable;
+  readStream(filePath: URL): Readable;
   /** Write a file from either a buffer or stream */
   write(filePath: URL, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
   /** list all files in path */

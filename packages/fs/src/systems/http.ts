@@ -36,7 +36,7 @@ export class FsHttp implements FileSystem {
     throw new Error(`Unable to "delete" on ${filePath}`);
   }
 
-  stream(filePath: URL): Readable {
+  readStream(filePath: URL): Readable {
     throw new Error(`Unable to "stream" on ${filePath}`);
   }
 }

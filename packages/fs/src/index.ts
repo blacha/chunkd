@@ -1,7 +1,7 @@
 export { FileSystem, ListOptions, WriteOptions, FileInfo, FileWriteTypes } from './file.system.js';
 export { fsa } from './file.system.abstraction.js';
 export { Flag, FlagRead, FlagReadWrite } from './flags.js';
-export { toArray } from './to.array.js';
+export { toArray, toFirst } from './generator.js';
 export { FsMemory } from './systems/memory.js';
 export { FsFile } from './systems/file.js';
 export { FsHttp } from './systems/http.js';

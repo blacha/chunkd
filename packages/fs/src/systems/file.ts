@@ -81,7 +81,7 @@ export class FsFile implements FileSystem {
     }
   }
 
-  stream(filePath: URL): fs.ReadStream {
+  readStream(filePath: URL): fs.ReadStream {
     return fs.createReadStream(filePath);
   }
 }

@@ -1,9 +1,10 @@
-import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
 import { Source } from '@chunkd/source';
-import { Flag } from './flags.js';
-import type { Readable } from 'node:stream';
-import { FsFile } from './systems/file.js';
 import { SourceFactory } from '@chunkd/view';
+import type { Readable } from 'node:stream';
+import { pathToFileURL } from 'node:url';
+import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
+import { Flag } from './flags.js';
+import { FsFile } from './systems/file.js';
 
 export class FileSystemAbstraction implements FileSystem {
   name = 'fsa';
@@ -15,6 +16,18 @@ export class FileSystemAbstraction implements FileSystem {
   systems: { prefix: string; system: FileSystem; flag: Flag }[] = [];
 
   sources: SourceFactory = new SourceFactory();
+
+  /**
+   * Attempt to parse a path like object as into a URL
+   * Falling back onto `pathToFileURL` if the URL parsing failes
+   */
+  toUrl(str: string): URL {
+    try {
+      return new URL(str);
+    } catch (e) {
+      return pathToFileURL(str);
+    }
+  }
 
   /**
    * Register a file system to a specific path which can then be used with any `fsa` command
@@ -63,8 +76,8 @@ export class FileSystemAbstraction implements FileSystem {
    * @param filePath file to read
    * @returns Stream of file contents
    */
-  stream(filePath: URL): Readable {
-    return this.get(filePath, 'r').stream(filePath);
+  readStream(filePath: URL): Readable {
+    return this.get(filePath, 'r').readStream(filePath);
   }
 
   /**
@@ -170,4 +183,3 @@ export const fsa = new FileSystemAbstraction();
 
 const fsFile = new FsFile();
 fsa.register('file://', fsFile);
-fsa.register('', fsFile);

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { after, before, beforeEach, describe, it } from 'node:test';
-import { FetchLikeOptions, SourceHttp } from '../http.source.js';
+import { FetchLikeOptions, SourceHttp } from '../index.js';
 
 export function assertObject(o: unknown, message: string): asserts o is Record<string, unknown> {
   if (o == null) throw new Error(`Object is null: ${message}`);

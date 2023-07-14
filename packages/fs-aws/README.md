@@ -8,6 +8,7 @@ see [@chunkd/fs](../fs/README.md) for more usage
 
 ```javascript
 import { FsAwsS3 } from '@chunkd/fs-aws';
+import S3Client from '@aws-sdk/clients-s3';
 
 const fs = new FsAwsS3(new S3Client());
 

@@ -96,14 +96,20 @@ describe('FileSystemAbstraction', () => {
     const fsa = new FileSystemAbstraction();
 
     const writeStub = (fakeB.write = Sinon.stub());
-    const streamStub = (fakeA.stream = Sinon.stub());
+    const streamStub = (fakeA.readStream = Sinon.stub());
 
     fsa.register('fake-a://', fakeA);
     fsa.register('fake-b://', fakeB);
 
-    fsa.write(new URL('fake-b://bar.js'), fsa.stream(new URL('fake-a://foo.js')));
+    fsa.write(new URL('fake-b://bar.js'), fsa.readStream(new URL('fake-a://foo.js')));
 
     assert.equal(streamStub.callCount, 1);
     assert.equal(writeStub.callCount, 1);
+  });
+
+  it('should parse urls', () => {
+    const fsa = new FileSystemAbstraction();
+    assert.equal(fsa.toUrl('s3://foo/bar').href, 's3://foo/bar');
+    assert.equal(fsa.toUrl('fake-a://fake.com/bar').href, 'fake-a://fake.com/bar');
   });
 });

@@ -34,7 +34,7 @@ export class FsMemory implements FileSystem {
     return data.buffer;
   }
 
-  stream(filePath: URL): Readable {
+  readStream(filePath: URL): Readable {
     const buf = this.files.get(filePath.href);
     if (buf == null) throw new Error('Not found', { cause: new Error() });
     return toReadable(buf.buffer);
