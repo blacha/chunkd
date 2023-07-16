@@ -7,7 +7,16 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { FileInfo, FileSystem, FileSystemProvider, FsError, ListOptions, WriteOptions, isRecord } from '@chunkd/fs';
+import {
+  FileInfo,
+  FileSystem,
+  FileSystemAction,
+  FileSystemProvider,
+  FsError,
+  ListOptions,
+  WriteOptions,
+  isRecord,
+} from '@chunkd/fs';
 import { SourceAwsS3 } from '@chunkd/source-aws';
 import type { Readable } from 'node:stream';
 import { PassThrough } from 'node:stream';
@@ -16,13 +25,13 @@ function isReadable(r: any): r is Readable {
   return r != null && typeof r['read'] === 'function';
 }
 
-export function getCompositeError(e: unknown, msg: string): FsError {
-  if (!isRecord(e)) return new FsError(msg, 500, e);
-  if (typeof e.statusCode === 'number') return new FsError(msg, e.statusCode, e);
+export function toFsError(e: unknown, msg: string, url: URL, action: FileSystemAction, system: FileSystem): FsError {
+  if (!isRecord(e)) return new FsError(msg, 500, url, action, system, e);
+  if (typeof e.statusCode === 'number') return new FsError(msg, e.statusCode, url, action, system, e);
   if (isRecord(e.$metadata) && typeof e.$metadata.httpStatusCode === 'number') {
-    return new FsError(msg, e.$metadata.httpStatusCode, e);
+    return new FsError(msg, e.$metadata.httpStatusCode, url, action, system, e);
   }
-  return new FsError(msg, 500, e);
+  return new FsError(msg, 500, url, action, system, e);
 }
 /** One megabyte in bytes */
 const OneMegaByte = 1024 * 1204;
@@ -70,21 +79,19 @@ export class FsAwsS3 implements FileSystem {
     this.s3 = s3;
   }
 
-  source(filePath: URL): SourceAwsS3 {
-    const source = new SourceAwsS3(filePath, this.s3);
-    if (source == null) throw new Error(`Failed to create aws s3 source from uri: ${filePath}`);
-    return source;
+  source(loc: URL): SourceAwsS3 {
+    return new SourceAwsS3(loc, this.s3);
   }
 
-  async *list(filePath: URL, opts?: ListOptions): AsyncGenerator<URL> {
-    for await (const obj of this.details(filePath, opts)) yield new URL(obj.path);
+  async *list(loc: URL, opts?: ListOptions): AsyncGenerator<URL> {
+    for await (const obj of this.details(loc, opts)) yield new URL(obj.path);
   }
 
-  async *details(filePath: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
+  async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
     let ContinuationToken: string | undefined = undefined;
     const Delimiter: string | undefined = opts?.recursive === false ? '/' : undefined;
-    const Bucket = filePath.hostname;
-    const Prefix = decodeURIComponent(filePath.pathname.slice(1));
+    const Bucket = loc.hostname;
+    const Prefix = decodeURIComponent(loc.pathname.slice(1));
 
     let count = 0;
     try {
@@ -126,12 +133,12 @@ export class FsAwsS3 implements FileSystem {
         ContinuationToken = res.NextContinuationToken;
       }
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to list: "${filePath}"`);
+      const ce = toFsError(e, `Failed to list: "${loc}"`, loc, 'list', this);
 
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
+        const newFs = await this.credentials.find(loc);
         if (newFs) {
-          yield* newFs.details(filePath, opts);
+          yield* newFs.details(loc, opts);
           return;
         }
       }
@@ -139,22 +146,22 @@ export class FsAwsS3 implements FileSystem {
     }
   }
 
-  async read(filePath: URL): Promise<Buffer> {
+  async read(loc: URL): Promise<Buffer> {
     try {
       const res = await this.s3.send(
         new GetObjectCommand({
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
           RequestPayer: this.requestPayer,
         }),
       );
 
       return Buffer.from(await new Response(res.Body as BodyInit).arrayBuffer());
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to read: "${filePath}"`);
+      const ce = toFsError(e, `Failed to read: "${loc}"`, loc, 'read', this);
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
-        if (newFs) return newFs.read(filePath);
+        const newFs = await this.credentials.find(loc);
+        if (newFs) return newFs.read(loc);
       }
       throw ce;
     }
@@ -167,7 +174,7 @@ export class FsAwsS3 implements FileSystem {
     // Already tested this bucket no need to test again.
     if (this.writeTests.has(testPath.hostname)) return;
 
-    const filePath = new URL(this.writeTestSuffix, testPath);
+    const loc = new URL(this.writeTestSuffix, testPath);
 
     try {
       await new Upload({
@@ -175,17 +182,17 @@ export class FsAwsS3 implements FileSystem {
         queueSize: this.uploadQueueSize,
         partSize: this.uploadPartSize,
         params: {
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
-          Body: Buffer.from('@chunkd/fs writeTest file'),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
+          Body: Buffer.from('@chunkd/fs-aws writeTest file'),
           RequestPayer: this.requestPayer,
         },
       }).done();
       this.writeTests.add(testPath.hostname); // Write test worked!
       // Suffix was added so cleanup the file
-      if (this.writeTestSuffix !== '') await this.delete(filePath);
+      if (this.writeTestSuffix !== '') await this.delete(loc);
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to write to "${filePath}"`);
+      const ce = toFsError(e, `Failed to write to "${loc}"`, loc, 'write', this);
       if (ce.code === 403) {
         const newFs = await this.credentials.find(testPath);
         if (newFs) return newFs;
@@ -194,11 +201,11 @@ export class FsAwsS3 implements FileSystem {
     }
   }
 
-  async write(filePath: URL, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
+  async write(loc: URL, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
     // Streams cannot be read twice, so we cannot try to upload the file, fail then attempt to upload it again with new credentials
     if (this.credentials != null && isReadable(buf)) {
-      const newFs = await this._writeTest(filePath);
-      if (newFs) return newFs.write(filePath, buf, ctx);
+      const newFs = await this._writeTest(loc);
+      if (newFs) return newFs.write(loc, buf, ctx);
     }
 
     try {
@@ -207,8 +214,8 @@ export class FsAwsS3 implements FileSystem {
         queueSize: this.uploadQueueSize,
         partSize: this.uploadPartSize,
         params: {
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
           Body: buf,
           RequestPayer: this.requestPayer,
           ContentEncoding: ctx?.contentEncoding,
@@ -217,46 +224,47 @@ export class FsAwsS3 implements FileSystem {
         },
       }).done();
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to write: "${filePath}"`);
+      const ce = toFsError(e, `Failed to write: "${loc}"`, loc, 'write', this);
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
-        if (newFs) return newFs.write(filePath, buf, ctx);
+        const newFs = await this.credentials.find(loc);
+        if (newFs) return newFs.write(loc, buf, ctx);
       }
       throw ce;
     }
   }
 
-  async delete(filePath: URL): Promise<void> {
+  async delete(loc: URL): Promise<void> {
     try {
       await this.s3.send(
         new DeleteObjectCommand({
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
           RequestPayer: this.requestPayer,
         }),
       );
       return;
     } catch (e) {
-      const ce = getCompositeError(e, `Failed to delete: "${filePath}"`);
+      const ce = toFsError(e, `Failed to delete: "${loc}"`, loc, 'delete', this);
+      if (ce.code === 404) return;
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
-        if (newFs) return newFs.delete(filePath);
+        const newFs = await this.credentials.find(loc);
+        if (newFs) return newFs.delete(loc);
       }
       throw ce;
     }
   }
 
-  exists(filePath: URL): Promise<boolean> {
-    return this.head(filePath).then((f) => f != null);
+  exists(loc: URL): Promise<boolean> {
+    return this.head(loc).then((f) => f != null);
   }
 
-  readStream(filePath: URL): Readable {
+  readStream(loc: URL): Readable {
     const pt = new PassThrough();
     this.s3
       .send(
         new GetObjectCommand({
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
           RequestPayer: this.requestPayer,
         }),
       )
@@ -264,21 +272,21 @@ export class FsAwsS3 implements FileSystem {
         if (r.Body) (r.Body as Readable).pipe(pt);
         else pt.end();
       })
-      .catch((e) => pt.emit('error', e));
+      .catch((e) => pt.emit('error', toFsError(e, `Failed to readStream: ${loc}`, loc, 'readStream', this)));
     return pt;
   }
 
-  async head(filePath: URL): Promise<FileInfo | null> {
+  async head(loc: URL): Promise<FileInfo | null> {
     try {
       const res = await this.s3.send(
         new HeadObjectCommand({
-          Bucket: filePath.hostname,
-          Key: decodeURIComponent(filePath.pathname.slice(1)),
+          Bucket: loc.hostname,
+          Key: decodeURIComponent(loc.pathname.slice(1)),
           RequestPayer: this.requestPayer,
         }),
       );
 
-      const info: FileInfo = { size: res.ContentLength, path: filePath };
+      const info: FileInfo = { size: res.ContentLength, path: loc };
       if (res.Metadata && Object.keys(res.Metadata).length > 0) info.metadata = res.Metadata;
       if (res.ContentEncoding) info.contentEncoding = res.ContentEncoding;
       if (res.ContentType) info.contentType = res.ContentType;
@@ -289,12 +297,12 @@ export class FsAwsS3 implements FileSystem {
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
 
-      const ce = getCompositeError(e, `Failed to head: "${filePath}"`);
+      const ce = toFsError(e, `Failed to head: ${loc}`, loc, 'head', this);
       if (ce.code === 404) return null;
 
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(filePath);
-        if (newFs) return newFs.head(filePath);
+        const newFs = await this.credentials.find(loc);
+        if (newFs) return newFs.head(loc);
       }
       throw ce;
     }

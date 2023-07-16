@@ -25,16 +25,14 @@ const source = new SourceHttp(new URL('../cog.tif', document.baseURI));
 
 ### Advanced Usage
 
-For caching, block alignment and fetch grouping see [@chunkd/middleware](../middleware)
-
-###
+For caching, block alignment and fetch grouping see [@chunkd/middleware](https://www.npmjs.com/package/@chunkd/middleware) and [@chunkd/fs](https://www.npmjs.com/package/@chunkd/fs)
 
 ## Nodejs <18
 
 Node.js <18 does not come with a default `fetch` function, a `fetch` method must be provided before being able to be used.
 
 ```javascript
-import {SourceHttp} from '@chunkd/source-http';
+import { SourceHttp } from '@chunkd/source-http';
 import { fetch } from 'node-fetch';
 
 SourceHttp.fetch = fetch;

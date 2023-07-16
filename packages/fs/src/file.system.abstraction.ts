@@ -53,31 +53,31 @@ export class FileSystemAbstraction implements FileSystem {
   /**
    * Read a file into memory
    *
-   * @param filePath file to read
+   * @param loc file to read
    * @returns Content of the file
    */
-  read(filePath: URL): Promise<Buffer> {
-    return this.get(filePath, 'r').read(filePath);
+  read(loc: URL): Promise<Buffer> {
+    return this.get(loc, 'r').read(loc);
   }
 
   /**
    * Read a file as JSON
-   * @param filePath file to read
+   * @param loc file to read
    * @returns JSON Content of the file
    */
-  async readJson<T>(filePath: URL): Promise<T> {
-    const obj = await this.read(filePath);
+  async readJson<T>(loc: URL): Promise<T> {
+    const obj = await this.read(loc);
     return JSON.parse(obj.toString());
   }
 
   /**
    * Create a read stream for a file
    *
-   * @param filePath file to read
+   * @param loc file to read
    * @returns Stream of file contents
    */
-  readStream(filePath: URL): Readable {
-    return this.get(filePath, 'r').readStream(filePath);
+  readStream(loc: URL): Readable {
+    return this.get(loc, 'r').readStream(loc);
   }
 
   /**
@@ -85,71 +85,71 @@ export class FileSystemAbstraction implements FileSystem {
    *
    * If a object or array is passed in, it will be JSON.stringified
    *
-   * @param filePath file to write
+   * @param loc file to write
    * @param buffer buffer or stream to write
    */
-  write(filePath: URL, buffer: FileWriteTypes, opts?: WriteOptions): Promise<void> {
-    return this.get(filePath, 'rw').write(filePath, buffer, opts);
+  write(loc: URL, buffer: FileWriteTypes, opts?: WriteOptions): Promise<void> {
+    return this.get(loc, 'rw').write(loc, buffer, opts);
   }
 
   /**
    * Delete a file from a location
    *
-   * @param filePath file to delete
+   * @param loc file to delete
    */
-  delete(filePath: URL): Promise<void> {
-    return this.get(filePath, 'rw').delete(filePath);
+  delete(loc: URL): Promise<void> {
+    return this.get(loc, 'rw').delete(loc);
   }
 
   /**
-   * List recursively all files starting with the filePath
-   * @param filePath file path to search
+   * List recursively all files starting with the loc
+   * @param loc file path to search
    * @returns list of files inside that path
    */
-  list(filePath: URL, opts?: ListOptions): AsyncGenerator<URL> {
-    return this.get(filePath, 'r').list(filePath, opts);
+  list(loc: URL, opts?: ListOptions): AsyncGenerator<URL> {
+    return this.get(loc, 'r').list(loc, opts);
   }
 
   /**
-   * List recursively all files starting with the filePath with basic
+   * List recursively all files starting with the loc with basic
    * file information such as size
    *
-   * @param filePath file path to search
+   * @param loc file path to search
    * @returns list of files inside that path
    */
-  details(filePath: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
-    return this.get(filePath, 'r').details(filePath, opts);
+  details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
+    return this.get(loc, 'r').details(loc, opts);
   }
 
   /**
    * Does this object exist
    *
-   * @param filePath path to check
+   * @param loc path to check
    * @returns true if file exists, false otherwise
    */
-  exists(filePath: URL): Promise<boolean> {
-    return this.get(filePath, 'r')
-      .head(filePath)
+  exists(loc: URL): Promise<boolean> {
+    return this.get(loc, 'r')
+      .head(loc)
       .then((f) => f != null);
   }
 
   /**
    * Fetch basic information about the file
    *
-   * @param filePath path to check
+   * @param loc path to check
    * @returns basic information such as file size
    */
-  head(filePath: URL): Promise<FileInfo | null> {
-    return this.get(filePath, 'r').head(filePath);
+  head(loc: URL): Promise<FileInfo | null> {
+    return this.get(loc, 'r').head(loc);
   }
 
   /**
    * create a chunked reading source from the file path
-   * @param filePath File to read
+   * @param loc File to read
    * @returns
    */
-  source(filePath: URL): Source {
-    return this.sources.wrap(this.get(filePath, 'r').source(filePath));
+  source(loc: URL): Source {
+    return this.sources.wrap(this.get(loc, 'r').source(loc));
   }
 
   /**
@@ -164,9 +164,11 @@ export class FileSystemAbstraction implements FileSystem {
   }
 
   /** Find the filesystem that would be used for a given path */
-  get(filePath: URL, flag: Flag): FileSystem {
+  get(loc: URL, flag: Flag): FileSystem {
+    if (loc.href == null) throw new Error(`Invalid URL: ${loc}`);
     this.sortSystems();
-    const fileHref = filePath.href;
+    const fileHref = loc.href;
+    console.log(fileHref);
     for (const cfg of this.systems) {
       if (fileHref.startsWith(cfg.prefix)) {
         // If we want to write to the system but only have read-only access
@@ -175,7 +177,7 @@ export class FileSystemAbstraction implements FileSystem {
       }
     }
 
-    throw new Error(`Unable to find file system for path:${filePath}`);
+    throw new Error(`Unable to find file system for path:${loc}`);
   }
 }
 

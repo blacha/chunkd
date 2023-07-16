@@ -45,6 +45,7 @@ export interface ListOptions {
 export interface FileSystem {
   /**
    * name of the file system
+   *
    * @example
    * "file"
    * "s3"
@@ -52,19 +53,22 @@ export interface FileSystem {
    */
   name: string;
   /** Read a file into a buffer */
-  read(filePath: URL): Promise<Buffer>;
+  read(location: URL): Promise<Buffer>;
   /** Create a read stream */
-  readStream(filePath: URL): Readable;
+  readStream(location: URL): Readable;
   /** Write a file from either a buffer or stream */
-  write(filePath: URL, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
-  /** list all files in path */
-  list(filePath: URL, opt?: ListOptions): AsyncGenerator<URL>;
-  /** list all files with file info in path */
-  details(filePath: URL, opt?: ListOptions): AsyncGenerator<FileInfo>;
-  /** Get information about the path  */
-  head(filePath: URL): Promise<FileInfo | null>;
+  write(location: URL, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
+  /** list all files in location */
+  list(location: URL, opt?: ListOptions): AsyncGenerator<URL>;
+  /** list all files with file info in location */
+  details(location: URL, opt?: ListOptions): AsyncGenerator<FileInfo>;
+  /** Get information about the location  */
+  head(location: URL): Promise<FileInfo | null>;
   /** Create a chunk source to read chunks out of */
-  source(filePath: URL): Source;
+  source(location: URL): Source;
   /** Delete a file from the location */
-  delete(filePath: URL): Promise<void>;
+  delete(location: URL): Promise<void>;
 }
+
+/** All actions on a file system */
+export type FileSystemAction = 'read' | 'readStream' | 'write' | 'list' | 'details' | 'head' | 'source' | 'delete';

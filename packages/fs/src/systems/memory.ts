@@ -1,7 +1,7 @@
-// import { CompositeError, FileInfo, FileSystem, ListOptions, SourceMemory, WriteOptions } from '@chunkd/core';
 import { Readable } from 'stream';
 import { FileInfo, FileSystem, ListOptions, WriteOptions } from '../file.system.js';
 import { SourceMemory } from '@chunkd/source-memory';
+import { FsError } from '../error.js';
 
 export function toReadable(r: string | Buffer | Readable): Readable {
   if (typeof r === 'string') r = Buffer.from(r);
@@ -28,35 +28,35 @@ export class FsMemory implements FileSystem {
   name = 'memory';
   files: Map<string, { buffer: Buffer; opts?: WriteOptions }> = new Map();
 
-  async read(filePath: URL): Promise<Buffer> {
-    const data = this.files.get(filePath.href);
-    if (data == null) throw new Error('Not found', { cause: new Error() });
+  async read(loc: URL): Promise<Buffer> {
+    const data = this.files.get(loc.href);
+    if (data == null) throw new FsError('Not found', 404, loc, 'read', this);
     return data.buffer;
   }
 
-  readStream(filePath: URL): Readable {
-    const buf = this.files.get(filePath.href);
-    if (buf == null) throw new Error('Not found', { cause: new Error() });
+  readStream(loc: URL): Readable {
+    const buf = this.files.get(loc.href);
+    if (buf == null) throw new FsError('Not found', 404, loc, 'readStream', this);
     return toReadable(buf.buffer);
   }
 
-  async write(filePath: URL, buffer: string | Buffer | Readable, opts?: WriteOptions): Promise<void> {
-    this.files.set(filePath.href, { opts: opts, buffer: await getBuffer(buffer) });
+  async write(loc: URL, buffer: string | Buffer | Readable, opts?: WriteOptions): Promise<void> {
+    this.files.set(loc.href, { opts: opts, buffer: await getBuffer(buffer) });
   }
 
-  async *list(filePath: URL, opt?: ListOptions): AsyncGenerator<URL> {
+  async *list(loc: URL, opt?: ListOptions): AsyncGenerator<URL> {
     const folders = new Set();
     for (const file of this.files.keys()) {
-      if (file.startsWith(filePath.href)) {
+      if (file.startsWith(loc.href)) {
         if (opt?.recursive === false) {
-          const subPath = file.slice(filePath.href.length);
+          const subPath = file.slice(loc.href.length);
           const parts = subPath.split('/');
           if (parts.length === 1) yield new URL(file);
           else {
             const folderName = parts[0];
             if (folders.has(folderName)) continue;
             folders.add(folderName);
-            yield new URL(folderName + '/', filePath);
+            yield new URL(folderName + '/', loc);
           }
         } else {
           yield new URL(file);
@@ -65,8 +65,8 @@ export class FsMemory implements FileSystem {
     }
   }
 
-  async *details(filePath: URL, opt?: ListOptions): AsyncGenerator<FileInfo> {
-    for await (const file of this.list(filePath, opt)) {
+  async *details(loc: URL, opt?: ListOptions): AsyncGenerator<FileInfo> {
+    for await (const file of this.list(loc, opt)) {
       const data = await this.head(file);
       if (data == null) {
         yield { path: file, isDirectory: true };
@@ -76,16 +76,16 @@ export class FsMemory implements FileSystem {
     }
   }
 
-  async exists(filePath: URL): Promise<boolean> {
-    const dat = await this.head(filePath);
+  async exists(loc: URL): Promise<boolean> {
+    const dat = await this.head(loc);
     return dat != null;
   }
 
-  async head(filePath: URL): Promise<FileInfo | null> {
-    const obj = this.files.get(filePath.href);
+  async head(loc: URL): Promise<FileInfo | null> {
+    const obj = this.files.get(loc.href);
     if (obj == null) return null;
     return {
-      path: filePath,
+      path: loc,
       size: obj.buffer.length,
       metadata: obj.opts?.metadata,
       contentType: obj.opts?.contentType,
@@ -93,14 +93,14 @@ export class FsMemory implements FileSystem {
     };
   }
 
-  async delete(filePath: URL): Promise<void> {
-    this.files.delete(filePath.href);
+  async delete(loc: URL): Promise<void> {
+    this.files.delete(loc.href);
   }
 
-  source(filePath: URL): SourceMemory {
-    const obj = this.files.get(filePath.href);
+  source(loc: URL): SourceMemory {
+    const obj = this.files.get(loc.href);
     if (obj == null) throw new Error('File not found');
-    const source = new SourceMemory(filePath, obj.buffer);
+    const source = new SourceMemory(loc, obj.buffer);
     return source;
   }
 }

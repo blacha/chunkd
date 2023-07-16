@@ -1,42 +1,79 @@
 import type { Readable } from 'stream';
+import { PassThrough, Stream } from 'stream';
 import { SourceHttp } from '@chunkd/source-http';
 import { FileInfo, FileSystem } from '../file.system.js';
+import { FsError } from '../error.js';
 
 export class FsHttp implements FileSystem {
   name = 'http';
 
-  source(filePath: URL): SourceHttp {
-    return new SourceHttp(filePath);
+  source(loc: URL): SourceHttp {
+    return new SourceHttp(loc);
   }
 
-  async *list(filePath: URL): AsyncGenerator<URL> {
-    throw new Error(`Unable to "list" on ${filePath}`);
+  async *list(loc: URL): AsyncGenerator<URL> {
+    throw new FsError(`Unable to "list" on ${loc}`, 500, loc, 'list', this);
   }
-  async *details(filePath: URL): AsyncGenerator<FileInfo> {
-    throw new Error(`Unable to "details" on ${filePath}`);
-  }
-
-  async head(filePath: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
-    const res = await SourceHttp.fetch(filePath, { method: 'HEAD' });
-    if (!res.ok) throw Error(`Failed to head: ${filePath}`, { cause: new Error(res.statusText) });
-    return { path: filePath, size: Number(res.headers.get('content-length')), isDirectory: false };
+  async *details(loc: URL): AsyncGenerator<FileInfo> {
+    throw new FsError(`Unable to "details" on ${loc}`, 500, loc, 'list', this);
   }
 
-  async read(filePath: URL): Promise<Buffer> {
-    const res = await SourceHttp.fetch(filePath, { method: 'GET' });
-    if (!res.ok) throw Error(`Failed to head: ${filePath}`, { cause: new Error(res.statusText) });
-    return Buffer.from(await res.arrayBuffer());
+  async head(loc: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
+    try {
+      const res = await SourceHttp.fetch(loc, { method: 'HEAD' });
+      if (!res.ok) {
+        throw new FsError(`Failed to head: ${loc}`, res.status, loc, 'read', this, new Error(res.statusText));
+      }
+      return { path: loc, size: Number(res.headers.get('content-length')), isDirectory: false };
+    } catch (e) {
+      if (FsError.is(e) && e.system === this) throw e;
+      throw new FsError(`Failed to head: ${loc}`, 500, loc, 'read', this, e);
+    }
   }
 
-  async write(filePath: URL): Promise<void> {
-    throw new Error(`Unable to "write" on ${filePath}`);
+  async read(loc: URL): Promise<Buffer> {
+    try {
+      const res = await SourceHttp.fetch(loc, { method: 'GET' });
+      if (!res.ok) {
+        throw new FsError(`Failed to read: ${loc}`, res.status, loc, 'read', this, new Error(res.statusText));
+      }
+      return Buffer.from(await res.arrayBuffer());
+    } catch (e) {
+      if (FsError.is(e) && e.system === this) throw e;
+      throw new FsError(`Failed to read: ${loc}`, 500, loc, 'read', this, e);
+    }
   }
 
-  async delete(filePath: URL): Promise<void> {
-    throw new Error(`Unable to "delete" on ${filePath}`);
+  async write(loc: URL): Promise<void> {
+    throw new FsError(`Unable to "write" on ${loc}`, 500, loc, 'list', this);
   }
 
-  readStream(filePath: URL): Readable {
-    throw new Error(`Unable to "stream" on ${filePath}`);
+  async delete(loc: URL): Promise<void> {
+    throw new FsError(`Unable to "delete" on ${loc}`, 500, loc, 'list', this);
+  }
+
+  readStream(loc: URL): Readable {
+    const pt = new PassThrough();
+    SourceHttp.fetch(loc, { method: 'GET' })
+      .then((res) => {
+        if (!res.ok) {
+          pt.emit(
+            'error',
+            new FsError(`Failed to readStream: ${loc}`, res.status, loc, 'readStream', this, new Error(res.statusText)),
+          );
+          return;
+        }
+        if (res.body == null) {
+          pt.end();
+          return;
+        }
+
+        const st = Stream.Readable.fromWeb(res.body as any);
+        st.pipe(pt);
+      })
+      .catch((e) => {
+        pt.emit('error', new FsError(`Failed to readStream: ${loc}`, 500, loc, 'readStream', this, e));
+      });
+    return pt;
   }
 }

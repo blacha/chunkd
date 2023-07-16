@@ -2,6 +2,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import { FsFile } from '../file.js';
+import { FsError } from '../../error.js';
 
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
   const output: T[] = [];
@@ -29,6 +30,11 @@ describe('LocalFileSystem', () => {
     await fs.delete(targetFile);
   });
 
+  it('should not error on delete when 404', async () => {
+    await fs.delete(new URL('to.delete', import.meta.url));
+    assert.ok('Ok');
+  });
+
   it('should delete a file', async () => {
     const toDelete = new URL('to.delete', import.meta.url);
     assert.equal(await fs.head(toDelete), null);
@@ -39,14 +45,17 @@ describe('LocalFileSystem', () => {
     assert.equal(await fs.head(toDelete), null);
   });
 
-  // it('should 404 when file not found', async () => {
-  //   try {
-  //     await fs.read(new URL('NOT A FILE.js', import.meta.url));
-  //     assert.fail('should throw'); // should have errored
-  //   } catch (e: any) {
-  //     assert.equal(e.code, 404);
-  //   }
-  // });
+  it('should 404 when file not found', async () => {
+    try {
+      await fs.read(new URL('NOT A FILE.js', import.meta.url));
+      assert.fail('should throw'); // should have errored
+    } catch (e: unknown) {
+      assert.equal(FsError.is(e), true);
+      assert.equal((e as FsError).code, 404);
+      assert.equal((e as FsError).url.href, new URL('NOT A FILE.js', import.meta.url).href);
+      assert.equal((e as FsError).action, 'read');
+    }
+  });
 
   it('should throw when writing from a bad stream', async () => {
     try {
