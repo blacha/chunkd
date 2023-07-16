@@ -6,7 +6,7 @@
     { "path": "./packages/source-memory" },
     { "path": "./packages/source-http" },
     { "path": "./packages/source-aws" },
-    { "path": "./packages/view" },
+    { "path": "./packages/middleware" },
     { "path": "./packages/fs" },
     { "path": "./packages/fs-aws" }
   ]

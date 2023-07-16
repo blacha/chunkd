@@ -1,5 +1,5 @@
 {
-  "name": "@chunkd/view",
+  "name": "@chunkd/middleware",
   "version": "10.0.0",
   "type": "module",
   "engines": {
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/blacha/chunkd.git",
-    "directory": "packages/view"
+    "directory": "packages/middleware"
   },
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",

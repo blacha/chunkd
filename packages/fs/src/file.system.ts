@@ -11,10 +11,8 @@ export interface FileInfo {
    * undefined if no size found
    */
   size?: number;
-
   /** Is this file a directory */
   isDirectory?: boolean;
-
   /** Additional metadata returned from the request */
   metadata?: Record<string, string>;
   /** Encoding of the file eg "gzip" */

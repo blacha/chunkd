@@ -2,10 +2,6 @@ import assert from 'node:assert';
 import { after, before, beforeEach, describe, it } from 'node:test';
 import { FetchLikeOptions, SourceHttp } from '../index.js';
 
-export function assertObject(o: unknown, message: string): asserts o is Record<string, unknown> {
-  if (o == null) throw new Error(`Object is null: ${message}`);
-}
-
 export interface HttpHeaders {
   Range: string;
 }
@@ -16,7 +12,7 @@ describe('SourceHttp', () => {
 
   before(() => {
     // Fake fetch that returns the number of the byte that was requested
-    SourceHttp.fetch = (_, obj?: FetchLikeOptions): any => {
+    SourceHttp.fetchFunc = (_, obj?: FetchLikeOptions): any => {
       const rangeHeader = obj?.headers?.Range;
       if (rangeHeader == null) throw new Error('No headers');
       const [startByte, endByte] = rangeHeader
@@ -35,7 +31,7 @@ describe('SourceHttp', () => {
   });
 
   after(() => {
-    SourceHttp.fetch = fetch;
+    SourceHttp.fetchFunc = fetch;
   });
 
   beforeEach(() => {

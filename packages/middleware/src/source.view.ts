@@ -13,7 +13,7 @@ export class SourceFactory {
     this.middleware.unshift(mw);
   }
 
-  view(s: Source): SourceView {
+  wrap(s: Source): SourceView {
     return new SourceView(s, this);
   }
 }
@@ -21,6 +21,11 @@ export class SourceFactory {
 export class SourceView implements Source {
   source: Source;
   middleware: SourceFactory;
+
+  static is(s: Source): s is SourceView {
+    if ('middleware' in s) return true;
+    return false;
+  }
 
   constructor(source: Source, factory: SourceFactory) {
     this.source = source;

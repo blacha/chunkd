@@ -7,7 +7,7 @@
     "packages/source-file": {},
     "packages/source-http": {},
     "packages/source-memory": {},
-    "packages/view": {},
+    "packages/middleware": {},
     "packages/fs": {},
     "packages/fs-aws": {}
   }
