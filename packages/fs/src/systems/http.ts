@@ -12,10 +12,10 @@ export class FsHttp implements FileSystem {
   }
 
   async *list(loc: URL): AsyncGenerator<URL> {
-    throw new FsError(`Unable to "list" on ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to list: ${loc}`, 500, loc, 'list', this);
   }
   async *details(loc: URL): AsyncGenerator<FileInfo> {
-    throw new FsError(`Unable to "details" on ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to details: ${loc}`, 500, loc, 'list', this);
   }
 
   async head(loc: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
@@ -45,11 +45,11 @@ export class FsHttp implements FileSystem {
   }
 
   async write(loc: URL): Promise<void> {
-    throw new FsError(`Unable to "write" on ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to write: ${loc}`, 500, loc, 'list', this);
   }
 
   async delete(loc: URL): Promise<void> {
-    throw new FsError(`Unable to "delete" on ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to delete: ${loc}`, 500, loc, 'list', this);
   }
 
   readStream(loc: URL): Readable {
