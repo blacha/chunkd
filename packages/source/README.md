@@ -6,6 +6,6 @@ Base interface for all sources used by `@chunkd`
 
 ```typescript
 export interface Source {
-    async fetchBytes(offset: number, length?: number);
+  fetchBytes(offset: number, length?: number);
 }
 ```
