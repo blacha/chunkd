@@ -30,13 +30,13 @@ export class FsMemory implements FileSystem {
 
   async read(loc: URL): Promise<Buffer> {
     const data = this.files.get(loc.href);
-    if (data == null) throw new FsError('Not found', 404, loc, 'read', this);
+    if (data == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'read', this);
     return data.buffer;
   }
 
   readStream(loc: URL): Readable {
     const buf = this.files.get(loc.href);
-    if (buf == null) throw new FsError('Not found', 404, loc, 'readStream', this);
+    if (buf == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'readStream', this);
     return toReadable(buf.buffer);
   }
 
@@ -99,7 +99,7 @@ export class FsMemory implements FileSystem {
 
   source(loc: URL): SourceMemory {
     const obj = this.files.get(loc.href);
-    if (obj == null) throw new Error('File not found');
+    if (obj == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'source', this);
     const source = new SourceMemory(loc, obj.buffer);
     return source;
   }
