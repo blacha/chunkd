@@ -177,7 +177,7 @@ export class FileSystemAbstraction implements FileSystem {
       }
     }
 
-    throw new Error(`Unable to find file system for path:${loc}`);
+    throw new Error(`Unable to find file system for location: ${loc}`);
   }
 }
 
