@@ -46,8 +46,8 @@ export class FsFile implements FileSystem {
     }
   }
 
-  async *details(filePath: URL, opts?: ListOptions): AsyncGenerator<FileInfo & { isDirectory: boolean }> {
-    for await (const file of this.list(filePath, opts)) {
+  async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo & { isDirectory: boolean }> {
+    for await (const file of this.list(loc, opts)) {
       const res = await this.head(file);
       if (res == null) continue;
       yield res;
@@ -104,7 +104,7 @@ export class FsFile implements FileSystem {
     }
   }
 
-  readStream(filePath: URL): fs.ReadStream {
-    return fs.createReadStream(filePath);
+  readStream(loc: URL): fs.ReadStream {
+    return fs.createReadStream(loc);
   }
 }

@@ -1,4 +1,4 @@
-import { Source, SourceMetadata } from '@chunkd/source';
+import { Source, SourceError, SourceMetadata } from '@chunkd/source';
 import { promises as fs } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -11,9 +11,9 @@ export class SourceFile implements Source {
   /** Automatically close the file descriptor after reading */
   closeAfterRead = false;
 
-  constructor(filePath: URL | string, opts: { closeAfterRead: boolean } = { closeAfterRead: false }) {
+  constructor(loc: URL | string, opts: { closeAfterRead: boolean } = { closeAfterRead: false }) {
     this.closeAfterRead = opts.closeAfterRead;
-    this.url = typeof filePath === 'string' ? pathToFileURL(resolve(filePath)) : filePath;
+    this.url = typeof loc === 'string' ? pathToFileURL(resolve(loc)) : loc;
   }
 
   /** Close the file handle */
@@ -41,14 +41,18 @@ export class SourceFile implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     if (offset < 0 && length != null) {
-      throw new Error(`Cannot fetch negative offset: ${offset} with length: ${length} from: ${this.url}`);
+      throw new SourceError(
+        `Cannot fetch negative offset: ${offset} with length: ${length} from: ${this.url}`,
+        400,
+        this,
+      );
     }
 
     // If reading negative offsets we need the length of the file before we can read it.
     if (offset < 0) {
       length = Math.abs(offset);
       const metadata = await this.head();
-      if (metadata.size == null) throw new Error(`Failed to fetch metadata from: ${this.url}`);
+      if (metadata.size == null) throw new SourceError(`Failed to fetch metadata from: ${this.url}`, 404, this);
       offset = metadata.size + offset;
     } else if (this.metadata == null) await this.head();
 
@@ -57,7 +61,9 @@ export class SourceFile implements Source {
     // If no length given read the entire file
     if (length == null && size != null) length = size - offset;
 
-    if (length == null || size == null) throw new Error(`Length is required for reading from file: ${this.url}`);
+    if (length == null || size == null) {
+      throw new SourceError(`Length is required for reading from file: ${this.url}`, 400, this);
+    }
     if (this.fd == null) this.fd = fs.open(this.url, 'r');
     const fd = await this.fd;
     const { buffer } = await fd.read(Buffer.allocUnsafe(length ?? size), 0, length, offset);

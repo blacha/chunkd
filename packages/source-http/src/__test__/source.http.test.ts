@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { after, before, beforeEach, describe, it } from 'node:test';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import { FetchLikeOptions, SourceHttp } from '../index.js';
 
 export interface HttpHeaders {
@@ -59,5 +59,56 @@ describe('SourceHttp', () => {
   it('should fetch at offsets parts', async () => {
     await source.fetch(1024, 1024);
     assert.equal(ranges[0], 'bytes=1024-2047');
+  });
+
+  it('should support string URLs', () => {
+    const source = new SourceHttp('https://foo.com/bar');
+    assert.equal(source.url.href, 'https://foo.com/bar');
+  });
+
+  // Should these throw if import.meta.url is not a http?
+  describe('import.meta.url', () => {
+    it('should support "/"', () => {
+      const source = new SourceHttp('/bar.txt');
+      assert.equal(source.url.href, 'file:///bar.txt');
+    });
+
+    it('should support "./', () => {
+      const source = new SourceHttp('./bar.txt');
+      assert.equal(source.url.protocol, 'file:');
+      assert.ok(source.url.href.endsWith('/src/bar.txt'));
+    });
+  });
+
+  describe('document.baseURI', () => {
+    let oldDoc: any;
+    beforeEach(() => {
+      oldDoc = global.document;
+      global.document = { baseURI: 'https://example.com/foo/index.html' } as any;
+    });
+
+    afterEach(() => {
+      global.document = oldDoc;
+    });
+
+    it('should use support "/" ', () => {
+      const source = new SourceHttp('/bar.txt');
+      assert.equal(source.url.href, 'https://example.com/bar.txt');
+    });
+
+    it('should support ".."', () => {
+      const sourceRelUp = new SourceHttp('../bar.txt');
+      assert.equal(sourceRelUp.url.href, 'https://example.com/bar.txt');
+    });
+
+    it('should support "./"', () => {
+      const sourceRelUp = new SourceHttp('./bar.txt');
+      assert.equal(sourceRelUp.url.href, 'https://example.com/foo/bar.txt');
+    });
+
+    it('should should support "../../../"', () => {
+      const sourceRelUp = new SourceHttp('../../../bar.txt');
+      assert.equal(sourceRelUp.url.href, 'https://example.com/bar.txt');
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { Source, SourceMetadata } from '@chunkd/source';
+import { Source, SourceError, SourceMetadata } from '@chunkd/source';
 
 export class SourceMemory implements Source {
   url: URL;
@@ -25,6 +25,13 @@ export class SourceMemory implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     if (offset < 0) offset = this.data.byteLength + offset;
+
+    if (offset > this.data.byteLength) {
+      throw new SourceError('Read outside bounds', 400, this);
+    }
+    if (length && offset + length > this.data.byteLength) {
+      throw new SourceError('Read outside bounds', 400, this);
+    }
     return this.data.slice(offset, length == null ? undefined : offset + length);
   }
 }

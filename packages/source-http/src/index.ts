@@ -1,4 +1,4 @@
-import { ContentRange, Source, SourceMetadata } from '@chunkd/source';
+import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
 
 /** Minimal typings for fetch */
 export interface FetchLikeOptions {
@@ -31,7 +31,18 @@ export class SourceHttp implements Source {
   url: URL;
 
   constructor(url: URL | string) {
-    this.url = typeof url === 'string' ? new URL(url) : url;
+    this.url = typeof url === 'string' ? SourceHttp.tryUrl(url) : url;
+  }
+
+  /** Attempt to parse a relative string into a URL */
+  static tryUrl(s: string): URL {
+    try {
+      return new URL(s);
+    } catch (_e) {
+      if (typeof document !== 'undefined') return new URL(s, document.baseURI);
+      // Should these throw if import.meta.url is not a http?
+      return new URL(s, import.meta.url);
+    }
   }
 
   /** Optional metadata, only populated if a .head() or .fetchBytes() has already been returned */
@@ -52,26 +63,36 @@ export class SourceHttp implements Source {
   }
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
-    const Range = ContentRange.toRange(offset, length);
-    const headers = { Range };
-    const response = await SourceHttp.fetch(this.url, { headers });
+    try {
+      const Range = ContentRange.toRange(offset, length);
+      const headers = { Range };
+      const response = await SourceHttp.fetch(this.url, { headers });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${this.url} ${Range}`, {
-        cause: { statusCode: response.status, message: response.statusText },
-      });
-    }
+      if (!response.ok) {
+        throw new SourceError(
+          `Failed to fetch ${this.url} ${Range}`,
+          response.status,
+          this,
+          new Error(response.statusText),
+        );
+      }
 
-    const metadata = getMetadataFromResponse(response);
-    if (this.metadata == null) {
-      this.metadata = metadata;
-    } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
-      // ETag has changed since the last read!
-      throw new Error(`ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`, {
-        cause: { statusCode: 409 },
-      });
+      const metadata = getMetadataFromResponse(response);
+      if (this.metadata == null) {
+        this.metadata = metadata;
+      } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
+        // ETag has changed since the last read!
+        throw new SourceError(
+          `ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
+          409,
+          this,
+        );
+      }
+      return response.arrayBuffer();
+    } catch (e) {
+      if (SourceError.is(e) && e.source === this) throw e;
+      throw new SourceError(`Failed to fetch: ${this.url}`, 500, this, e);
     }
-    return response.arrayBuffer();
   }
 
   // Allow overwriting the fetcher used (eg testing/node-js)
