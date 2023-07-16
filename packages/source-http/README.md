@@ -4,7 +4,7 @@ Load a chunks of a file from a HTTP(s) Source using `fetch`
 
 ## Usage
 
-```javascript
+```typescript
 import { SourceHttp } from '@chunkd/source-http';
 
 const source = new SourceHttp(new URL('https://example.com/cog.tif'));
@@ -34,7 +34,8 @@ For caching, block alignment and fetch grouping see [@chunkd/middleware](../midd
 Node.js <18 does not come with a default `fetch` function, a `fetch` method must be provided before being able to be used.
 
 ```javascript
+import {SourceHttp} from '@chunkd/source-http';
 import { fetch } from 'node-fetch';
 
-SourceHttp.fetchFunc = fetch;
+SourceHttp.fetch = fetch;
 ```

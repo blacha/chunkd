@@ -12,7 +12,7 @@ describe('SourceHttp', () => {
 
   before(() => {
     // Fake fetch that returns the number of the byte that was requested
-    SourceHttp.fetchFunc = (_, obj?: FetchLikeOptions): any => {
+    SourceHttp.fetch = (_, obj?: FetchLikeOptions): any => {
       const rangeHeader = obj?.headers?.Range;
       if (rangeHeader == null) throw new Error('No headers');
       const [startByte, endByte] = rangeHeader
@@ -31,7 +31,7 @@ describe('SourceHttp', () => {
   });
 
   after(() => {
-    SourceHttp.fetchFunc = fetch;
+    SourceHttp.fetch = fetch;
   });
 
   beforeEach(() => {

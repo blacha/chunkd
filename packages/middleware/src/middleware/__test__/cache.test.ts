@@ -12,7 +12,7 @@ describe('SourceCache', () => {
   it('should cache requests', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
     const cache = new SourceCache({ size: 1024 * 1024 });
@@ -39,7 +39,7 @@ describe('SourceCache', () => {
   it('should empty cache when it fills', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
     const cache = new SourceCache({ size: 1 });

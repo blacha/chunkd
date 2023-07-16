@@ -12,7 +12,7 @@ describe('SourceChunk', () => {
   it('should chunk requests', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
     sf.use(new SourceChunk({ size: 16 }));
@@ -28,7 +28,7 @@ describe('SourceChunk', () => {
   it('should create multiple requests', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
     const spy = sandbox.spy(source, 'fetch');
 
     sf.use(new SourceChunk({ size: 4 }));

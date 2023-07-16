@@ -13,7 +13,7 @@ describe('SourceAbsolute', () => {
   it('should convert negative length to absolute offsets', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
 
@@ -33,7 +33,7 @@ describe('SourceAbsolute', () => {
   it('should not convert negative length if size is invalid', async () => {
     const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.view(source);
+    const view = sf.wrap(source);
     sf.use(SourceAbsolute);
 
     const spy = sandbox.spy(source, 'fetch');

@@ -39,7 +39,7 @@ export class SourceHttp implements Source {
   private _head?: Promise<SourceMetadata>;
   head(): Promise<SourceMetadata> {
     if (this._head) return this._head;
-    this._head = SourceHttp.fetchFunc(this.url, { method: 'HEAD' }).then((res) => {
+    this._head = SourceHttp.fetch(this.url, { method: 'HEAD' }).then((res) => {
       if (!res.ok) {
         delete this._head;
         throw new Error(`Failed to HEAD ${this.url}`, { cause: { statusCode: res.status, msg: res.statusText } });
@@ -53,7 +53,7 @@ export class SourceHttp implements Source {
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     const Range = ContentRange.toRange(offset, length);
     const headers = { Range };
-    const response = await SourceHttp.fetchFunc(this.url, { headers });
+    const response = await SourceHttp.fetch(this.url, { headers });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch ${this.url} ${Range}`, {
@@ -74,5 +74,5 @@ export class SourceHttp implements Source {
   }
 
   // Allow overwriting the fetcher used (eg testing/node-js)
-  static fetchFunc: FetchLike = (a, b) => fetch(a, b);
+  static fetch: FetchLike = (a, b) => fetch(a, b);
 }

@@ -1,5 +1,5 @@
 import { Source } from '@chunkd/source';
-import { SourceFactory } from '@chunkd/view';
+import { SourceFactory } from '@chunkd/middleware';
 import type { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
 import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
@@ -149,7 +149,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns
    */
   source(filePath: URL): Source {
-    return this.sources.view(this.get(filePath, 'r').source(filePath));
+    return this.sources.wrap(this.get(filePath, 'r').source(filePath));
   }
 
   /**
