@@ -70,7 +70,9 @@ describe('SourceHttp', () => {
   describe('import.meta.url', () => {
     it('should support "/"', () => {
       const source = new SourceHttp('/bar.txt');
-      assert.equal(source.url.href, 'file:///bar.txt');
+      // Windows will report `file://D:/bar.txt` linux `file:///bar.txt`
+      const baseUrl = new URL('/', import.meta.url);
+      assert.equal(source.url.href, baseUrl.href + 'bar.txt');
     });
 
     it('should support "./', () => {
