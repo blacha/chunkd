@@ -1,35 +1,23 @@
-import { Source, SourceMetadata } from '@chunkd/source';
-import { SourceMiddleware, SourceCallback, SourceRequest } from './type.js';
+import { SourceCallback, SourceMiddleware, SourceRequest } from './middleware.js';
+import { Source, SourceMetadata } from './source.js';
 
-export class SourceFactory {
-  middleware: SourceMiddleware[] = [];
-
-  /** add a middleware to the end of the queue */
-  use(mw: SourceMiddleware): void {
-    this.middleware.push(mw);
-  }
-  /** Add a middleware to the front of the queue */
-  unshift(mw: SourceMiddleware): void {
-    this.middleware.unshift(mw);
-  }
-
-  wrap(s: Source): SourceView {
-    return new SourceView(s, this);
-  }
-}
-
+/**
+ * Wrap a source with middleware to modify requests to the sources
+ *
+ * @see @chunkd/middleware
+ */
 export class SourceView implements Source {
   source: Source;
-  middleware: SourceFactory;
+  middleware: SourceMiddleware[];
 
   static is(s: Source): s is SourceView {
     if ('middleware' in s) return true;
     return false;
   }
 
-  constructor(source: Source, factory: SourceFactory) {
+  constructor(source: Source, middleware: SourceMiddleware[] = []) {
     this.source = source;
-    this.middleware = factory;
+    this.middleware = middleware;
   }
 
   get type(): string {
@@ -49,14 +37,16 @@ export class SourceView implements Source {
   }
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
-    const middleware = this.middleware.middleware;
-    if (middleware.length === 0) return this.source.fetch(offset, length);
+    const middleware = this.middleware;
+    if (middleware == null || middleware.length === 0) return this.source.fetch(offset, length);
     const handler: SourceCallback = (req: SourceRequest) => this.source.fetch(req.offset, req.length);
     return this.run(handler, offset, length);
   }
 
+  /** Run a request using all the middleware */
   async run(handler: SourceCallback, offset: number, length?: number): Promise<ArrayBuffer> {
-    const middleware = this.middleware.middleware;
+    const middleware = this.middleware;
+    if (middleware == null) return handler({ source: this, offset, length });
 
     function runMiddleware(middleware: SourceMiddleware, next: SourceCallback): SourceCallback {
       return (req: SourceRequest): Promise<ArrayBuffer> => middleware.fetch(req, next);

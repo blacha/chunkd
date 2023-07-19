@@ -1,4 +1,4 @@
-import { Source } from '@chunkd/source';
+import { Source } from './source.js';
 
 export interface SourceRequest {
   source: Source;

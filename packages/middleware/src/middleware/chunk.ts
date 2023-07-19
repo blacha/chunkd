@@ -1,4 +1,4 @@
-import { SourceCallback, SourceMiddleware, SourceRequest } from '../type.js';
+import { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
 
 interface SourceChunkOptions {
   /**

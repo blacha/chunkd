@@ -2,21 +2,19 @@ import { SourceMemory } from '@chunkd/source-memory';
 import assert from 'node:assert';
 import { afterEach, describe, it } from 'node:test';
 import sinon from 'sinon';
-import { SourceFactory } from '../../source.view.js';
 import { SourceCache } from '../cache.js';
+import { SourceView } from '@chunkd/source';
 
 describe('SourceCache', () => {
   const sandbox = sinon.createSandbox();
   afterEach(() => sandbox.restore());
 
   it('should cache requests', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
     const cache = new SourceCache({ size: 1024 * 1024 });
-    sf.use(cache);
+    const view = new SourceView(source, [cache]);
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(spy.callCount, 1);
@@ -37,13 +35,11 @@ describe('SourceCache', () => {
   });
 
   it('should empty cache when it fills', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
 
     const spy = sandbox.spy(source, 'fetch');
     const cache = new SourceCache({ size: 1 });
-    sf.use(cache);
+    const view = new SourceView(source, [cache]);
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');

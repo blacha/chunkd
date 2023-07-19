@@ -1,5 +1,4 @@
-import { Source } from '@chunkd/source';
-import { SourceFactory } from '@chunkd/middleware';
+import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
 import type { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
 import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
@@ -15,7 +14,8 @@ export class FileSystemAbstraction implements FileSystem {
   private isOrdered = true;
   systems: { prefix: string; system: FileSystem; flag: Flag }[] = [];
 
-  sources: SourceFactory = new SourceFactory();
+  /** List of middleware to use for every source created */
+  middleware: SourceMiddleware[] = [];
 
   /**
    * Attempt to parse a path like object as into a URL
@@ -149,7 +149,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @returns
    */
   source(loc: URL): Source {
-    return this.sources.wrap(this.get(loc, 'r').source(loc));
+    return new SourceView(this.get(loc, 'r').source(loc), this.middleware);
   }
 
   /**
@@ -168,7 +168,6 @@ export class FileSystemAbstraction implements FileSystem {
     if (loc.href == null) throw new Error(`Invalid URL: ${loc}`);
     this.sortSystems();
     const fileHref = loc.href;
-    console.log(fileHref);
     for (const cfg of this.systems) {
       if (fileHref.startsWith(cfg.prefix)) {
         // If we want to write to the system but only have read-only access

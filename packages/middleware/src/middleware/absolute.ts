@@ -1,4 +1,4 @@
-import { SourceMiddleware, SourceRequest, SourceCallback } from '../type.js';
+import { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
 
 /** convert negative  offset requests into absolute requests if the file size is known */
 export const SourceAbsolute: SourceMiddleware = {

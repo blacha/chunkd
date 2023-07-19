@@ -1,19 +1,17 @@
-import { describe, it, afterEach } from 'node:test';
-import assert from 'node:assert';
+import { Source, SourceView } from '@chunkd/source';
 import { SourceMemory } from '@chunkd/source-memory';
+import assert from 'node:assert';
+import { afterEach, describe, it } from 'node:test';
 import sinon from 'sinon';
-import { SourceFactory } from '../../source.view.js';
 import { SourceAbsolute } from '../absolute.js';
-import { Source } from '@chunkd/source';
 
 describe('SourceAbsolute', () => {
   const sandbox = sinon.createSandbox();
   afterEach(() => sandbox.restore());
 
   it('should convert negative length to absolute offsets', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
+    const view = new SourceView(source);
 
     const spy = sandbox.spy(source, 'fetch');
 
@@ -22,7 +20,7 @@ describe('SourceAbsolute', () => {
     assert.equal(spy.callCount, 1);
     assert.deepEqual(spy.lastCall.args, [-1, undefined]);
 
-    sf.use(SourceAbsolute);
+    view.middleware.push(SourceAbsolute);
 
     const secondRequest = await view.fetch(-1);
     assert.equal(Buffer.from(secondRequest)[0], '}'.charCodeAt(0));
@@ -31,10 +29,8 @@ describe('SourceAbsolute', () => {
   });
 
   it('should not convert negative length if size is invalid', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
-    sf.use(SourceAbsolute);
+    const view = new SourceView(source, [SourceAbsolute]);
 
     const spy = sandbox.spy(source, 'fetch');
 

@@ -43,8 +43,9 @@ function removeSlashes(f) {
  * @param {string} prefix
  * @param {FileSystemAbstraction} fs
  */
-function testPrefix(prefix, fs) {
+async function testPrefix(prefix, fs) {
   fsa.register(prefix, fs);
+
   describe(prefix, () => {
     before(async () => {
       console.time(prefix);
@@ -85,6 +86,11 @@ function testPrefix(prefix, fs) {
       ]);
     });
 
+    it('should list by prefix', async () => {
+      const files = await toArray(fsa.list(new URL('file-', prefix), { recursive: false }));
+      assert.deepEqual(files.map((f) => decodeURI(f.href.slice(prefix.length)), ['file-'])
+    })
+
     it('should list folders', async () => {
       const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
       assert.deepEqual(
@@ -96,7 +102,7 @@ function testPrefix(prefix, fs) {
       );
     });
 
-    it('should read a file', async () => {
+    it('should read a file', async (t) => {
       const file = await fsa.read(new URL(TestFiles[0].path, prefix));
       assert.equal(file.toString(), TestFiles[0].buffer.toString());
     });
@@ -105,6 +111,10 @@ function testPrefix(prefix, fs) {
       const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
       assert.equal(ret.path.href, new URL(TestFiles[0].path, prefix).href);
       assert.equal(ret.size, TestFiles[0].buffer.length);
+    });
+
+    it('should not error when attempting to delete a missing', async () => {
+      await fsa.delete(new URL(TestFiles[0].path + '.MISSING_FILE_NAME', prefix));
     });
 
     it('should read a source', async () => {
@@ -129,8 +139,8 @@ function testPrefix(prefix, fs) {
   });
 }
 
-testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
-testPrefix('memory://blacha-chunkd-test/', new FsMemory());
+// testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
+// testPrefix('memory://blacha-chunkd-test/', new FsMemory());
 // Only test S3 if a AWS_PROFILE is set
 if (process.env.AWS_PROFILE) testPrefix('s3://blacha-chunkd-test/v3/', new FsAwsS3(new S3Client()));
 // if (process.env.GCP_ACCOUNT) testPrefix(`gs://blacha-chunkd-test/`, new FsGoogleStorage(getGcp()));

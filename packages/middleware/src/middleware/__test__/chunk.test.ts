@@ -2,20 +2,18 @@ import { SourceMemory } from '@chunkd/source-memory';
 import assert from 'node:assert';
 import { afterEach, describe, it } from 'node:test';
 import sinon from 'sinon';
-import { SourceFactory } from '../../source.view.js';
 import { SourceChunk } from '../chunk.js';
+import { SourceView } from '@chunkd/source';
 
 describe('SourceChunk', () => {
   const sandbox = sinon.createSandbox();
   afterEach(() => sandbox.restore());
 
   it('should chunk requests', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
+    const view = new SourceView(source, [new SourceChunk({ size: 16 })]);
 
     const spy = sandbox.spy(source, 'fetch');
-    sf.use(new SourceChunk({ size: 16 }));
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(spy.callCount, 1);
@@ -26,12 +24,9 @@ describe('SourceChunk', () => {
   });
 
   it('should create multiple requests', async () => {
-    const sf = new SourceFactory();
     const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
-    const view = sf.wrap(source);
+    const view = new SourceView(source, [new SourceChunk({ size: 4 })]);
     const spy = sandbox.spy(source, 'fetch');
-
-    sf.use(new SourceChunk({ size: 4 }));
 
     assert.equal(Buffer.from(await view.fetch(0, 8)).toString(), '{"hello"');
     assert.equal(spy.callCount, 2);
