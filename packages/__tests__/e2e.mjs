@@ -48,99 +48,115 @@ async function testPrefix(prefix, fs) {
 
   describe(prefix, () => {
     before(async () => {
-      console.time(prefix);
+      // console.time(prefix);
       await setupTestData(prefix);
     });
 
     after(() => {
-      console.timeEnd(prefix);
+      // console.timeEnd(prefix);
     });
 
-    it('should list recursive:default ', async () => {
-      const files = await toArray(fsa.list(new URL(prefix)));
-      assert.equal(files.length, TestFiles.length);
-    });
+    describe('list', () => {
+      it('should list recursive:default ', async () => {
+        const files = await toArray(fsa.list(new URL(prefix)));
+        assert.equal(files.length, TestFiles.length);
+      });
 
-    it('should list recursive:true ', async () => {
-      const files = await toArray(fsa.list(new URL(prefix), { recursive: true }));
-      assert.equal(files.length, TestFiles.length);
+      it('should list recursive:true ', async () => {
+        const files = await toArray(fsa.list(new URL(prefix), { recursive: true }));
+        assert.equal(files.length, TestFiles.length);
 
-      for (const file of TestFiles) {
-        assert.notEqual(
-          files.find((f) => f.href.endsWith(new URL(file.path, prefix).href)),
-          undefined,
+        for (const file of TestFiles) {
+          assert.notEqual(
+            files.find((f) => f.href.endsWith(new URL(file.path, prefix).href)),
+            undefined,
+          );
+        }
+      });
+
+      it('should list recursive:false ', async () => {
+        const files = await toArray(fsa.list(new URL(prefix), { recursive: false }));
+        assert.equal(files.length, 6);
+        assert.deepEqual(files.map((f) => decodeURI(f.href.slice(prefix.length))).map(removeSlashes), [
+          'a',
+          'c',
+          'd',
+          'file-1',
+          'file-2',
+          '🦄.json',
+        ]);
+      });
+
+      it('should list by prefix', async () => {
+        const files = await toArray(fsa.list(new URL('file-', prefix), { recursive: false }));
+        assert.deepEqual(
+          files.map((f) => decodeURI(f.href.slice(prefix.length)), ['file-']),
+          ['file-1', 'file-2'],
         );
-      }
+      });
+
+      it('should list folders', async () => {
+        const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
+        assert.deepEqual(
+          files
+            .filter((f) => f.isDirectory)
+            .map((f) => f.path.href.slice(prefix.length))
+            .map(removeSlashes),
+          ['a', 'c', 'd'],
+        );
+      });
     });
 
-    it('should list recursive:false ', async () => {
-      const files = await toArray(fsa.list(new URL(prefix), { recursive: false }));
-      assert.equal(files.length, 6);
-      assert.deepEqual(files.map((f) => decodeURI(f.href.slice(prefix.length))).map(removeSlashes), [
-        'a',
-        'c',
-        'd',
-        'file-1',
-        'file-2',
-        '🦄.json',
-      ]);
+    describe('read', () => {
+      it('should read a file', async (t) => {
+        const file = await fsa.read(new URL(TestFiles[0].path, prefix));
+        assert.equal(file.toString(), TestFiles[0].buffer.toString());
+      });
     });
 
-    it('should list by prefix', async () => {
-      const files = await toArray(fsa.list(new URL('file-', prefix), { recursive: false }));
-      assert.deepEqual(files.map((f) => decodeURI(f.href.slice(prefix.length)), ['file-'])
-    })
-
-    it('should list folders', async () => {
-      const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
-      assert.deepEqual(
-        files
-          .filter((f) => f.isDirectory)
-          .map((f) => f.path.href.slice(prefix.length))
-          .map(removeSlashes),
-        ['a', 'c', 'd'],
-      );
+    describe('head', () => {
+      it('should head a file', async () => {
+        const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
+        assert.equal(ret.path.href, new URL(TestFiles[0].path, prefix).href);
+        assert.equal(ret.size, TestFiles[0].buffer.length);
+      });
     });
 
-    it('should read a file', async (t) => {
-      const file = await fsa.read(new URL(TestFiles[0].path, prefix));
-      assert.equal(file.toString(), TestFiles[0].buffer.toString());
+    describe('delete', () => {
+      it('should not error when attempting to delete a missing', async () => {
+        await fsa.delete(new URL(TestFiles[0].path + '.MISSING_FILE_NAME', prefix));
+      });
     });
 
-    it('should head a file', async () => {
-      const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
-      assert.equal(ret.path.href, new URL(TestFiles[0].path, prefix).href);
-      assert.equal(ret.size, TestFiles[0].buffer.length);
-    });
+    describe('source', () => {
+      it('should read a source', async () => {
+        const source = fsa.source(new URL('🦄.json', prefix));
+        const bytes = Buffer.from(await source.fetch(0)).toString('hex');
+        assert.equal(bytes, 'f09fa684');
+        await source.close();
+      });
 
-    it('should not error when attempting to delete a missing', async () => {
-      await fsa.delete(new URL(TestFiles[0].path + '.MISSING_FILE_NAME', prefix));
-    });
+      it('should read a range from source', async () => {
+        const source = fsa.source(new URL('🦄.json', prefix));
 
-    it('should read a source', async () => {
-      const source = fsa.source(new URL('🦄.json', prefix));
-      const bytes = Buffer.from(await source.fetch(0)).toString('hex');
-      assert.equal(bytes, 'f09fa684');
-    });
+        const bytes = Buffer.from(await source.fetch(0, 2)).toString('hex');
+        assert.equal(bytes, 'f09f');
+        await source.close();
+      });
 
-    it('should read a range from source', async () => {
-      const source = fsa.source(new URL('🦄.json', prefix));
+      it('should read from the end of the source', async () => {
+        const source = fsa.source(new URL('🦄.json', prefix));
 
-      const bytes = Buffer.from(await source.fetch(0, 2)).toString('hex');
-      assert.equal(bytes, 'f09f');
-    });
-
-    it('should read from the end of the source', async () => {
-      const source = fsa.source(new URL('🦄.json', prefix));
-
-      const bytesEnd = Buffer.from(await source.fetch(-2)).toString('hex');
-      assert.equal(bytesEnd, 'a684');
+        const bytesEnd = Buffer.from(await source.fetch(-2)).toString('hex');
+        assert.equal(bytesEnd, 'a684');
+        await source.close();
+      });
     });
   });
 }
 
-// testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
-// testPrefix('memory://blacha-chunkd-test/', new FsMemory());
+testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
+testPrefix('memory://blacha-chunkd-test/', new FsMemory());
 // Only test S3 if a AWS_PROFILE is set
 if (process.env.AWS_PROFILE) testPrefix('s3://blacha-chunkd-test/v3/', new FsAwsS3(new S3Client()));
 // if (process.env.GCP_ACCOUNT) testPrefix(`gs://blacha-chunkd-test/`, new FsGoogleStorage(getGcp()));

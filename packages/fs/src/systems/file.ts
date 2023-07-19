@@ -35,6 +35,28 @@ export class FsFile implements FileSystem {
 
   async *list(loc: URL, opts?: ListOptions): AsyncGenerator<URL> {
     try {
+      // Check if the listing location is a folder before trying to list
+      const stat = await this.head(loc);
+      if (stat == null || !stat.isDirectory) {
+        // Not a folder so grab the folder name
+        const baseUrl = new URL('.', loc);
+        const baseStat = await this.head(baseUrl);
+        const prefix = loc.href.slice(baseUrl.href.length);
+        // Parent folder doesnt exist
+        if (baseStat == null || !baseStat.isDirectory) return;
+        const files = await fs.promises.readdir(baseUrl, { withFileTypes: true });
+
+        for (const file of files) {
+          // Ensure only file starting with the prefix are returned
+          if (!file.name.startsWith(prefix)) continue;
+          const targetPath = new URL(file.name, loc);
+          if (file.isDirectory() && opts?.recursive !== false) yield* this.list(new URL(targetPath + '/'));
+          else yield targetPath;
+        }
+
+        return;
+      }
+
       const files = await fs.promises.readdir(loc, { withFileTypes: true });
       for (const file of files) {
         const targetPath = new URL(file.name, loc);
