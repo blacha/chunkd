@@ -18,7 +18,7 @@
   "description": "",
   "devDependencies": {
     "@linzjs/style": "^4.0.0",
-    "lerna": "^6.4.0"
+    "lerna": "^7.1.4"
   },
   "workspaces": {
     "packages": [
