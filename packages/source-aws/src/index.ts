@@ -1,4 +1,4 @@
-import { S3Client, GetObjectCommand, HeadObjectCommand, GetObjectOutput, HeadObjectOutput } from '@aws-sdk/client-s3';
+import { GetObjectCommand, GetObjectOutput, HeadObjectCommand, HeadObjectOutput, S3Client } from '@aws-sdk/client-s3';
 import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
 
 function parseMetadata(res: GetObjectOutput | HeadObjectOutput): SourceMetadata {
@@ -49,8 +49,8 @@ export class SourceAwsS3 implements Source {
   /** optionally set this source as requesterPays */
   requestPayer?: 'requester';
 
-  constructor(url: URL, client: S3Client = new S3Client({})) {
-    this.url = url;
+  constructor(url: URL | string, client: S3Client = new S3Client({})) {
+    this.url = typeof url === 'string' ? new URL(url) : url;
     this.client = client;
   }
 

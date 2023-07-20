@@ -21,7 +21,9 @@
     "@aws-sdk/client-s3": "*",
     "@chunkd/source": "^11.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.16.19"
+  },
   "publishConfig": {
     "access": "public"
   },
