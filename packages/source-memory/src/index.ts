@@ -1,4 +1,11 @@
-import { Source, SourceError, SourceMetadata } from '@chunkd/source';
+import { Source, SourceError, SourceMetadata, tryParseUrl } from '@chunkd/source';
+
+function parseMemoryUrl(s: string | URL): URL {
+  if (typeof s !== 'string') return s;
+  const url = tryParseUrl(s);
+  if (url) return url;
+  return new URL('memory://' + s);
+}
 
 export class SourceMemory implements Source {
   url: URL;
@@ -12,9 +19,9 @@ export class SourceMemory implements Source {
     return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   }
 
-  constructor(url: URL, bytes: Buffer | Uint8Array | ArrayBuffer) {
+  constructor(url: URL | string, bytes: Buffer | Uint8Array | ArrayBuffer) {
     const buf = SourceMemory.toArrayBuffer(bytes ?? new Uint8Array());
-    this.url = url;
+    this.url = parseMemoryUrl(url);
     this.data = buf;
     this.metadata = { size: buf.byteLength };
   }

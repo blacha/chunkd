@@ -29,4 +29,14 @@ describe('SourceMemory', () => {
     const bytesNegative = await source.fetch(-2);
     assert.equal(Buffer.from(bytesNegative).toString(), '23');
   });
+
+  it('should allow string names', () => {
+    const array = new Uint8Array(chars.split('').map((c) => c.charCodeAt(0)));
+
+    const source = new SourceMemory('memory://test.txt', array);
+    assert.equal(source.url.href, 'memory://test.txt');
+
+    const sourceRel = new SourceMemory('test.txt', array);
+    assert.equal(sourceRel.url.href, 'memory://test.txt');
+  });
 });
