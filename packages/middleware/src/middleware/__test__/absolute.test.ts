@@ -21,7 +21,7 @@ describe('SourceAbsolute', () => {
     const secondRequest = await view.fetch(-1);
     assert.equal(Buffer.from(secondRequest)[0], '}'.charCodeAt(0));
     assert.equal(spy.mock.callCount(), 2);
-    assert.deepEqual(spy.mock.calls[0].arguments, [16, 1]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [16, 1]);
   });
 
   it('should not convert negative length if size is invalid', async (t) => {
@@ -40,6 +40,6 @@ describe('SourceAbsolute', () => {
     delete (source as Source).metadata;
     assert.equal(Buffer.from(await view.fetch(-1))[0], '}'.charCodeAt(0));
     assert.equal(spy.mock.callCount(), 2);
-    assert.deepEqual(spy.mock.calls[0].arguments, [-1, undefined]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [-1, undefined]);
   });
 });
