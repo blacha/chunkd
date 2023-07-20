@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-memory",
-  "version": "10.1.0",
+  "version": "11.0.0",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -18,7 +18,7 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@chunkd/source": "^10.0.0"
+    "@chunkd/source": "^11.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0"
