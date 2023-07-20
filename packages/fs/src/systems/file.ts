@@ -34,36 +34,44 @@ export class FsFile implements FileSystem {
   }
 
   async *list(loc: URL, opts?: ListOptions): AsyncGenerator<URL> {
+    const isRecursive = opts?.recursive !== false;
+    let prefix: string | undefined;
     try {
       // Check if the listing location is a folder before trying to list
-      const stat = await this.head(loc);
-      if (stat == null || !stat.isDirectory) {
+      const stat = await fs.promises.stat(loc).catch(() => null);
+
+      // Trying to list a folder but doesn't exist
+      if (stat == null && loc.href.endsWith('/')) {
+        throw new FsError(`Failed to list: ${loc}`, 404, loc, 'list', this);
+      }
+
+      // Prefix search, list the parent folder and filter for the filename
+      if (stat == null || !stat.isDirectory() || !loc.href.endsWith('/')) {
         // Not a folder so grab the folder name
         const baseUrl = new URL('.', loc);
         const baseStat = await this.head(baseUrl);
-        const prefix = loc.href.slice(baseUrl.href.length);
-        // Parent folder doesnt exist
+        // Parent folder doesn't exist
         if (baseStat == null || !baseStat.isDirectory) return;
-        const files = await fs.promises.readdir(baseUrl, { withFileTypes: true });
-
-        for (const file of files) {
-          // Ensure only file starting with the prefix are returned
-          if (!file.name.startsWith(prefix)) continue;
-          const targetPath = new URL(file.name, loc);
-          if (file.isDirectory() && opts?.recursive !== false) yield* this.list(new URL(targetPath + '/'));
-          else yield targetPath;
-        }
-
-        return;
+        // Filter files to ensure they start with the prefix
+        prefix = loc.href.slice(baseUrl.href.length);
+        loc = baseUrl;
       }
 
       const files = await fs.promises.readdir(loc, { withFileTypes: true });
       for (const file of files) {
-        const targetPath = new URL(file.name, loc);
-        if (file.isDirectory() && opts?.recursive !== false) yield* this.list(new URL(targetPath + '/'));
-        else yield targetPath;
+        if (prefix && !file.name.startsWith(prefix)) continue;
+        if (file.isDirectory()) {
+          if (isRecursive) {
+            yield* this.list(new URL(file.name + '/', loc));
+          } else {
+            yield new URL(file.name + '/', loc);
+          }
+        } else {
+          yield new URL(file.name, loc);
+        }
       }
     } catch (e) {
+      if (FsError.is(e)) throw e;
       throw new FsError(`Failed to list: ${loc}`, getCode(e), loc, 'list', this, e);
     }
   }

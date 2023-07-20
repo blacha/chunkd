@@ -45,10 +45,11 @@ export class FsMemory implements FileSystem {
   }
 
   async *list(loc: URL, opt?: ListOptions): AsyncGenerator<URL> {
+    const isRecursive = opt?.recursive === false;
     const folders = new Set();
     for (const file of this.files.keys()) {
       if (file.startsWith(loc.href)) {
-        if (opt?.recursive === false) {
+        if (isRecursive) {
           const subPath = file.slice(loc.href.length);
           const parts = subPath.split('/');
           if (parts.length === 1) yield new URL(file);
@@ -56,7 +57,11 @@ export class FsMemory implements FileSystem {
             const folderName = parts[0];
             if (folders.has(folderName)) continue;
             folders.add(folderName);
-            yield new URL(folderName + '/', loc);
+            // If the folderName is empty then loc is also a folder
+            // eg list "a" when "a/b/c.txt" exists
+            if (folderName === '') {
+              yield new URL(loc + '/');
+            } else yield new URL(folderName + '/', loc);
           }
         } else {
           yield new URL(file);

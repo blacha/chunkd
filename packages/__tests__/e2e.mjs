@@ -18,6 +18,7 @@ if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEF
 const TestFiles = [
   { path: 'a/b/file-a-b-1.txt', buffer: Buffer.from('a/b/file-a-b-1.txt') },
   { path: 'a/b/file-a-b-2', buffer: Buffer.from('a/b/file-a-b-2') },
+  { path: 'a-file.txt', buffer: Buffer.from('a-file.txt') },
   { path: 'a/file-a-1', buffer: Buffer.from('file-a-1') },
   { path: 'c/file-c-1', buffer: Buffer.from('file-c-1') },
   { path: 'd/file-d-1', buffer: Buffer.from('file-d-1') },
@@ -25,18 +26,13 @@ const TestFiles = [
   { path: 'file-2', buffer: Buffer.from('file-2') },
   { path: '🦄.json', buffer: Buffer.from('🦄') },
 ];
+console.log = console.trace;
 
 async function setupTestData(prefix) {
   for (const file of TestFiles) {
     const target = new URL(file.path, prefix);
     await fsa.write(target, file.buffer);
   }
-}
-
-function removeSlashes(f) {
-  if (f.startsWith('/')) f = f.slice(1);
-  if (f.endsWith('/')) f = f.slice(0, f.length - 1);
-  return f;
 }
 
 /**
@@ -76,15 +72,12 @@ async function testPrefix(prefix, fs) {
 
       it('should list recursive:false ', async () => {
         const files = await toArray(fsa.list(new URL(prefix), { recursive: false }));
-        assert.equal(files.length, 6);
-        assert.deepEqual(files.map((f) => decodeURI(f.href.slice(prefix.length))).map(removeSlashes), [
-          'a',
-          'c',
-          'd',
-          'file-1',
-          'file-2',
-          '🦄.json',
-        ]);
+        files.sort((a, b) => a.href.localeCompare(b.href));
+        assert.equal(files.length, 7);
+        assert.deepEqual(
+          files.map((f) => decodeURI(f.href.slice(prefix.length))),
+          ['🦄.json', 'a-file.txt', 'a/', 'c/', 'd/', 'file-1', 'file-2'],
+        );
       });
 
       it('should list by prefix', async () => {
@@ -95,14 +88,20 @@ async function testPrefix(prefix, fs) {
         );
       });
 
+      it('should list folders without trailing "/"', async () => {
+        const listPrefix = new URL(prefix + 'a');
+        const files = await toArray(fsa.details(new URL(listPrefix), { recursive: false }));
+        assert.deepEqual(
+          files.map((f) => f.path.href.slice(prefix.length)),
+          ['a/', 'a-file.txt'],
+        );
+      });
+
       it('should list folders', async () => {
         const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
         assert.deepEqual(
-          files
-            .filter((f) => f.isDirectory)
-            .map((f) => f.path.href.slice(prefix.length))
-            .map(removeSlashes),
-          ['a', 'c', 'd'],
+          files.filter((f) => f.isDirectory).map((f) => f.path.href.slice(prefix.length)),
+          ['a/', 'c/', 'd/'],
         );
       });
     });
