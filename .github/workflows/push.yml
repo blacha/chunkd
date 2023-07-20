@@ -17,5 +17,4 @@ jobs:
 
     steps:
       - uses: linz/action-typescript@v2
-
-      - uses: blacha/hyperfine-action@v1
+      # - uses: blacha/hyperfine-action@v1

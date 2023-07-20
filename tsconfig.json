@@ -1,14 +1,13 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/source-http" },
-    { "path": "./packages/source-aws" },
-    { "path": "./packages/source-aws-v2" },
-    { "path": "./packages/source-aws-v3" },
-    { "path": "./packages/source-google-cloud" },
+    { "path": "./packages/source" },
     { "path": "./packages/source-file" },
     { "path": "./packages/source-memory" },
-    { "path": "./packages/fs" }
+    { "path": "./packages/source-http" },
+    { "path": "./packages/source-aws" },
+    { "path": "./packages/middleware" },
+    { "path": "./packages/fs" },
+    { "path": "./packages/fs-aws" }
   ]
 }

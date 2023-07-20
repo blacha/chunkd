@@ -2,13 +2,13 @@
   "name": "@chunkd/base",
   "version": "0.1.0",
   "scripts": {
-    "clean": "tsc -b --clean && rimraf 'packages/*/build'",
+    "clean": "tsc -b --clean",
     "build": "tsc -b --pretty",
     "build-watch": "tsc -b --pretty --watch",
     "version": "eslint lerna.json --fix",
     "bump": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
     "lint": "eslint . --quiet --fix --ignore-path .gitignore",
-    "test": "ospec --globs 'packages/*/build/**/*.test.js'"
+    "test": "lerna run test"
   },
   "type": "module",
   "private": true,
@@ -17,12 +17,9 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@linzjs/style": "^3.15.0",
-    "@types/ospec": "^4.0.2",
+    "@linzjs/style": "^4.0.0",
     "@types/sinon": "^10.0.2",
     "lerna": "^6.4.0",
-    "ospec": "^4.1.1",
-    "rimraf": "^5.0.0",
     "sinon": "^15.0.1"
   },
   "workspaces": {

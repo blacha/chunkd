@@ -1,10 +1,10 @@
-import { FsHttp } from '@chunkd/source-http';
-import { fsa } from './fs.abstraction.js';
-
-export { FsHttp } from '@chunkd/source-http';
-export { FileSystemAbstraction, fsa } from './fs.abstraction.js';
+export { FileSystem, ListOptions, WriteOptions, FileInfo, FileWriteTypes, FileSystemAction } from './file.system.js';
+export { fsa } from './file.system.abstraction.js';
 export { Flag, FlagRead, FlagReadWrite } from './flags.js';
-
-const fsHttp = new FsHttp();
-fsa.register('http://', fsHttp);
-fsa.register('https://', fsHttp);
+export { toArray, toFirst } from './generator.js';
+export { FsMemory } from './systems/memory.js';
+export { FsFile } from './systems/file.js';
+export { FsHttp } from './systems/http.js';
+export { FsError } from './error.js';
+export { FileSystemProvider } from './provider.js';
+export { isRecord } from './systems/file.js';

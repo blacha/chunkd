@@ -1,10 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./build",
-    "lib": ["es2018", "dom"]
+    "outDir": "./build"
   },
-  "include": ["src/**/*"],
-  "references": [{ "path": "../core" }, { "path": "../source-memory" }]
+  "include": ["src/"],
+  "references": [{ "path": "../source" }]
 }

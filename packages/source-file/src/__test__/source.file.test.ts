@@ -1,43 +1,44 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import o from 'ospec';
-import { basename, join } from 'path';
-import { fileURLToPath } from 'url';
-import { SourceFile } from '../file.source.js';
+import { join } from 'node:path';
+import { describe, it, beforeEach, afterEach } from 'node:test';
+import assert from 'node:assert';
+import { fileURLToPath } from 'node:url';
+import { SourceFile } from '../index.js';
 
-o.spec('SourceFile', () => {
+describe('SourceFile', () => {
   const TestFile = join(fileURLToPath(import.meta.url));
 
   let source: SourceFile;
-  o.beforeEach(() => {
+  beforeEach(() => {
     source = new SourceFile(TestFile);
   });
-  o.afterEach(async () => source.close());
 
-  o('should close after reads', async () => {
+  afterEach(async () => source.close());
+
+  it('should close after reads', async () => {
     source.closeAfterRead = true;
-    o(source.fd).equals(null);
+    assert.equal(source.fd, null);
 
-    const bytes = await source.fetchBytes(0, 1);
-    o(bytes.byteLength).equals(1);
-    o(source.fd).equals(null);
+    const bytes = await source.fetch(0, 1);
+    assert.equal(bytes.byteLength, 1);
+    assert.equal(source.fd, null);
 
-    const bytesB = await source.fetchBytes(10, 1);
-    o(bytesB.byteLength).equals(1);
-    o(source.fd).equals(null);
+    const bytesB = await source.fetch(10, 1);
+    assert.equal(bytesB.byteLength, 1);
+    assert.equal(source.fd, null);
   });
 
-  o('should resolve uri', () => {
-    o(source.uri[0]).equals('/');
-    o(source.name).equals(basename(fileURLToPath(import.meta.url)));
+  it('should resolve uri', () => {
+    assert.equal(source.url.protocol, 'file:');
+    assert.equal(source.url.pathname.endsWith('/source.file.test.js'), true);
   });
 
-  o('should read last bytes from file', async () => {
-    const buf = Buffer.from(await source.fetchBytes(-1024));
+  it('should read last bytes from file', async () => {
+    const buf = Buffer.from(await source.fetch(-1024));
 
-    const size = await source.size;
-    await source.loadBytes(size - 1024, 1024);
-    const expected = Buffer.from(source.bytes(size - 1024, 1024));
+    const metadata = await source.metadata;
+    const bytes = await source.fetch((metadata?.size ?? -1) - 1024, 1024);
+    const expected = Buffer.from(bytes);
 
-    o(buf.toString('base64')).equals(expected.toString('base64'));
+    assert.equal(buf.toString('base64'), expected.toString('base64'));
   });
 });

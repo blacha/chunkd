@@ -3,23 +3,30 @@
   "version": "10.1.2",
   "type": "module",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/blacha/chunkd.git",
     "directory": "packages/source-http"
   },
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "author": "Blayne Chard",
   "license": "MIT",
-  "scripts": {},
-  "dependencies": {
-    "@chunkd/core": "^10.3.0"
+  "scripts": {
+    "test": "node --test"
   },
-  "devDependencies": {},
+  "dependencies": {
+    "@chunkd/source": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "build/src"
+  ]
 }
