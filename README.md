@@ -1,15 +1,10 @@
 # @chunkd
 
-[![Build Status](https://github.com/blacha/chunkd/workflows/Main/badge.svg)](https://github.com/blacha/chunkd/actions)
-
-
 File system abstraction to work with files from various sources 
 
 - [Filesystem](./packages/source-file/)
 - [Http](./packages//source-http/)
-- [Aws SDK V2](./packages/source-aws-v2/)
-- [Aws SDK V3](./packages/source-aws-v3/)
-- [Google Cloud](./packages/source-google-cloud/)
+- [Aws SDK V3](./packages/source-aws/)
 - [Memory](./packages/source-memory/)
 
 ## Usage
