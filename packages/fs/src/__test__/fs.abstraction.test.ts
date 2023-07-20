@@ -1,7 +1,6 @@
 import { FsFile } from '../systems/file.js';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import Sinon from 'sinon';
 import { FileSystemAbstraction } from '../file.system.abstraction.js';
 
 export class FakeSystem extends FsFile {
@@ -90,21 +89,21 @@ describe('FileSystemAbstraction', () => {
     assert.equal(fsa.systems[0].system, fakeB);
   });
 
-  it('should stream files between systems', () => {
+  it('should stream files between systems', (t) => {
     const fakeA = new FakeSystem('fake');
     const fakeB = new FakeSystem('fakeSpecific');
     const fsa = new FileSystemAbstraction();
 
-    const writeStub = (fakeB.write = Sinon.stub());
-    const streamStub = (fakeA.readStream = Sinon.stub());
+    const writeStub = (fakeB.write = t.mock.fn());
+    const streamStub = (fakeA.readStream = t.mock.fn());
 
     fsa.register('fake-a://', fakeA);
     fsa.register('fake-b://', fakeB);
 
     fsa.write(new URL('fake-b://bar.js'), fsa.readStream(new URL('fake-a://foo.js')));
 
-    assert.equal(streamStub.callCount, 1);
-    assert.equal(writeStub.callCount, 1);
+    assert.equal(streamStub.mock.callCount(), 1);
+    assert.equal(writeStub.mock.callCount(), 1);
   });
 
   it('should parse urls', () => {
