@@ -10,7 +10,7 @@ export interface FetchLikeResponse {
   statusText: string;
   status: number;
   headers: { get(k: string): string | null };
-  body: ReadableStream | null;
+  body: unknown;
   arrayBuffer(): Promise<ArrayBuffer>;
 }
 export type FetchLike = (url: string | URL, opts?: FetchLikeOptions) => Promise<FetchLikeResponse>;
