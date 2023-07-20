@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
 import { Flag } from './flags.js';
 import { FsFile } from './systems/file.js';
+import { toArray } from './generator.js';
 
 export class FileSystemAbstraction implements FileSystem {
   name = 'fsa';
@@ -16,6 +17,9 @@ export class FileSystemAbstraction implements FileSystem {
 
   /** List of middleware to use for every source created */
   middleware: SourceMiddleware[] = [];
+
+  /** Utility to convert async generators into arrays */
+  toArray = toArray;
 
   /**
    * Attempt to parse a path like object as into a URL
