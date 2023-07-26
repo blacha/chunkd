@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-http",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"

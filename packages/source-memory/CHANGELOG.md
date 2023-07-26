@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.1](https://github.com/blacha/chunkd/compare/source-memory-v11.0.0...source-memory-v11.0.1) (2023-07-26)
+
+
+### Bug Fixes
+
+* **source-memory:** allow creating source with string url ([640a4a4](https://github.com/blacha/chunkd/commit/640a4a41cac4076a363fb2e4ec8b1893ad51e43c))
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/source-memory-v10.1.0...source-memory-v11.0.0) (2023-07-20)
 
 

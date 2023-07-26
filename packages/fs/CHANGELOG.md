@@ -1,5 +1,20 @@
 # Changelog
 
+## [11.0.1](https://github.com/blacha/chunkd/compare/fs-v11.0.0...fs-v11.0.1) (2023-07-26)
+
+
+### Bug Fixes
+
+* **fs:** be more consistent when listing folders ([671845e](https://github.com/blacha/chunkd/commit/671845e040af451318d822d08e257c028d409081))
+* **fs:** re-add fsa.toArray() ([0abb67b](https://github.com/blacha/chunkd/commit/0abb67b5a875931482a9ca2768b8c9d9299bec38))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source-http bumped from ^11.0.0 to ^11.0.1
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/fs-v10.0.9...fs-v11.0.0) (2023-07-20)
 
 

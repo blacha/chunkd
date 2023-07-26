@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-memory",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
