@@ -80,7 +80,6 @@ describe('LocalFileSystem', () => {
     const missingTrailing = new URL(href.slice(0, href.length - 1));
     const files = await toArray(fs.list(missingTrailing));
 
-    console.log(files.map((f) => f.href));
     assert.equal(files.length > 2, true);
     assert.ok(files.every((f) => f.href.includes('src/systems/__test__/')));
   });
