@@ -14,7 +14,9 @@
   "types": "./build/src/index.d.ts",
   "author": "Blayne Chard",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "@chunkd/source": "^11.0.0",
     "@chunkd/source-file": "^11.0.0",

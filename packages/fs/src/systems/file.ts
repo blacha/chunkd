@@ -90,7 +90,7 @@ export class FsFile implements FileSystem {
       return { path: loc, size: stat.size, isDirectory: stat.isDirectory() };
     } catch (e) {
       if (isRecord(e) && e.code === 'ENOENT') return null;
-      throw new FsError(`Failed to stat ${loc}`, getCode(e), loc, 'list', this, e);
+      throw new FsError(`Failed to stat ${loc}`, getCode(e), loc, 'head', this, e);
     }
   }
 
@@ -98,7 +98,7 @@ export class FsFile implements FileSystem {
     try {
       return await fs.promises.readFile(loc);
     } catch (e) {
-      throw new FsError(`Failed to read: ${loc}`, getCode(e), loc, 'list', this, e);
+      throw new FsError(`Failed to read: ${loc}`, getCode(e), loc, 'read', this, e);
     }
   }
 
@@ -118,7 +118,7 @@ export class FsFile implements FileSystem {
         });
       }
     } catch (e) {
-      throw new FsError(`Failed to write: ${loc}`, getCode(e), loc, 'list', this, e);
+      throw new FsError(`Failed to write: ${loc}`, getCode(e), loc, 'write', this, e);
     }
   }
 
@@ -130,7 +130,7 @@ export class FsFile implements FileSystem {
       const code = getCode(e);
       if (code === 404) return;
 
-      throw new FsError(`Failed to delete: ${loc}`, getCode(e), loc, 'list', this, e);
+      throw new FsError(`Failed to delete: ${loc}`, getCode(e), loc, 'delete', this, e);
     }
   }
 

@@ -82,7 +82,7 @@ describe('LocalFileSystem', () => {
 
     console.log(files.map((f) => f.href));
     assert.equal(files.length > 2, true);
-    assert.ok(files.every((f) => f.href.includes('fs/src/systems/__test__/')));
+    assert.ok(files.every((f) => f.href.includes('src/systems/__test__/')));
   });
 
   it('should list files', async () => {
