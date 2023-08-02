@@ -1,5 +1,14 @@
 # Changelog
 
+## [11.0.2](https://github.com/blacha/chunkd/compare/fs-v11.0.1...fs-v11.0.2) (2023-08-02)
+
+
+### Bug Fixes
+
+* **fs:** correct directory names for windows ([#1241](https://github.com/blacha/chunkd/issues/1241)) ([6ba9f24](https://github.com/blacha/chunkd/commit/6ba9f24c7b7d83927b63651a350f2ca3ec5ed1d5))
+* **fs:** correct error action names ([c10bbeb](https://github.com/blacha/chunkd/commit/c10bbebf0ddfae8ca91b5162057a17b3c947f2f6))
+* **fs:** missing source-memory dependency ([f1ff070](https://github.com/blacha/chunkd/commit/f1ff0702c0707880c420da67562953dcbee1d0cb))
+
 ## [11.0.1](https://github.com/blacha/chunkd/compare/fs-v11.0.0...fs-v11.0.1) (2023-07-26)
 
 
