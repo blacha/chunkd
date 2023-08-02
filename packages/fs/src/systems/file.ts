@@ -1,9 +1,8 @@
 import { SourceFile } from '@chunkd/source-file';
 import fs from 'node:fs';
-import path from 'node:path';
 import { Readable } from 'node:stream';
-import { FileInfo, FileSystem, ListOptions } from '../file.system.js';
 import { FsError } from '../error.js';
+import { FileInfo, FileSystem, ListOptions } from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }
@@ -105,12 +104,12 @@ export class FsFile implements FileSystem {
   async write(loc: URL, buf: Buffer | Readable | string): Promise<void> {
     try {
       if (Buffer.isBuffer(buf) || typeof buf === 'string') {
-        await fs.promises.mkdir(path.dirname(loc.pathname), { recursive: true });
+        await fs.promises.mkdir(new URL('.', loc), { recursive: true });
         await fs.promises.writeFile(loc, buf);
       } else {
         await new Promise(async (resolve, reject) => {
           buf.once('error', reject); // Has to be run before any awaits
-          await fs.promises.mkdir(path.dirname(loc.pathname), { recursive: true });
+          await fs.promises.mkdir(new URL('.', loc), { recursive: true });
           const st = fs.createWriteStream(loc);
           st.on('finish', resolve);
           st.on('error', reject);
