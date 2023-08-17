@@ -23,7 +23,7 @@ export class FileSystemAbstraction implements FileSystem {
 
   /**
    * Attempt to parse a path like object as into a URL
-   * Falling back onto `pathToFileURL` if the URL parsing failes
+   * Falling back onto `pathToFileURL` if the URL parsing fails
    */
   toUrl(str: string): URL {
     try {
@@ -37,10 +37,11 @@ export class FileSystemAbstraction implements FileSystem {
    * Register a file system to a specific path which can then be used with any `fsa` command
    *
    * @example
+   * ```typescript
    * fsa.register('s3://', fsS3, 'rw')
    * fsa.register('s3://bucket-a/key-a', specificS3, 'r')
    * fsa.register('http://', fsHttp)
-   *
+   * ```
    */
   register(prefix: string, system: FileSystem, flag: Flag = 'rw'): void {
     for (let i = 0; i < this.systems.length; i++) {
