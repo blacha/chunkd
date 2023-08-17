@@ -1,4 +1,4 @@
-import { Source, SourceError, SourceMetadata, tryParseUrl } from '@chunkd/source';
+import { ContentRange, Source, SourceError, SourceMetadata, tryParseUrl } from '@chunkd/source';
 
 function parseMemoryUrl(s: string | URL): URL {
   if (typeof s !== 'string') return s;
@@ -34,11 +34,13 @@ export class SourceMemory implements Source {
     if (offset < 0) offset = this.data.byteLength + offset;
 
     if (offset > this.data.byteLength) {
-      throw new SourceError('Read outside bounds', 400, this);
+      throw new SourceError(`Read offset outside bounds ${ContentRange.toRange(offset, length)}`, 400, this);
     }
+
     if (length && offset + length > this.data.byteLength) {
-      throw new SourceError('Read outside bounds', 400, this);
+      throw new SourceError(`Read length outside bounds ${ContentRange.toRange(offset, length)}`, 400, this);
     }
+
     return this.data.slice(offset, length == null ? undefined : offset + length);
   }
 }
