@@ -1,4 +1,4 @@
-import { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
+import { ContentRange, SourceCallback, SourceError, SourceMiddleware, SourceRequest } from '@chunkd/source';
 
 interface SourceChunkOptions {
   /**
@@ -32,8 +32,19 @@ export class SourceChunk implements SourceMiddleware {
     const startChunkId = Math.floor(req.offset / this.chunkSize);
     const endChunkId = Math.ceil((req.offset + req.length) / this.chunkSize);
 
+    // Do no try and read past the end of the file
+    const maxSize = req.source.metadata?.size;
+    if (maxSize != null && req.offset + req.length > maxSize) {
+      throw new SourceError(
+        `Request outside of bounds ${ContentRange.toRange(req.offset, req.length)}`,
+        416,
+        req.source,
+      );
+    }
+
     const startByte = startChunkId * this.chunkSize;
-    const endByte = endChunkId * this.chunkSize;
+    const endByte = maxSize != null ? Math.min(endChunkId * this.chunkSize, maxSize) : endChunkId * this.chunkSize;
+    const maxLength = endByte - startByte;
     const chunkOffset = req.offset - startByte;
 
     const chunkCount = endChunkId - startChunkId;
@@ -44,17 +55,22 @@ export class SourceChunk implements SourceMiddleware {
     }
 
     // Request is already requesting a exact chunk no need to slice buffers or modify the request
-    if (req.offset === startByte && req.length === endByte - startByte) return next(req);
+    if (req.offset === startByte && req.length === maxLength) return next(req);
 
-    const buffer = await next({ ...req, offset: startByte, length: this.chunkSize });
+    const buffer = await next({ ...req, offset: startByte, length: maxLength });
     return buffer.slice(chunkOffset, chunkOffset + req.length);
   }
 
   async fetchChunks(req: SourceRequest, startId: number, endId: number): Promise<ArrayBuffer> {
     const promises: Promise<ArrayBuffer>[] = [];
 
+    const maxEndByte = req.source.metadata?.size ?? endId * this.chunkSize;
+
     for (let chunk = startId; chunk < endId; chunk++) {
-      promises.push(req.source.fetch(chunk * this.chunkSize, this.chunkSize));
+      const startByte = chunk * this.chunkSize;
+      const endByte = Math.min(startByte + this.chunkSize, maxEndByte);
+      const chunkLength = endByte - startByte;
+      promises.push(req.source.fetch(chunk * this.chunkSize, chunkLength));
     }
 
     const results = await Promise.all(promises);
