@@ -6,7 +6,7 @@ import { SourceAbsolute } from '../absolute.js';
 
 describe('SourceAbsolute', () => {
   it('should convert negative length to absolute offsets', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
     const view = new SourceView(source);
 
     const spy = t.mock.method(source, 'fetch');
@@ -25,7 +25,7 @@ describe('SourceAbsolute', () => {
   });
 
   it('should not convert negative length if size is invalid', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
     const view = new SourceView(source, [SourceAbsolute]);
 
     const spy = t.mock.method(source, 'fetch');

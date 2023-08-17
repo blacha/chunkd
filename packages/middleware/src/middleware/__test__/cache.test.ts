@@ -6,7 +6,7 @@ import { SourceCache } from '../cache.js';
 
 describe('SourceCache', () => {
   it('should cache requests', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
 
     const spy = t.mock.method(source, 'fetch');
     const cache = new SourceCache({ size: 1024 * 1024 });
@@ -31,7 +31,7 @@ describe('SourceCache', () => {
   });
 
   it('should empty cache when it fills', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
 
     const spy = t.mock.method(source, 'fetch');
     const cache = new SourceCache({ size: 1 });

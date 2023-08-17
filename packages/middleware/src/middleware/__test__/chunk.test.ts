@@ -6,7 +6,7 @@ import { SourceChunk } from '../chunk.js';
 
 describe('SourceChunk', () => {
   it('should chunk requests', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
     const view = new SourceView(source, [new SourceChunk({ size: 16 })]);
     const spy = t.mock.method(source, 'fetch');
 
@@ -20,7 +20,7 @@ describe('SourceChunk', () => {
   });
 
   it('should create multiple requests', async (t) => {
-    const source = new SourceMemory(new URL('memory://test.json'), Buffer.from(JSON.stringify({ hello: 'world' })));
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
     const view = new SourceView(source, [new SourceChunk({ size: 4 })]);
     const spy = t.mock.method(source, 'fetch');
 
