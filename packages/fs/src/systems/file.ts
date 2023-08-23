@@ -86,7 +86,7 @@ export class FsFile implements FileSystem {
   async head(loc: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
     try {
       const stat = await fs.promises.stat(loc);
-      return { path: loc, size: stat.size, isDirectory: stat.isDirectory() };
+      return { url: loc, size: stat.size, isDirectory: stat.isDirectory() };
     } catch (e) {
       if (isRecord(e) && e.code === 'ENOENT') return null;
       throw new FsError(`Failed to stat ${loc}`, getCode(e), loc, 'head', this, e);

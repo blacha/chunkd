@@ -5,7 +5,7 @@ export type FileWriteTypes = Buffer | Readable | string;
 
 export interface FileInfo {
   /** file path */
-  path: URL;
+  url: URL;
   /**
    * Size of file in bytes
    * undefined if no size found

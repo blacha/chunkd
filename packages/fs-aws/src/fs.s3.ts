@@ -84,7 +84,7 @@ export class FsAwsS3 implements FileSystem {
   }
 
   async *list(loc: URL, opts?: ListOptions): AsyncGenerator<URL> {
-    for await (const obj of this.details(loc, opts)) yield new URL(obj.path);
+    for await (const obj of this.details(loc, opts)) yield obj.url;
   }
 
   async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
@@ -105,7 +105,7 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            yield { path: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true };
+            yield { url: new URL(`s3://${Bucket}/${prefix.Prefix}/`), isDirectory: true };
           }
         }
 
@@ -113,7 +113,7 @@ export class FsAwsS3 implements FileSystem {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
             yield {
-              path: new URL(`s3://${Bucket}/${obj.Key}`),
+              url: new URL(`s3://${Bucket}/${obj.Key}`),
               size: obj.Size,
               eTag: obj.ETag,
               lastModified: obj.LastModified?.toISOString(),
@@ -286,7 +286,7 @@ export class FsAwsS3 implements FileSystem {
         }),
       );
 
-      const info: FileInfo = { size: res.ContentLength, path: loc };
+      const info: FileInfo = { size: res.ContentLength, url: loc };
       if (res.Metadata && Object.keys(res.Metadata).length > 0) info.metadata = res.Metadata;
       if (res.ContentEncoding) info.contentEncoding = res.ContentEncoding;
       if (res.ContentType) info.contentType = res.ContentType;

@@ -99,7 +99,7 @@ describe('LocalFileSystem', () => {
 
     assert.equal(files.length > 3, true);
     assert.notEqual(
-      files.find((f) => f.path.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
       undefined,
     );
     assert.deepEqual(
@@ -111,7 +111,7 @@ describe('LocalFileSystem', () => {
   it('should list recursively', async () => {
     const files = await toArray(fs.details(new URL('..', import.meta.url)));
     assert.notEqual(
-      files.find((f) => f.path.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
       undefined,
     );
     assert.deepEqual(
@@ -124,7 +124,7 @@ describe('LocalFileSystem', () => {
     const files = await toArray(fs.details(new URL('..', import.meta.url), { recursive: false }));
     // In a sub folder shouldn't find it
     assert.equal(
-      files.find((f) => f.path.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
       undefined,
     );
     assert.deepEqual(files.filter((f) => f.isDirectory).length, 1);
