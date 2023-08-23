@@ -1,11 +1,11 @@
 {
   "packages/core": "10.3.0",
-  "packages/fs": "11.0.2",
-  "packages/fs-aws": "11.0.2",
-  "packages/middleware": "11.0.0",
-  "packages/source": "11.0.0",
-  "packages/source-aws": "11.0.1",
-  "packages/source-file": "11.0.0",
-  "packages/source-http": "11.0.1",
-  "packages/source-memory": "11.0.1"
+  "packages/fs": "11.1.0",
+  "packages/fs-aws": "11.1.0",
+  "packages/middleware": "11.0.1",
+  "packages/source": "11.1.0",
+  "packages/source-aws": "11.0.2",
+  "packages/source-file": "11.0.1",
+  "packages/source-http": "11.0.2",
+  "packages/source-memory": "11.0.2"
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.0](https://github.com/blacha/chunkd/compare/source-v11.0.0...source-v11.1.0) (2023-08-23)
+
+
+### Features
+
+* **source:** add onClose to allow middleware to be alerted to when a source is closed ([a502119](https://github.com/blacha/chunkd/commit/a502119b67884dcb817fc0ae2d6d3c154397349b))
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/source-v10.0.0...source-v11.0.0) (2023-07-20)
 
 
