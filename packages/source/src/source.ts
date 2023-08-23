@@ -1,3 +1,5 @@
+/** @typedef {Error} SourceError */
+
 export interface Source {
   /**
    * human friendly name of the source type
@@ -15,8 +17,8 @@ export interface Source {
   /**
    * Metadata about the object the source represents
    *
-   * Some information such as {@link SourceMetadata.size} or {@link SourceMetadata.eTag} can be gained after the first {@link fetch}
-   * other information requires a {@link head} to be called.
+   * Some information such as {@link SourceMetadata.size|size} or {@link SourceMetadata.eTag|eTag} can be read after the first {@link fetch}
+   * other information requires {@link head|head()} to be called.
    */
   metadata?: SourceMetadata;
 
