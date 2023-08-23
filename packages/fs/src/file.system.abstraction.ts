@@ -10,7 +10,7 @@ export class FileSystemAbstraction implements FileSystem {
   name = 'fsa';
   /**
    * Is the systems array currently ordered
-   * @see FileSystemAbstraction.sortSystems
+   * @see {@link FileSystemAbstraction.sortSystems}
    */
   private isOrdered = true;
   systems: { prefix: string; system: FileSystem; flag: Flag }[] = [];

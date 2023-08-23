@@ -1,6 +1,6 @@
 import { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
 
-/** convert negative  offset requests into absolute requests if the file size is known */
+/** convert negative offset requests into absolute requests if the file size is known */
 export const SourceAbsolute: SourceMiddleware = {
   name: 'source:absolute',
   fetch(req: SourceRequest, next: SourceCallback): Promise<ArrayBuffer> {

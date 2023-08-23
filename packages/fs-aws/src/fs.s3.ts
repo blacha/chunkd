@@ -61,14 +61,14 @@ export class FsAwsS3 implements FileSystem {
 
   /**
    * When testing write permissions add a suffix to the file name, this file will be deleted up after writing completes
-   * @see {FsAwsS3.WriteTestSuffix}
+   * @see {@link FsAwsS3.WriteTestSuffix}
    **/
   writeTestSuffix = FsAwsS3.WriteTestSuffix;
 
   /**
    * Max number of list requests to run before throwing a error
    *
-   * @see {FsAwsS3.MaxListCount}
+   * @see {@link FsAwsS3.MaxListCount}
    */
   maxListCount = FsAwsS3.MaxListCount;
 

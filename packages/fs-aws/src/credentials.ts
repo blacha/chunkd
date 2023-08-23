@@ -106,7 +106,7 @@ export abstract class AwsS3CredentialProvider implements FileSystemProvider<FsAw
    *
    * @param loc location to configuration file
    *
-   * @see AwsCredentialProvider
+   * @see {@link AwsCredentialProvider}
    *
    * @example
    * ```typescript
