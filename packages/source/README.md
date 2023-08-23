@@ -5,7 +5,7 @@ Base interface for all sources used by `@chunkd`
 ````typescript
 export interface Source {
   /**
-   *  human friendly name of the source type
+   * human friendly name of the source type
    * @example "aws:s3", "file", "memory"
    */
   type: string;
@@ -23,6 +23,9 @@ export interface Source {
   /** Read the metadata before a fetch request */
   head(): Promise<SourceMetadata>;
 
+  /** close the source, sources like files sometimes have open file handles that need to be closed */
+  close?(): Promise<void>;
+  
   /**
    * Directly read bytes from the source
    *

@@ -1,6 +1,6 @@
 export interface Source {
   /**
-   *  human friendly name of the source type
+   * human friendly name of the source type
    * @example "aws:s3", "file", "memory"
    */
   type: string;
@@ -12,10 +12,15 @@ export interface Source {
    */
   url: URL;
 
-  /** Metadata about the object the source represents */
+  /**
+   * Metadata about the object the source represents
+   *
+   * Some information such as {@link SourceMetadata.size} or {@link SourceMetadata.eTag} can be gained after the first {@link fetch}
+   * other information requires a {@link head} to be called.
+   */
   metadata?: SourceMetadata;
 
-  /** Read the metadata before a fetch request */
+  /** head the source to read the Metadata and sets {@link metadata} */
   head(): Promise<SourceMetadata>;
 
   /** close the source, sources like files sometimes have open file handles that need to be closed */
@@ -32,6 +37,9 @@ export interface Source {
    *```
    * @param offset Byte to start reading form
    * @param length optional number of bytes to read
+   *
+   * @throws {SourceError} on read failures.
+   * @throws {SourceError} if the file is modified between reads.
    */
   fetch(offset: number, length?: number): Promise<ArrayBuffer>;
 }
