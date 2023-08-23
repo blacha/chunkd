@@ -49,10 +49,12 @@ export class FsConfigFetcher {
 }
 
 export type AwsCredentialProviderLoader = () => Promise<AwsCredentialProvider>;
-export abstract class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
+export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
   /**
    * The default session duration if none is provided by the configuration
    * By default AWS uses 3600 seconds (1 hour)
+   *
+   * @default 3600 seconds
    */
   defaultSessionDuration: number | undefined;
   configs: (AwsCredentialConfig | FsConfigFetcher)[] = [];
