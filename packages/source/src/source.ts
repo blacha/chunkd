@@ -45,5 +45,6 @@ export interface SourceMetadata {
   contentType?: string;
   contentDisposition?: string;
   lastModified?: string;
+  /** Extra metadata from the source, see individual sources to see what values are added */
   metadata?: Record<string, unknown>;
 }

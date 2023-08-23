@@ -4,7 +4,8 @@ import { Source, SourceMetadata } from './source.js';
 /**
  * Wrap a source with middleware to modify requests to the sources
  *
- * @see @chunkd/middleware
+ * @see {@link SourceMiddleware}
+ * @see @chunkd/middle for example middleware
  */
 export class SourceView implements Source {
   source: Source;
@@ -37,7 +38,8 @@ export class SourceView implements Source {
   }
 
   async close(): Promise<void> {
-    return this.source.close?.();
+    await this.source.close?.();
+    for (const middleware of this.middleware) await middleware.onClose?.(this.source);
   }
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
