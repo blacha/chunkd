@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.0.1](https://github.com/blacha/chunkd/compare/middleware-v11.0.0...middleware-v11.0.1) (2023-08-23)
+
+
+### Bug Fixes
+
+* **middleware:** do not read past the end of files ([603873c](https://github.com/blacha/chunkd/commit/603873c7645aa985c667ccb489cabcdf7c5fc9b6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.0.0 to ^11.1.0
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/middleware-v10.0.0...middleware-v11.0.0) (2023-07-20)
 
 

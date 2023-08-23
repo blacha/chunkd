@@ -1,5 +1,22 @@
 # Changelog
 
+## [11.1.0](https://github.com/blacha/chunkd/compare/fs-v11.0.2...fs-v11.1.0) (2023-08-23)
+
+
+### Features
+
+* **fs:** use "url" over "path" for url locations ([8b072bd](https://github.com/blacha/chunkd/commit/8b072bd21b70f6ba30b39d245f1f11b1a49021b5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.0.0 to ^11.1.0
+    * @chunkd/source-memory bumped from ^11.0.1 to ^11.0.2
+    * @chunkd/source-file bumped from ^11.0.0 to ^11.0.1
+    * @chunkd/source-http bumped from ^11.0.1 to ^11.0.2
+
 ## [11.0.2](https://github.com/blacha/chunkd/compare/fs-v11.0.1...fs-v11.0.2) (2023-08-02)
 
 

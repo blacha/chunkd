@@ -1,5 +1,11 @@
 # Changelog
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.0.0 to ^11.1.0
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/source-file-v10.0.6...source-file-v11.0.0) (2023-07-20)
 
 
