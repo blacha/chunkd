@@ -46,7 +46,7 @@ export class FsAwsS3 implements FileSystem {
   credentials?: AwsS3CredentialProvider;
 
   /** Buckets we have already tested writing too and should skip testing multiple times */
-  writeTests = new Set<string>();
+  writeTests = new Map<string, Promise<void | FsAwsS3>>();
 
   /** Request Payment option */
   requestPayer?: 'requester';
@@ -97,7 +97,7 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            yield { url: new URL(`s3://${Bucket}/${prefix.Prefix}/`), isDirectory: true };
+            yield { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true };
           }
         }
 
@@ -163,8 +163,6 @@ export class FsAwsS3 implements FileSystem {
   async _writeTest(testPath: URL): Promise<void | FsAwsS3> {
     /** No credential provider so cannot lookup credentials if it fails */
     if (this.credentials == null) return;
-    // Already tested this bucket no need to test again.
-    if (this.writeTests.has(testPath.hostname)) return;
 
     const loc = new URL(this.writeTestSuffix, testPath);
 
@@ -180,7 +178,6 @@ export class FsAwsS3 implements FileSystem {
           RequestPayer: this.requestPayer,
         },
       }).done();
-      this.writeTests.add(testPath.hostname); // Write test worked!
       // Suffix was added so cleanup the file
       if (this.writeTestSuffix !== '') await this.delete(loc);
     } catch (e) {
@@ -196,7 +193,12 @@ export class FsAwsS3 implements FileSystem {
   async write(loc: URL, buf: Buffer | Readable | string, ctx?: WriteOptions): Promise<void> {
     // Streams cannot be read twice, so we cannot try to upload the file, fail then attempt to upload it again with new credentials
     if (this.credentials != null && isReadable(buf)) {
-      const newFs = await this._writeTest(loc);
+      let existing = this.writeTests.get(loc.hostname);
+      if (existing == null) {
+        existing = this._writeTest(loc);
+        this.writeTests.set(loc.hostname, existing);
+      }
+      const newFs = await existing;
       if (newFs) return newFs.write(loc, buf, ctx);
     }
 
