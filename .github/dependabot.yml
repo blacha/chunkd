@@ -10,11 +10,9 @@ updates:
     groups:
       aws-sdk:
         patterns:
-          - "aws-sdk/*"
+          - "@aws-sdk/*"
     ignore:
       - dependency-name: 'aws-sdk'
-        update-types: ['version-update:semver-patch']
-      - dependency-name: '@aws-sdk/*'
         update-types: ['version-update:semver-patch']
       - dependency-name: '@google-cloud/*'
         update-types: ['version-update:semver-patch']
