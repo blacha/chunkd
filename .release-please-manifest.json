@@ -1,7 +1,7 @@
 {
   "packages/core": "10.3.0",
   "packages/fs": "11.1.0",
-  "packages/fs-aws": "11.1.0",
+  "packages/fs-aws": "11.2.0",
   "packages/middleware": "11.0.1",
   "packages/source": "11.1.0",
   "packages/source-aws": "11.0.2",
