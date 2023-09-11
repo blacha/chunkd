@@ -17,7 +17,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@linzjs/style": "^4.0.0",
+    "@linzjs/style": "^5.0.0",
     "lerna": "^7.1.5"
   },
   "workspaces": {
