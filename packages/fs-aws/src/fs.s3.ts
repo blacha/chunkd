@@ -130,7 +130,7 @@ export class FsAwsS3 implements FileSystem {
       const ce = toFsError(e, `Failed to list: "${loc}"`, loc, 'list', this);
 
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(loc);
+        const newFs = await this.credentials.find(loc, 'r');
         if (newFs) {
           yield* newFs.details(loc, opts);
           return;
@@ -154,7 +154,7 @@ export class FsAwsS3 implements FileSystem {
     } catch (e) {
       const ce = toFsError(e, `Failed to read: "${loc}"`, loc, 'read', this);
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(loc);
+        const newFs = await this.credentials.find(loc, 'r');
         if (newFs) return newFs.read(loc);
       }
       throw ce;
@@ -185,7 +185,7 @@ export class FsAwsS3 implements FileSystem {
     } catch (e) {
       const ce = toFsError(e, `Failed to write to "${loc}"`, loc, 'write', this);
       if (ce.code === 403) {
-        const newFs = await this.credentials.find(testPath);
+        const newFs = await this.credentials.find(testPath, 'rw');
         if (newFs) return newFs;
       }
       throw ce;
@@ -222,7 +222,7 @@ export class FsAwsS3 implements FileSystem {
     } catch (e) {
       const ce = toFsError(e, `Failed to write: "${loc}"`, loc, 'write', this);
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(loc);
+        const newFs = await this.credentials.find(loc, 'rw');
         if (newFs) return newFs.write(loc, buf, ctx);
       }
       throw ce;
@@ -243,7 +243,7 @@ export class FsAwsS3 implements FileSystem {
       const ce = toFsError(e, `Failed to delete: "${loc}"`, loc, 'delete', this);
       if (ce.code === 404) return;
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(loc);
+        const newFs = await this.credentials.find(loc, 'rw');
         if (newFs) return newFs.delete(loc);
       }
       throw ce;
@@ -297,7 +297,7 @@ export class FsAwsS3 implements FileSystem {
       if (ce.code === 404) return null;
 
       if (this.credentials != null && ce.code === 403) {
-        const newFs = await this.credentials.find(loc);
+        const newFs = await this.credentials.find(loc, 'r');
         if (newFs) return newFs.head(loc);
       }
       throw ce;
