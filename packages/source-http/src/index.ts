@@ -29,10 +29,15 @@ export function getMetadataFromResponse(response: FetchLikeResponse): SourceMeta
 export class SourceHttp implements Source {
   type = 'http';
   url: URL;
+  headers?: Record<string,string>;
 
-  constructor(url: URL | string) {
+  constructor(url: URL | string, headers?:  Record<string, string>) {
     this.url = typeof url === 'string' ? SourceHttp.tryUrl(url) : url;
+    if (typeof headers !== 'undefined') {
+      this.headers = headers;
+    }
   }
+
 
   /** Attempt to parse a relative string into a URL */
   static tryUrl(s: string): URL {
@@ -51,7 +56,7 @@ export class SourceHttp implements Source {
   private _head?: Promise<SourceMetadata>;
   head(): Promise<SourceMetadata> {
     if (this._head) return this._head;
-    this._head = SourceHttp.fetch(this.url, { method: 'HEAD' }).then((res) => {
+    this._head = SourceHttp.fetch(this.url, { method: 'HEAD', headers: this.headers }).then((res) => {
       if (!res.ok) {
         delete this._head;
         throw new Error(`Failed to HEAD ${this.url}`, { cause: { statusCode: res.status, msg: res.statusText } });
@@ -64,8 +69,9 @@ export class SourceHttp implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     try {
-      const Range = ContentRange.toRange(offset, length);
-      const headers = { Range };
+      const Range = {'range': ContentRange.toRange(offset, length)};
+      const headers = {...Range, ...this.headers};
+
       const response = await SourceHttp.fetch(this.url, { headers });
 
       if (!response.ok) {
@@ -74,7 +80,7 @@ export class SourceHttp implements Source {
           response.status,
           this,
           new Error(response.statusText),
-        );
+          );
       }
 
       const metadata = getMetadataFromResponse(response);
@@ -86,7 +92,7 @@ export class SourceHttp implements Source {
           `ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
           409,
           this,
-        );
+          );
       }
       return response.arrayBuffer();
     } catch (e) {
