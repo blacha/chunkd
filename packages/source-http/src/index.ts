@@ -33,9 +33,7 @@ export class SourceHttp implements Source {
 
   constructor(url: URL | string, headers?:  Record<string, string>) {
     this.url = typeof url === 'string' ? SourceHttp.tryUrl(url) : url;
-    if (typeof headers !== 'undefined') {
-      this.headers = headers;
-    }
+    this.headers = headers;
   }
 
 
