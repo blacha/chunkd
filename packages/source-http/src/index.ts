@@ -67,14 +67,13 @@ export class SourceHttp implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     try {
-      const Range = {'range': ContentRange.toRange(offset, length)};
       const headers = { range: ContentRange.toRange(offset, length), ...this.headers};
 
       const response = await SourceHttp.fetch(this.url, { headers });
 
       if (!response.ok) {
         throw new SourceError(
-          `Failed to fetch ${this.url} ${Range}`,
+          `Failed to fetch ${this.url} ${headers.range}`,
           response.status,
           this,
           new Error(response.statusText),
@@ -87,7 +86,7 @@ export class SourceHttp implements Source {
       } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
         // ETag has changed since the last read!
         throw new SourceError(
-          `ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
+          `ETag conflict ${this.url} ${headers.range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
           409,
           this,
           );
