@@ -29,13 +29,12 @@ export function getMetadataFromResponse(response: FetchLikeResponse): SourceMeta
 export class SourceHttp implements Source {
   type = 'http';
   url: URL;
-  headers?: Record<string,string>;
+  headers?: Record<string, string>;
 
-  constructor(url: URL | string, headers?:  Record<string, string>) {
+  constructor(url: URL | string, headers?: Record<string, string>) {
     this.url = typeof url === 'string' ? SourceHttp.tryUrl(url) : url;
     this.headers = headers;
   }
-
 
   /** Attempt to parse a relative string into a URL */
   static tryUrl(s: string): URL {
@@ -67,7 +66,7 @@ export class SourceHttp implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     try {
-      const headers = { range: ContentRange.toRange(offset, length), ...this.headers};
+      const headers = { range: ContentRange.toRange(offset, length), ...this.headers };
 
       const response = await SourceHttp.fetch(this.url, { headers });
 
@@ -77,7 +76,7 @@ export class SourceHttp implements Source {
           response.status,
           this,
           new Error(response.statusText),
-          );
+        );
       }
 
       const metadata = getMetadataFromResponse(response);
@@ -89,7 +88,7 @@ export class SourceHttp implements Source {
           `ETag conflict ${this.url} ${headers.range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
           409,
           this,
-          );
+        );
       }
       return response.arrayBuffer();
     } catch (e) {
