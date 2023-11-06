@@ -70,7 +70,7 @@ export class SourceHttp implements Source {
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     try {
       const Range = {'range': ContentRange.toRange(offset, length)};
-      const headers = {...Range, ...this.headers};
+      const headers = { range: ContentRange.toRange(offset, length), ...this.headers};
 
       const response = await SourceHttp.fetch(this.url, { headers });
 
