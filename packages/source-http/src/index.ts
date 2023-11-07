@@ -29,9 +29,11 @@ export function getMetadataFromResponse(response: FetchLikeResponse): SourceMeta
 export class SourceHttp implements Source {
   type = 'http';
   url: URL;
+  headers?: Record<string, string>;
 
-  constructor(url: URL | string) {
+  constructor(url: URL | string, headers?: Record<string, string>) {
     this.url = typeof url === 'string' ? SourceHttp.tryUrl(url) : url;
+    this.headers = headers;
   }
 
   /** Attempt to parse a relative string into a URL */
@@ -51,7 +53,7 @@ export class SourceHttp implements Source {
   private _head?: Promise<SourceMetadata>;
   head(): Promise<SourceMetadata> {
     if (this._head) return this._head;
-    this._head = SourceHttp.fetch(this.url, { method: 'HEAD' }).then((res) => {
+    this._head = SourceHttp.fetch(this.url, { method: 'HEAD', headers: this.headers }).then((res) => {
       if (!res.ok) {
         delete this._head;
         throw new Error(`Failed to HEAD ${this.url}`, { cause: { statusCode: res.status, msg: res.statusText } });
@@ -64,13 +66,13 @@ export class SourceHttp implements Source {
 
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     try {
-      const Range = ContentRange.toRange(offset, length);
-      const headers = { Range };
+      const headers = { range: ContentRange.toRange(offset, length), ...this.headers };
+
       const response = await SourceHttp.fetch(this.url, { headers });
 
       if (!response.ok) {
         throw new SourceError(
-          `Failed to fetch ${this.url} ${Range}`,
+          `Failed to fetch ${this.url} ${headers.range}`,
           response.status,
           this,
           new Error(response.statusText),
@@ -83,7 +85,7 @@ export class SourceHttp implements Source {
       } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
         // ETag has changed since the last read!
         throw new SourceError(
-          `ETag conflict ${this.url} ${Range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
+          `ETag conflict ${this.url} ${headers.range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
           409,
           this,
         );
