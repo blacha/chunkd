@@ -2,6 +2,8 @@ import { FsFile } from '../systems/file.js';
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { FileSystemAbstraction } from '../file.system.abstraction.js';
+import { gzipSync } from 'node:zlib';
+import { FsMemory } from '../systems/memory.js';
 
 export class FakeSystem extends FsFile {
   constructor(protocol = 'fake') {
@@ -110,5 +112,40 @@ describe('FileSystemAbstraction', () => {
     const fsa = new FileSystemAbstraction();
     assert.equal(fsa.toUrl('s3://foo/bar').href, 's3://foo/bar');
     assert.equal(fsa.toUrl('fake-a://fake.com/bar').href, 'fake-a://fake.com/bar');
+  });
+
+  describe('readJson', () => {
+    it('should readJson objects', async () => {
+      const fsa = new FileSystemAbstraction();
+      const fsMem = new FsMemory();
+      fsa.register('memory://', fsMem);
+
+      await fsa.write(new URL('memory://memory/empty.json'), Buffer.from(JSON.stringify({ Hello: 'World' })));
+      const result = await fsa.readJson(new URL('memory://memory/empty.json'));
+      assert.deepEqual(result, { Hello: 'World' });
+    });
+
+    it('should readJson gzipped objects', async () => {
+      const fsa = new FileSystemAbstraction();
+      const fsMem = new FsMemory();
+      fsa.register('memory://', fsMem);
+
+      await fsa.write(new URL('memory://memory/empty.json'), gzipSync(Buffer.from(JSON.stringify({ Hello: 'World' }))));
+      const result = await fsa.readJson(new URL('memory://memory/empty.json'));
+      assert.deepEqual(result, { Hello: 'World' });
+    });
+
+    it('should readJson gzipped objects ending in ".gz"', async () => {
+      const fsa = new FileSystemAbstraction();
+      const fsMem = new FsMemory();
+      fsa.register('memory://', fsMem);
+
+      await fsa.write(
+        new URL('memory://memory/empty.json.gz'),
+        gzipSync(Buffer.from(JSON.stringify({ Hello: 'World' }))),
+      );
+      const result = await fsa.readJson(new URL('memory://memory/empty.json.gz'));
+      assert.deepEqual(result, { Hello: 'World' });
+    });
   });
 });

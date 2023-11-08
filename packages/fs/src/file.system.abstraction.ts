@@ -1,10 +1,26 @@
 import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
 import type { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
+import { gunzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
 import { Flag } from './flags.js';
 import { FsFile } from './systems/file.js';
 import { toArray } from './generator.js';
+
+const gunzipProm = promisify(gunzip);
+
+/**
+ * Does a buffer look like a gzipped document instead of raw json
+ *
+ * Determined by checking the first two bytes are the gzip magic bytes `0x1f 0x8b`
+ *
+ * @see https://en.wikipedia.org/wiki/Gzip
+ *
+ */
+export function isGzip(b: Buffer): boolean {
+  return b[0] === 0x1f && b[1] === 0x8b;
+}
 
 export class FileSystemAbstraction implements FileSystem {
   name = 'fsa';
@@ -67,11 +83,18 @@ export class FileSystemAbstraction implements FileSystem {
 
   /**
    * Read a file as JSON
+   *
+   * If the file ends with .gz or is a GZIP like {@link isGzip} file it will automatically be decompressed.
+   *
    * @param loc file to read
    * @returns JSON Content of the file
    */
   async readJson<T>(loc: URL): Promise<T> {
     const obj = await this.read(loc);
+    if (loc.pathname.endsWith('.gz') || isGzip(obj)) {
+      const data = await gunzipProm(obj);
+      return JSON.parse(data.toString());
+    }
     return JSON.parse(obj.toString());
   }
 
