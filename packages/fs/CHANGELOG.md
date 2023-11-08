@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.2.0](https://github.com/blacha/chunkd/compare/fs-v11.1.0...fs-v11.2.0) (2023-11-08)
+
+
+### Features
+
+* **fsa:** decompress "json.gz" files automatically with readJson ([#1345](https://github.com/blacha/chunkd/issues/1345)) ([a13e380](https://github.com/blacha/chunkd/commit/a13e380caaecfe48de5341c7570938c43ec2027a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source-http bumped from ^11.0.2 to ^11.1.0
+
 ## [11.1.0](https://github.com/blacha/chunkd/compare/fs-v11.0.2...fs-v11.1.0) (2023-08-23)
 
 

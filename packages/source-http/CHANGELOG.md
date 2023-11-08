@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.1.0](https://github.com/blacha/chunkd/compare/source-http-v11.0.2...source-http-v11.1.0) (2023-11-08)
+
+
+### Features
+
+* **source-http:** add header support ([#1342](https://github.com/blacha/chunkd/issues/1342)) ([f768e82](https://github.com/blacha/chunkd/commit/f768e82e544253fa6353cd4c4d59481efcfb878f))
+
 ## [11.0.1](https://github.com/blacha/chunkd/compare/source-http-v11.0.0...source-http-v11.0.1) (2023-07-26)
 
 
