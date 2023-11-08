@@ -13,6 +13,12 @@
   * dependencies
     * @chunkd/fs bumped from 11.0.1 to 11.0.2
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.1.0 to 11.2.0
+
 ## [11.2.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.1.0...fs-aws-v11.2.0) (2023-09-07)
 
 
