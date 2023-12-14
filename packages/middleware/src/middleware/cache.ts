@@ -20,12 +20,16 @@ export class SourceCache implements SourceMiddleware {
   /** Primary cache of objects */
   cacheA: Map<string, CacheObject> = new Map();
   cacheB: Map<string, CacheObject> = new Map();
+  /** List of protocols to cache */
+  protocols: Set<string>;
 
-  constructor(opts: { size: number }) {
+  constructor(opts: { size: number; protocols?: string[] }) {
     this.maxSize = opts.size;
+    this.protocols = new Set<string>(opts.protocols ?? []);
   }
 
   fetch(req: SourceRequest, next: SourceCallback): Promise<ArrayBuffer> {
+    if (this.protocols.size > 0 && !this.protocols.has(req.source.url.protocol)) return next(req);
     if (req.length == null) return next(req);
 
     const cacheKey = `${req.source.url.toString()}@${req.offset}+${req.length}`;

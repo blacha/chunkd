@@ -30,6 +30,21 @@ describe('SourceCache', () => {
     assert.equal(cacheEntry[1].saves, 0);
   });
 
+  it('should limit cache to specific protocols', async () => {
+    const cache = new SourceCache({ size: 1, protocols: ['memory-b:'] });
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
+    const view = new SourceView(source, [cache]);
+    assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
+    assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
+    assert.equal(cache.size, 0);
+
+    const sourceB = new SourceMemory('memory-b://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
+    const viewB = new SourceView(sourceB, [cache]);
+    assert.equal(Buffer.from(await viewB.fetch(0, 1)).toString(), '{');
+    assert.equal(Buffer.from(await viewB.fetch(0, 1)).toString(), '{');
+    assert.equal(cache.size, 1);
+  });
+
   it('should empty cache when it fills', async (t) => {
     const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
 
