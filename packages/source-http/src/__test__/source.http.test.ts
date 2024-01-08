@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
-import { FetchLikeOptions, SourceHttp } from '../index.js';
+
+import { FetchLikeOptions, FetchLikeResponse, SourceHttp } from '../index.js';
 
 export interface HttpHeaders {
   Range: string;
@@ -12,7 +13,7 @@ describe('SourceHttp', () => {
 
   before(() => {
     // Fake fetch that returns the number of the byte that was requested
-    SourceHttp.fetch = (_, obj?: FetchLikeOptions): any => {
+    SourceHttp.fetch = (_, obj?: FetchLikeOptions): Promise<FetchLikeResponse> => {
       const rangeHeader = obj?.headers?.range;
       if (rangeHeader == null) throw new Error('No headers');
       const [startByte, endByte] = rangeHeader
@@ -25,8 +26,8 @@ describe('SourceHttp', () => {
         bytes.push(i);
       }
       const buffer = new Uint8Array(bytes).buffer;
-      const arrayBuffer = (): any => Promise.resolve(buffer);
-      return Promise.resolve({ arrayBuffer, ok: true, headers: new Map() }) as any;
+      const arrayBuffer = (): Promise<ArrayBufferLike> => Promise.resolve(buffer);
+      return Promise.resolve({ arrayBuffer, ok: true, headers: new Map() }) as unknown as Promise<FetchLikeResponse>;
     };
   });
 
@@ -83,10 +84,10 @@ describe('SourceHttp', () => {
   });
 
   describe('document.baseURI', () => {
-    let oldDoc: any;
+    let oldDoc: Document;
     beforeEach(() => {
       oldDoc = global.document;
-      global.document = { baseURI: 'https://example.com/foo/index.html' } as any;
+      global.document = { baseURI: 'https://example.com/foo/index.html' } as unknown as Document;
     });
 
     afterEach(() => {

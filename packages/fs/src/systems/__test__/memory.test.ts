@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import assert from 'node:assert';
-import { describe, it, afterEach } from 'node:test';
-import { FsMemory } from '../memory.js';
+import { afterEach, describe, it } from 'node:test';
+
 import { toArray } from '../../generator.js';
+import { FsMemory } from '../memory.js';
 
 function toHref(s: URL[]): string[] {
   return s.map((url) => url.href);

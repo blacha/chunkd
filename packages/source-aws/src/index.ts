@@ -86,7 +86,7 @@ export class SourceAwsS3 implements Source {
       // If the file has been modified since the last time we requested data this can cause conflicts so error out
       if (lastEtag && response.ETag && lastEtag !== response.ETag) {
         throw new SourceError(
-          `ETag conflict ${this.url} ${fetchRange} expected: ${lastEtag} got: ${response.ETag}`,
+          `ETag conflict ${this.url.href} ${fetchRange} expected: ${lastEtag} got: ${response.ETag}`,
           409,
           this,
         );
@@ -94,7 +94,7 @@ export class SourceAwsS3 implements Source {
       // Use `fetch` response object to convert stream to arrayBuffer
       return new Response(response.Body as unknown as BodyInit).arrayBuffer();
     } catch (e) {
-      throw toSourceError(e, `Failed to fetchBytes from:${this.url} range: ${fetchRange}`, this);
+      throw toSourceError(e, `Failed to fetchBytes from:${this.url.href} range: ${fetchRange}`, this);
     }
   }
 }

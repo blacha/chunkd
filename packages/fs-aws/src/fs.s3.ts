@@ -15,8 +15,8 @@ import { SourceAwsS3 } from '@chunkd/source-aws';
 
 import { AwsS3CredentialProvider } from './credentials.js';
 
-function isReadable(r: any): r is Readable {
-  return r != null && typeof r['read'] === 'function';
+function isReadable(r: unknown): r is Readable {
+  return r != null && typeof (r as { read: unknown })['read'] === 'function';
 }
 
 export function toFsError(e: unknown, msg: string, url: URL, action: FileSystemAction, system: FileSystem): FsError {
@@ -127,7 +127,7 @@ export class FsAwsS3 implements FileSystem {
         ContinuationToken = res.NextContinuationToken;
       }
     } catch (e) {
-      const ce = toFsError(e, `Failed to list: "${loc}"`, loc, 'list', this);
+      const ce = toFsError(e, `Failed to list: "${loc.href}"`, loc, 'list', this);
 
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(loc);
@@ -152,7 +152,7 @@ export class FsAwsS3 implements FileSystem {
 
       return Buffer.from(await new Response(res.Body as BodyInit).arrayBuffer());
     } catch (e) {
-      const ce = toFsError(e, `Failed to read: "${loc}"`, loc, 'read', this);
+      const ce = toFsError(e, `Failed to read: "${loc.href}"`, loc, 'read', this);
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(loc);
         if (newFs) return newFs.read(loc);
@@ -183,7 +183,7 @@ export class FsAwsS3 implements FileSystem {
       // Suffix was added so cleanup the file
       if (this.writeTestSuffix !== '') await this.delete(loc);
     } catch (e) {
-      const ce = toFsError(e, `Failed to write to "${loc}"`, loc, 'write', this);
+      const ce = toFsError(e, `Failed to write to "${loc.href}"`, loc, 'write', this);
       if (ce.code === 403) {
         const newFs = await this.credentials.find(testPath);
         if (newFs) return newFs;
@@ -220,7 +220,7 @@ export class FsAwsS3 implements FileSystem {
         },
       }).done();
     } catch (e) {
-      const ce = toFsError(e, `Failed to write: "${loc}"`, loc, 'write', this);
+      const ce = toFsError(e, `Failed to write: "${loc.href}"`, loc, 'write', this);
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(loc);
         if (newFs) return newFs.write(loc, buf, ctx);
@@ -240,7 +240,7 @@ export class FsAwsS3 implements FileSystem {
       );
       return;
     } catch (e) {
-      const ce = toFsError(e, `Failed to delete: "${loc}"`, loc, 'delete', this);
+      const ce = toFsError(e, `Failed to delete: "${loc.href}"`, loc, 'delete', this);
       if (ce.code === 404) return;
       if (this.credentials != null && ce.code === 403) {
         const newFs = await this.credentials.find(loc);
@@ -268,7 +268,7 @@ export class FsAwsS3 implements FileSystem {
         if (r.Body) (r.Body as Readable).pipe(pt);
         else pt.end();
       })
-      .catch((e) => pt.emit('error', toFsError(e, `Failed to readStream: ${loc}`, loc, 'readStream', this)));
+      .catch((e) => pt.emit('error', toFsError(e, `Failed to readStream: ${loc.href}`, loc, 'readStream', this)));
     return pt;
   }
 
@@ -293,7 +293,7 @@ export class FsAwsS3 implements FileSystem {
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
 
-      const ce = toFsError(e, `Failed to head: ${loc}`, loc, 'head', this);
+      const ce = toFsError(e, `Failed to head: ${loc.href}`, loc, 'head', this);
       if (ce.code === 404) return null;
 
       if (this.credentials != null && ce.code === 403) {

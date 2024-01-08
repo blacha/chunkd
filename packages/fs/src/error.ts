@@ -1,4 +1,4 @@
-import { FileSystemAction, FileSystem } from './file.system.js';
+import { FileSystem, FileSystemAction } from './file.system.js';
 
 export class FsError extends Error {
   /** Status code for the error eg 403 - Forbidden vs 404 Not found */

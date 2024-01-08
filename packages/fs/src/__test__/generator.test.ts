@@ -1,7 +1,9 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
+
 import { toArray, toFirst } from '../generator.js';
 
+// eslint-disable-next-line @typescript-eslint/require-await
 async function* generator(iMax = 10): AsyncGenerator<number> {
   for (let i = 0; i < iMax; i++) yield i;
 }

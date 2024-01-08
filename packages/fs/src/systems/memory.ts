@@ -1,7 +1,8 @@
-import { Readable } from 'stream';
-import { FileInfo, FileSystem, ListOptions, WriteOptions } from '../file.system.js';
 import { SourceMemory } from '@chunkd/source-memory';
+import { Readable } from 'stream';
+
 import { FsError } from '../error.js';
+import { FileInfo, FileSystem, ListOptions, WriteOptions } from '../file.system.js';
 
 export function toReadable(r: string | Buffer | Readable): Readable {
   if (typeof r === 'string') r = Buffer.from(r);
@@ -18,9 +19,9 @@ export async function toBuffer(stream: Readable): Promise<Buffer> {
   return new Promise<Buffer>((resolve, reject) => {
     const buf: Buffer[] = [];
 
-    stream.on('data', (chunk) => buf.push(chunk));
+    stream.on('data', (chunk: Buffer) => buf.push(chunk));
     stream.on('end', () => resolve(Buffer.concat(buf)));
-    stream.on('error', (err) => reject(`error converting stream - ${err}`));
+    stream.on('error', (err) => reject(`error converting stream - ${String(err)}`));
   });
 }
 
@@ -28,15 +29,15 @@ export class FsMemory implements FileSystem {
   name = 'memory';
   files: Map<string, { buffer: Buffer; opts?: WriteOptions }> = new Map();
 
-  async read(loc: URL): Promise<Buffer> {
+  read(loc: URL): Promise<Buffer> {
     const data = this.files.get(loc.href);
-    if (data == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'read', this);
-    return data.buffer;
+    if (data == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'read', this);
+    return Promise.resolve(data.buffer);
   }
 
   readStream(loc: URL): Readable {
     const buf = this.files.get(loc.href);
-    if (buf == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'readStream', this);
+    if (buf == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'readStream', this);
     return toReadable(buf.buffer);
   }
 
@@ -44,6 +45,7 @@ export class FsMemory implements FileSystem {
     this.files.set(loc.href, { opts: opts, buffer: await getBuffer(buffer) });
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *list(loc: URL, opt?: ListOptions): AsyncGenerator<URL> {
     const isRecursive = opt?.recursive === false;
     const folders = new Set();
@@ -60,7 +62,7 @@ export class FsMemory implements FileSystem {
             // If the folderName is empty then loc is also a folder
             // eg list "a" when "a/b/c.txt" exists
             if (folderName === '') {
-              yield new URL(loc + '/');
+              yield new URL(loc.href + '/');
             } else yield new URL(folderName + '/', loc);
           }
         } else {
@@ -86,25 +88,26 @@ export class FsMemory implements FileSystem {
     return dat != null;
   }
 
-  async head(loc: URL): Promise<FileInfo | null> {
+  head(loc: URL): Promise<FileInfo | null> {
     const obj = this.files.get(loc.href);
-    if (obj == null) return null;
-    return {
+    if (obj == null) return Promise.resolve(null);
+    return Promise.resolve({
       url: loc,
       size: obj.buffer.length,
       metadata: obj.opts?.metadata,
       contentType: obj.opts?.contentType,
       contentEncoding: obj.opts?.contentEncoding,
-    };
+    });
   }
 
-  async delete(loc: URL): Promise<void> {
+  delete(loc: URL): Promise<void> {
     this.files.delete(loc.href);
+    return Promise.resolve();
   }
 
   source(loc: URL): SourceMemory {
     const obj = this.files.get(loc.href);
-    if (obj == null) throw new FsError(`Not found: ${loc}`, 404, loc, 'source', this);
+    if (obj == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'source', this);
     const source = new SourceMemory(loc, obj.buffer);
     return source;
   }

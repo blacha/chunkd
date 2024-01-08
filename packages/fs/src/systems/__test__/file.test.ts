@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
-import { FsFile } from '../file.js';
+
 import { FsError } from '../../error.js';
+import { FsFile } from '../file.js';
 
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
   const output: T[] = [];
@@ -64,8 +65,8 @@ describe('LocalFileSystem', () => {
         fs.readStream(new URL('missing-file-goes-here.txt', import.meta.url)),
       );
       assert.fail('should throw');
-    } catch (e: any) {
-      assert.equal(e.code, 404);
+    } catch (e: unknown) {
+      assert.equal((e as { code: number }).code, 404);
       assert.equal(String(e), 'Error: Failed to write: ' + new URL('fs.test', import.meta.url).href);
     }
   });

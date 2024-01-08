@@ -1,6 +1,8 @@
-import { SourceFile } from '@chunkd/source-file';
 import fs from 'node:fs';
 import { Readable } from 'node:stream';
+
+import { SourceFile } from '@chunkd/source-file';
+
 import { FsError } from '../error.js';
 import { FileInfo, FileSystem, ListOptions } from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
@@ -41,7 +43,7 @@ export class FsFile implements FileSystem {
 
       // Trying to list a folder but doesn't exist
       if (stat == null && loc.href.endsWith('/')) {
-        throw new FsError(`Failed to list: ${loc}`, 404, loc, 'list', this);
+        throw new FsError(`Failed to list: ${loc.href}`, 404, loc, 'list', this);
       }
 
       // Prefix search, list the parent folder and filter for the filename
@@ -71,7 +73,7 @@ export class FsFile implements FileSystem {
       }
     } catch (e) {
       if (FsError.is(e)) throw e;
-      throw new FsError(`Failed to list: ${loc}`, getCode(e), loc, 'list', this, e);
+      throw new FsError(`Failed to list: ${loc.href}`, getCode(e), loc, 'list', this, e);
     }
   }
 
@@ -89,7 +91,7 @@ export class FsFile implements FileSystem {
       return { url: loc, size: stat.size, isDirectory: stat.isDirectory() };
     } catch (e) {
       if (isRecord(e) && e.code === 'ENOENT') return null;
-      throw new FsError(`Failed to stat ${loc}`, getCode(e), loc, 'head', this, e);
+      throw new FsError(`Failed to stat ${loc.href}`, getCode(e), loc, 'head', this, e);
     }
   }
 
@@ -97,7 +99,7 @@ export class FsFile implements FileSystem {
     try {
       return await fs.promises.readFile(loc);
     } catch (e) {
-      throw new FsError(`Failed to read: ${loc}`, getCode(e), loc, 'read', this, e);
+      throw new FsError(`Failed to read: ${loc.href}`, getCode(e), loc, 'read', this, e);
     }
   }
 
@@ -107,17 +109,21 @@ export class FsFile implements FileSystem {
         await fs.promises.mkdir(new URL('.', loc), { recursive: true });
         await fs.promises.writeFile(loc, buf);
       } else {
-        await new Promise(async (resolve, reject) => {
+        await new Promise((resolve, reject) => {
           buf.once('error', reject); // Has to be run before any awaits
-          await fs.promises.mkdir(new URL('.', loc), { recursive: true });
-          const st = fs.createWriteStream(loc);
-          st.on('finish', resolve);
-          st.on('error', reject);
-          buf.pipe(st);
+          fs.promises
+            .mkdir(new URL('.', loc), { recursive: true })
+            .then(() => {
+              const st = fs.createWriteStream(loc);
+              st.on('finish', resolve);
+              st.on('error', reject);
+              buf.pipe(st);
+            })
+            .catch(reject);
         });
       }
     } catch (e) {
-      throw new FsError(`Failed to write: ${loc}`, getCode(e), loc, 'write', this, e);
+      throw new FsError(`Failed to write: ${loc.href}`, getCode(e), loc, 'write', this, e);
     }
   }
 
@@ -129,7 +135,7 @@ export class FsFile implements FileSystem {
       const code = getCode(e);
       if (code === 404) return;
 
-      throw new FsError(`Failed to delete: ${loc}`, getCode(e), loc, 'delete', this, e);
+      throw new FsError(`Failed to delete: ${loc.href}`, getCode(e), loc, 'delete', this, e);
     }
   }
 

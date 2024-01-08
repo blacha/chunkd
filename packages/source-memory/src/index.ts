@@ -30,7 +30,7 @@ export class SourceMemory implements Source {
     return Promise.resolve({ size: this.data.byteLength });
   }
 
-  async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
+  fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     if (offset < 0) offset = this.data.byteLength + offset;
 
     if (offset > this.data.byteLength) {
@@ -41,6 +41,6 @@ export class SourceMemory implements Source {
       throw new SourceError(`Read length outside bounds ${ContentRange.toRange(offset, length)}`, 400, this);
     }
 
-    return this.data.slice(offset, length == null ? undefined : offset + length);
+    return Promise.resolve(this.data.slice(offset, length == null ? undefined : offset + length));
   }
 }

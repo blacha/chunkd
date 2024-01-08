@@ -11,9 +11,9 @@ export function isPromise<T>(t: AwsCredentialProvider | Promise<T>): t is Promis
 
 /** Basic JSON validation of the configuration */
 export function validateConfig(cfg: AwsCredentialProvider, loc: URL): AwsCredentialProvider {
-  if (cfg == null) throw new Error('Unknown configuration from:' + loc);
-  if (cfg.v !== 2) throw new Error('Configuration is not v2 from:' + loc);
-  if (!Array.isArray(cfg.prefixes)) throw new Error('Configuration prefixes invalid from:' + loc);
+  if (cfg == null) throw new Error('Unknown configuration from:' + loc.href);
+  if (cfg.v !== 2) throw new Error('Configuration is not v2 from:' + loc.href);
+  if (!Array.isArray(cfg.prefixes)) throw new Error('Configuration prefixes invalid from:' + loc.href);
 
   return cfg;
 }
@@ -33,7 +33,7 @@ export class FsConfigFetcher {
     if (this._config != null) return this._config;
     this._config = this.fs
       .read(this.loc)
-      .then((f) => JSON.parse(f.toString()))
+      .then((f) => JSON.parse(f.toString()) as AwsCredentialProvider)
       .then((cfg) => validateConfig(cfg, this.loc));
 
     return this._config;

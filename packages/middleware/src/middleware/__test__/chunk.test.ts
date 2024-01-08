@@ -1,7 +1,9 @@
-import { SourceView } from '@chunkd/source';
-import { SourceMemory } from '@chunkd/source-memory';
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
+
+import { SourceView } from '@chunkd/source';
+import { SourceMemory } from '@chunkd/source-memory';
+
 import { SourceChunk } from '../chunk.js';
 
 describe('SourceChunk', () => {
