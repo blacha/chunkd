@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.0.3](https://github.com/blacha/chunkd/compare/source-aws-v11.0.2...source-aws-v11.0.3) (2024-02-20)
+
+
+### Bug Fixes
+
+* **source-aws:** Fix the Source.head function to decode url for the s3 object key. ([#1401](https://github.com/blacha/chunkd/issues/1401)) ([0eb0aa5](https://github.com/blacha/chunkd/commit/0eb0aa55076d0436d34b45e95cc898012135db93))
+
 ## [11.0.1](https://github.com/blacha/chunkd/compare/source-aws-v11.0.0...source-aws-v11.0.1) (2023-07-26)
 
 

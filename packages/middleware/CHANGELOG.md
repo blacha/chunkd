@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.0](https://github.com/blacha/chunkd/compare/middleware-v11.0.1...middleware-v11.1.0) (2024-02-20)
+
+
+### Features
+
+* **middleware:** restrict caching to specific protocols ([14c8a41](https://github.com/blacha/chunkd/commit/14c8a417829bb9942b1101ea95699057b18d8682))
+
 ## [11.0.1](https://github.com/blacha/chunkd/compare/middleware-v11.0.0...middleware-v11.0.1) (2023-08-23)
 
 

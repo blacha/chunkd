@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs-aws",
-  "version": "11.2.1",
+  "version": "11.2.2",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -22,7 +22,7 @@
     "@aws-sdk/credential-providers": "*",
     "@aws-sdk/lib-storage": "*",
     "@chunkd/fs": "11.2.0",
-    "@chunkd/source-aws": "11.0.2"
+    "@chunkd/source-aws": "11.0.3"
   },
   "devDependencies": {},
   "publishConfig": {
