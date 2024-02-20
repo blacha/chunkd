@@ -1,8 +1,9 @@
+import assert from 'node:assert';
+import { after, before, describe, it } from 'node:test';
+
 import { S3Client } from '@aws-sdk/client-s3';
 import { fsa, FsFile, FsMemory, toArray } from '@chunkd/fs';
 import { FsAwsS3 } from '@chunkd/fs-aws';
-import { before, after, describe, it } from 'node:test';
-import assert from 'node:assert';
 
 // function getGcp() {
 //   if (process.env.GCP_ACCOUNT) {
@@ -92,7 +93,7 @@ async function testPrefix(prefix, fs) {
         const listPrefix = new URL(prefix + 'a');
         const files = await toArray(fsa.details(new URL(listPrefix), { recursive: false }));
         assert.deepEqual(
-          files.map((f) => f.path.href.slice(prefix.length)),
+          files.map((f) => f.url.href.slice(prefix.length)),
           ['a/', 'a-file.txt'],
         );
       });
@@ -100,7 +101,7 @@ async function testPrefix(prefix, fs) {
       it('should list folders', async () => {
         const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
         assert.deepEqual(
-          files.filter((f) => f.isDirectory).map((f) => f.path.href.slice(prefix.length)),
+          files.filter((f) => f.isDirectory).map((f) => f.url.href.slice(prefix.length)),
           ['a/', 'c/', 'd/'],
         );
       });
@@ -116,7 +117,7 @@ async function testPrefix(prefix, fs) {
     describe('head', () => {
       it('should head a file', async () => {
         const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
-        assert.equal(ret.path.href, new URL(TestFiles[0].path, prefix).href);
+        assert.equal(ret.url.href, new URL(TestFiles[0].path, prefix).href);
         assert.equal(ret.size, TestFiles[0].buffer.length);
       });
     });
@@ -128,6 +129,12 @@ async function testPrefix(prefix, fs) {
     });
 
     describe('source', () => {
+      it('should head a source', async () => {
+        const source = fsa.source(new URL('🦄.json', prefix));
+        const ret = await source.head();
+        assert.equal(ret.size, 4);
+      });
+
       it('should read a source', async () => {
         const source = fsa.source(new URL('🦄.json', prefix));
         const bytes = Buffer.from(await source.fetch(0)).toString('hex');
