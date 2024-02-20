@@ -60,7 +60,7 @@ export class SourceAwsS3 implements Source {
 
     const request = new HeadObjectCommand({
       ...SourceAwsS3.getBucketKey(this.url),
-      Key: this.url.pathname.slice(1),
+      Key: decodeURIComponent(this.url.pathname.slice(1)),
       RequestPayer: this.requestPayer,
     });
     this._head = this.client.send(request).then((response) => {
