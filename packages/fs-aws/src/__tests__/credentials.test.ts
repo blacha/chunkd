@@ -22,10 +22,16 @@ describe('AwsS3CredentialProvider', () => {
     assert.ok(fs.requestPayer === 'requester');
   });
 
-  it('should require a roleArn', () => {
+  it('should support requester pays from the current role', () => {
     const creds = new AwsS3CredentialProvider();
 
+    const fs = creds.createFileSystem({ ...baseConfig, roleArn: undefined, access: 'requesterPays' });
+    assert.ok(fs.s3 !== getPublicS3());
+    assert.ok(fs.requestPayer === 'requester');
+  });
+
+  it('should require a roleArn', () => {
+    const creds = new AwsS3CredentialProvider();
     assert.throws(() => creds.createFileSystem({ ...baseConfig }));
-    assert.throws(() => creds.createFileSystem({ ...baseConfig, access: 'requesterPays' }));
   });
 });

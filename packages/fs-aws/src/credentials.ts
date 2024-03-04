@@ -79,6 +79,13 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
       return fs;
     }
 
+    // Requester pays off the current credentials
+    if (cs.access === 'requesterPays' && cs.roleArn == null) {
+      const fs = new FsAwsS3(new S3Client({}));
+      if (cs.access === 'requesterPays') fs.requestPayer = 'requester';
+      return fs;
+    }
+
     // All other credentials need a role assumed
     if (cs.roleArn == null) throw new Error('No roleArn is defined for prefix: ' + cs.prefix);
     const client = new S3Client({
