@@ -1,3 +1,6 @@
+import type { Readable } from 'node:stream';
+import { PassThrough } from 'node:stream';
+
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -7,10 +10,9 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { FileInfo, FileSystem, FileSystemAction, FsError, ListOptions, WriteOptions, isRecord } from '@chunkd/fs';
+import { FileInfo, FileSystem, FileSystemAction, FsError, isRecord, ListOptions, WriteOptions } from '@chunkd/fs';
 import { SourceAwsS3 } from '@chunkd/source-aws';
-import type { Readable } from 'node:stream';
-import { PassThrough } from 'node:stream';
+
 import { AwsS3CredentialProvider } from './credentials.js';
 
 function isReadable(r: any): r is Readable {
@@ -49,7 +51,7 @@ export class FsAwsS3 implements FileSystem {
   writeTests = new Map<string, Promise<void | FsAwsS3>>();
 
   /** Request Payment option */
-  requestPayer?: 'requester';
+  requestPayer?: 'requester' | 'public';
 
   /**
    * When testing write permissions add a suffix to the file name, this file will be deleted up after writing completes

@@ -1,8 +1,9 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { FileSystem, FileSystemProvider } from '@chunkd/fs';
-import { AwsCredentialConfig, AwsCredentialProvider } from './types.js';
+
 import { FsAwsS3 } from './fs.s3.js';
+import { AwsCredentialConfig, AwsCredentialProvider } from './types.js';
 
 export function isPromise<T>(t: AwsCredentialProvider | Promise<T>): t is Promise<T> {
   return 'then' in t && typeof t['then'] === 'function';
@@ -48,6 +49,14 @@ export class FsConfigFetcher {
   }
 }
 
+let PublicClient: S3Client | undefined;
+/** Creating a public s3 client is somewhat hard, where the signing method needs to be overriden */
+export function getPublicS3(): S3Client {
+  if (PublicClient) return PublicClient;
+  PublicClient = new S3Client({ signer: { sign: async (req) => req } });
+  return PublicClient;
+}
+
 export type AwsCredentialProviderLoader = () => Promise<AwsCredentialProvider>;
 export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
   /**
@@ -63,6 +72,15 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
 
   /** Given a config create a file system */
   createFileSystem(cs: AwsCredentialConfig): FsAwsS3 {
+    // Public access
+    if (cs.access === 'public') {
+      const fs = new FsAwsS3(getPublicS3());
+      fs.requestPayer = 'public';
+      return fs;
+    }
+
+    // All other credentials need a role assumed
+    if (cs.roleArn == null) throw new Error('No roleArn is defined for prefix: ' + cs.prefix);
     const client = new S3Client({
       credentials: fromTemporaryCredentials({
         params: {
@@ -74,7 +92,9 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
       }),
     });
 
-    return new FsAwsS3(client);
+    const fs = new FsAwsS3(client);
+    if (cs.access === 'requesterPays') fs.requestPayer = 'requester';
+    return fs;
   }
   /** Version for session name generally v2 or v3 for aws-sdk versions */
   version = 'v3';
