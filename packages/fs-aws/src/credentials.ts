@@ -53,7 +53,7 @@ let PublicClient: S3Client | undefined;
 /** Creating a public s3 client is somewhat hard, where the signing method needs to be overriden */
 export function getPublicS3(): S3Client {
   if (PublicClient) return PublicClient;
-  PublicClient = new S3Client({ signer: { sign: async (req) => req } });
+  PublicClient = new S3Client({ signer: { sign: (req) => Promise.resolve(req) } });
   return PublicClient;
 }
 
