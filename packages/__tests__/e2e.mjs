@@ -108,7 +108,7 @@ async function testPrefix(prefix, fs) {
     });
 
     describe('read', () => {
-      it('should read a file', async (t) => {
+      it('should read a file', async () => {
         const file = await fsa.read(new URL(TestFiles[0].path, prefix));
         assert.equal(file.toString(), TestFiles[0].buffer.toString());
       });

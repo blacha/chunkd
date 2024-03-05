@@ -1,5 +1,6 @@
-import { Source } from '@chunkd/source';
 import { Readable } from 'node:stream';
+
+import { Source } from '@chunkd/source';
 
 export type FileWriteTypes = Buffer | Readable | string;
 

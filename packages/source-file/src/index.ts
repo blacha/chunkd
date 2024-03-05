@@ -1,7 +1,8 @@
-import { Source, SourceError, SourceMetadata } from '@chunkd/source';
 import { promises as fs } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+import { Source, SourceError, SourceMetadata } from '@chunkd/source';
 
 export class SourceFile implements Source {
   type = 'file';
@@ -42,7 +43,7 @@ export class SourceFile implements Source {
   async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
     if (offset < 0 && length != null) {
       throw new SourceError(
-        `Cannot fetch negative offset: ${offset} with length: ${length} from: ${this.url}`,
+        `Cannot fetch negative offset: ${offset} with length: ${length} from: ${this.url.href}`,
         400,
         this,
       );
@@ -52,7 +53,7 @@ export class SourceFile implements Source {
     if (offset < 0) {
       length = Math.abs(offset);
       const metadata = await this.head();
-      if (metadata.size == null) throw new SourceError(`Failed to fetch metadata from: ${this.url}`, 404, this);
+      if (metadata.size == null) throw new SourceError(`Failed to fetch metadata from: ${this.url.href}`, 404, this);
       offset = metadata.size + offset;
     } else if (this.metadata == null) await this.head();
 
@@ -62,7 +63,7 @@ export class SourceFile implements Source {
     if (length == null && size != null) length = size - offset;
 
     if (length == null || size == null) {
-      throw new SourceError(`Length is required for reading from file: ${this.url}`, 400, this);
+      throw new SourceError(`Length is required for reading from file: ${this.url.href}`, 400, this);
     }
     if (this.fd == null) this.fd = fs.open(this.url, 'r');
     const fd = await this.fd;

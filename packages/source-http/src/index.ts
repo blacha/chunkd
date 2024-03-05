@@ -56,7 +56,7 @@ export class SourceHttp implements Source {
     this._head = SourceHttp.fetch(this.url, { method: 'HEAD', headers: this.headers }).then((res) => {
       if (!res.ok) {
         delete this._head;
-        throw new Error(`Failed to HEAD ${this.url}`, { cause: { statusCode: res.status, msg: res.statusText } });
+        throw new Error(`Failed to HEAD ${this.url.href}`, { cause: { statusCode: res.status, msg: res.statusText } });
       }
       this.metadata = getMetadataFromResponse(res);
       return this.metadata;
@@ -72,7 +72,7 @@ export class SourceHttp implements Source {
 
       if (!response.ok) {
         throw new SourceError(
-          `Failed to fetch ${this.url} ${headers.range}`,
+          `Failed to fetch ${this.url.href} ${headers.range}`,
           response.status,
           this,
           new Error(response.statusText),
@@ -85,7 +85,7 @@ export class SourceHttp implements Source {
       } else if (this.metadata.eTag && this.metadata.eTag !== metadata.eTag) {
         // ETag has changed since the last read!
         throw new SourceError(
-          `ETag conflict ${this.url} ${headers.range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
+          `ETag conflict ${this.url.href} ${headers.range} expected: ${this.metadata.eTag} got: ${metadata.eTag}`,
           409,
           this,
         );
@@ -93,7 +93,7 @@ export class SourceHttp implements Source {
       return response.arrayBuffer();
     } catch (e) {
       if (SourceError.is(e) && e.source === this) throw e;
-      throw new SourceError(`Failed to fetch: ${this.url}`, 500, this, e);
+      throw new SourceError(`Failed to fetch: ${this.url.href}`, 500, this, e);
     }
   }
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
+
 import { SourceAwsS3 } from '../index.js';
 
 describe('SourceAwsS3', () => {

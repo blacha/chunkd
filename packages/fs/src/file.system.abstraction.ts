@@ -1,12 +1,14 @@
-import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
 import type { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
-import { gunzip } from 'node:zlib';
 import { promisify } from 'node:util';
+import { gunzip } from 'node:zlib';
+
+import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
+
 import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
 import { Flag } from './flags.js';
-import { FsFile } from './systems/file.js';
 import { toArray } from './generator.js';
+import { FsFile } from './systems/file.js';
 
 const gunzipProm = promisify(gunzip);
 
@@ -93,9 +95,9 @@ export class FileSystemAbstraction implements FileSystem {
     const obj = await this.read(loc);
     if (loc.pathname.endsWith('.gz') || isGzip(obj)) {
       const data = await gunzipProm(obj);
-      return JSON.parse(data.toString());
+      return JSON.parse(data.toString()) as T;
     }
-    return JSON.parse(obj.toString());
+    return JSON.parse(obj.toString()) as T;
   }
 
   /**
@@ -193,7 +195,6 @@ export class FileSystemAbstraction implements FileSystem {
 
   /** Find the filesystem that would be used for a given path */
   get(loc: URL, flag: Flag): FileSystem {
-    if (loc.href == null) throw new Error(`Invalid URL: ${loc}`);
     this.sortSystems();
     const fileHref = loc.href;
     for (const cfg of this.systems) {
@@ -204,7 +205,7 @@ export class FileSystemAbstraction implements FileSystem {
       }
     }
 
-    throw new Error(`Unable to find file system for location: ${loc}`);
+    throw new Error(`Unable to find file system for location: ${loc.href}`);
   }
 }
 

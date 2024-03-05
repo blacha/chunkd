@@ -1,7 +1,8 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SourceMemory } from '@chunkd/source-memory';
+import { describe, it } from 'node:test';
+
 import { SourceView } from '@chunkd/source';
+import { SourceMemory } from '@chunkd/source-memory';
 
 describe('Sources', () => {
   it('should be passthrough with no middleware', async () => {

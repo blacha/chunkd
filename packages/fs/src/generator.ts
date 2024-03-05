@@ -8,5 +8,5 @@ export async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
 /** Grab the first value from a async generator */
 export async function toFirst<T>(generator: AsyncGenerator<T>): Promise<T> {
   const first = await generator.next();
-  return first.value;
+  return first.value as T;
 }

@@ -1,8 +1,9 @@
-import { FsFile } from '../systems/file.js';
-import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { FileSystemAbstraction } from '../file.system.abstraction.js';
+import { describe, it } from 'node:test';
 import { gzipSync } from 'node:zlib';
+
+import { FileSystemAbstraction } from '../file.system.abstraction.js';
+import { FsFile } from '../systems/file.js';
 import { FsMemory } from '../systems/memory.js';
 
 export class FakeSystem extends FsFile {
@@ -91,7 +92,7 @@ describe('FileSystemAbstraction', () => {
     assert.equal(fsa.systems[0].system, fakeB);
   });
 
-  it('should stream files between systems', (t) => {
+  it('should stream files between systems', async (t) => {
     const fakeA = new FakeSystem('fake');
     const fakeB = new FakeSystem('fakeSpecific');
     const fsa = new FileSystemAbstraction();
@@ -102,7 +103,7 @@ describe('FileSystemAbstraction', () => {
     fsa.register('fake-a://', fakeA);
     fsa.register('fake-b://', fakeB);
 
-    fsa.write(new URL('fake-b://bar.js'), fsa.readStream(new URL('fake-a://foo.js')));
+    await fsa.write(new URL('fake-b://bar.js'), fsa.readStream(new URL('fake-a://foo.js')));
 
     assert.equal(streamStub.mock.callCount(), 1);
     assert.equal(writeStub.mock.callCount(), 1);

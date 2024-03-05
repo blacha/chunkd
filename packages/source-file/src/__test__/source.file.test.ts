@@ -1,7 +1,8 @@
-import { join } from 'node:path';
-import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+
 import { SourceFile } from '../index.js';
 
 describe('SourceFile', () => {
@@ -35,7 +36,7 @@ describe('SourceFile', () => {
   it('should read last bytes from file', async () => {
     const buf = Buffer.from(await source.fetch(-1024));
 
-    const metadata = await source.metadata;
+    const metadata = source.metadata;
     const bytes = await source.fetch((metadata?.size ?? -1) - 1024, 1024);
     const expected = Buffer.from(bytes);
 

@@ -1,8 +1,10 @@
-import type { Readable } from 'stream';
-import { PassThrough, Stream } from 'stream';
 import { SourceHttp } from '@chunkd/source-http';
-import { FileInfo, FileSystem } from '../file.system.js';
+import type { Readable } from 'node:stream';
+import { PassThrough, Stream } from 'node:stream';
+import type { ReadableStream } from 'node:stream/web';
+
 import { FsError } from '../error.js';
+import { FileInfo, FileSystem } from '../file.system.js';
 
 export class FsHttp implements FileSystem {
   name = 'http';
@@ -10,24 +12,25 @@ export class FsHttp implements FileSystem {
   source(loc: URL): SourceHttp {
     return new SourceHttp(loc);
   }
-
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *list(loc: URL): AsyncGenerator<URL> {
-    throw new FsError(`NotImplemented to list: ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to list: ${loc.href}`, 500, loc, 'list', this);
   }
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *details(loc: URL): AsyncGenerator<FileInfo> {
-    throw new FsError(`NotImplemented to details: ${loc}`, 500, loc, 'list', this);
+    throw new FsError(`NotImplemented to details: ${loc.href}`, 500, loc, 'list', this);
   }
 
   async head(loc: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
     try {
       const res = await SourceHttp.fetch(loc, { method: 'HEAD' });
       if (!res.ok) {
-        throw new FsError(`Failed to head: ${loc}`, res.status, loc, 'read', this, new Error(res.statusText));
+        throw new FsError(`Failed to head: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
       return { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false };
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
-      throw new FsError(`Failed to head: ${loc}`, 500, loc, 'read', this, e);
+      throw new FsError(`Failed to head: ${loc.href}`, 500, loc, 'read', this, e);
     }
   }
 
@@ -35,21 +38,21 @@ export class FsHttp implements FileSystem {
     try {
       const res = await SourceHttp.fetch(loc, { method: 'GET' });
       if (!res.ok) {
-        throw new FsError(`Failed to read: ${loc}`, res.status, loc, 'read', this, new Error(res.statusText));
+        throw new FsError(`Failed to read: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
       return Buffer.from(await res.arrayBuffer());
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
-      throw new FsError(`Failed to read: ${loc}`, 500, loc, 'read', this, e);
+      throw new FsError(`Failed to read: ${loc.href}`, 500, loc, 'read', this, e);
     }
   }
 
-  async write(loc: URL): Promise<void> {
-    throw new FsError(`NotImplemented to write: ${loc}`, 500, loc, 'list', this);
+  write(loc: URL): Promise<void> {
+    throw new FsError(`NotImplemented to write: ${loc.href}`, 500, loc, 'list', this);
   }
 
-  async delete(loc: URL): Promise<void> {
-    throw new FsError(`NotImplemented to delete: ${loc}`, 500, loc, 'list', this);
+  delete(loc: URL): Promise<void> {
+    throw new FsError(`NotImplemented to delete: ${loc.href}`, 500, loc, 'list', this);
   }
 
   readStream(loc: URL): Readable {
@@ -59,7 +62,14 @@ export class FsHttp implements FileSystem {
         if (!res.ok) {
           pt.emit(
             'error',
-            new FsError(`Failed to readStream: ${loc}`, res.status, loc, 'readStream', this, new Error(res.statusText)),
+            new FsError(
+              `Failed to readStream: ${loc.href}`,
+              res.status,
+              loc,
+              'readStream',
+              this,
+              new Error(res.statusText),
+            ),
           );
           return;
         }
@@ -68,11 +78,11 @@ export class FsHttp implements FileSystem {
           return;
         }
 
-        const st = Stream.Readable.fromWeb(res.body as any);
+        const st = Stream.Readable.fromWeb(res.body as unknown as ReadableStream);
         st.pipe(pt);
       })
       .catch((e) => {
-        pt.emit('error', new FsError(`Failed to readStream: ${loc}`, 500, loc, 'readStream', this, e));
+        pt.emit('error', new FsError(`Failed to readStream: ${loc.href}`, 500, loc, 'readStream', this, e));
       });
     return pt;
   }

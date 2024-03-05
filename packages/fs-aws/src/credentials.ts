@@ -11,9 +11,9 @@ export function isPromise<T>(t: AwsCredentialProvider | Promise<T>): t is Promis
 
 /** Basic JSON validation of the configuration */
 export function validateConfig(cfg: AwsCredentialProvider, loc: URL): AwsCredentialProvider {
-  if (cfg == null) throw new Error('Unknown configuration from:' + loc);
-  if (cfg.v !== 2) throw new Error('Configuration is not v2 from:' + loc);
-  if (!Array.isArray(cfg.prefixes)) throw new Error('Configuration prefixes invalid from:' + loc);
+  if (cfg == null) throw new Error('Unknown configuration from:' + loc.href);
+  if (cfg.v !== 2) throw new Error('Configuration is not v2 from:' + loc.href);
+  if (!Array.isArray(cfg.prefixes)) throw new Error('Configuration prefixes invalid from:' + loc.href);
 
   return cfg;
 }
@@ -33,7 +33,7 @@ export class FsConfigFetcher {
     if (this._config != null) return this._config;
     this._config = this.fs
       .read(this.loc)
-      .then((f) => JSON.parse(f.toString()))
+      .then((f) => JSON.parse(f.toString()) as AwsCredentialProvider)
       .then((cfg) => validateConfig(cfg, this.loc));
 
     return this._config;
@@ -53,7 +53,7 @@ let PublicClient: S3Client | undefined;
 /** Creating a public s3 client is somewhat hard, where the signing method needs to be overriden */
 export function getPublicS3(): S3Client {
   if (PublicClient) return PublicClient;
-  PublicClient = new S3Client({ signer: { sign: async (req) => req } });
+  PublicClient = new S3Client({ signer: { sign: (req) => Promise.resolve(req) } });
   return PublicClient;
 }
 
