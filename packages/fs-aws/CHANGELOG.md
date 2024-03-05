@@ -25,6 +25,13 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.3.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.2.2...fs-aws-v11.3.0) (2024-03-05)
+
+
+### Features
+
+* **fs-aws:** add credential config for public and requester pays ([#1409](https://github.com/blacha/chunkd/issues/1409)) ([0386b61](https://github.com/blacha/chunkd/commit/0386b61e0e0fc36fefd1712f12561e723b47f6f5))
+
 ## [11.2.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.1.0...fs-aws-v11.2.0) (2023-09-07)
 
 
