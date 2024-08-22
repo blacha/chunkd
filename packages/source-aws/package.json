@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-aws",
-  "version": "11.0.3",
+  "version": "11.0.4",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
