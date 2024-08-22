@@ -9,7 +9,9 @@ describe('SourceAwsS3', () => {
   });
 
   it('should not expose "client" for logging', () => {
-    const keys = Object.keys(new SourceAwsS3('s3://foo/bar.txt'));
+    const source = new SourceAwsS3('s3://foo/bar.txt');
+    const keys = Object.keys(source);
     assert.equal(keys.includes('client'), false);
+    assert.notEqual(source.client.config, null);
   });
 });
