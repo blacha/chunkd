@@ -7,4 +7,9 @@ describe('SourceAwsS3', () => {
   it('should create s3 links from string url', () => {
     assert.equal(new SourceAwsS3('s3://foo/bar.txt').url.href, 's3://foo/bar.txt');
   });
+
+  it('should not expose "client" for logging', () => {
+    const keys = Object.keys(new SourceAwsS3('s3://foo/bar.txt'));
+    assert.equal(keys.includes('client'), false);
+  });
 });
