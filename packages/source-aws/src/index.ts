@@ -51,6 +51,8 @@ export class SourceAwsS3 implements Source {
 
   constructor(url: URL | string, client: S3Client = new S3Client({})) {
     this.url = typeof url === 'string' ? new URL(url) : url;
+    // S3 clients are very large and if this object gets logged the log is very very large
+    Object.defineProperty(this, 'client', { enumerable: false });
     this.client = client;
   }
 
