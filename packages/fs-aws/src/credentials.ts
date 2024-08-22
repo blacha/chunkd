@@ -1,6 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { FileSystem, FileSystemProvider } from '@chunkd/fs';
+import type { RequestSigner } from '@smithy/types';
 
 import { FsAwsS3 } from './fs.s3.js';
 import { AwsCredentialConfig, AwsCredentialProvider } from './types.js';
@@ -50,10 +51,11 @@ export class FsConfigFetcher {
 }
 
 let PublicClient: S3Client | undefined;
-/** Creating a public s3 client is somewhat hard, where the signing method needs to be overriden */
+/** Creating a public s3 client is somewhat hard, where the signing method needs to be overridden */
 export function getPublicS3(): S3Client {
   if (PublicClient) return PublicClient;
-  PublicClient = new S3Client({ signer: { sign: (req) => Promise.resolve(req) } });
+  const signer: RequestSigner = { sign: (req) => Promise.resolve(req) };
+  PublicClient = new S3Client({ signer });
   return PublicClient;
 }
 

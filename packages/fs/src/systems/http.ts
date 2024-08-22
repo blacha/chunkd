@@ -1,7 +1,8 @@
-import { SourceHttp } from '@chunkd/source-http';
 import type { Readable } from 'node:stream';
 import { PassThrough, Stream } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
+
+import { SourceHttp } from '@chunkd/source-http';
 
 import { FsError } from '../error.js';
 import { FileInfo, FileSystem } from '../file.system.js';
