@@ -111,8 +111,21 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
     return `fsa-${this.version}-${Date.now()}-${Math.random().toString(32).slice(2)}`;
   }
 
-  /** Optional callback when file systems are created */
-  onFileSystemCreated?: (acc: AwsCredentialConfig, fs: FileSystem) => void;
+  /**
+   * Optional callback when file systems are created
+   *
+   * @warning file systems are only created when a role is assumed,
+   * if multiple locations use the same role this event will only fire on the first assumption
+   */
+  onFileSystemCreated?: (acc: AwsCredentialConfig, fs: FsAwsS3) => void;
+  /**
+   * Optional callback when file systems are requested,
+   *
+   * @param acc the configuration found
+   * @param fs the file system found
+   * @param path the URL that triggered the find
+   */
+  onFileSystemFound?: (acc: AwsCredentialConfig, fs?: FsAwsS3, path?: URL) => void;
 
   /**
    * Register a credential configuration to be used
@@ -142,7 +155,7 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
    * registerConfig('s3://foo/bar/config.json', fsa);
    * ```
    */
-  registerConfig(loc: URL, fs: FileSystem): void {
+  registerConfig(loc: URL, fs: FsAwsS3): void {
     this.configs.push(new FsConfigFetcher(loc, fs));
   }
 
@@ -171,6 +184,7 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
       this.fileSystems.set(cacheKey, existing);
       this.onFileSystemCreated?.(cs, existing);
     }
+    this.onFileSystemFound?.(cs, existing, path);
 
     return existing;
   }
