@@ -24,7 +24,10 @@
     "@chunkd/fs": "11.2.0",
     "@chunkd/source-aws": "11.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.16.19",
+    "@smithy/types": "*"
+  },
   "publishConfig": {
     "access": "public"
   },
