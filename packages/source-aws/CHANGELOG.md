@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.0.4](https://github.com/blacha/chunkd/compare/source-aws-v11.0.3...source-aws-v11.0.4) (2024-11-03)
+
+
+### Bug Fixes
+
+* **source-aws:** prevent s3 client from being logged when errors are thrown ([#1475](https://github.com/blacha/chunkd/issues/1475)) ([d146aa1](https://github.com/blacha/chunkd/commit/d146aa1d24a450c2eb0ee50fffbbb51068420dd2))
+
 ## [11.0.3](https://github.com/blacha/chunkd/compare/source-aws-v11.0.2...source-aws-v11.0.3) (2024-02-20)
 
 
