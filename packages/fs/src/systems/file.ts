@@ -88,7 +88,9 @@ export class FsFile implements FileSystem {
   async head(loc: URL): Promise<FileInfo<fs.Stats> | null> {
     try {
       const stat = await fs.promises.stat(loc);
-      return { url: loc, size: stat.size, isDirectory: stat.isDirectory(), $response: stat };
+      const info = { url: loc, size: stat.size, isDirectory: stat.isDirectory(), $response: stat };
+      Object.defineProperty(info, '$response', { enumerable: false });
+      return info;
     } catch (e) {
       if (isRecord(e) && e.code === 'ENOENT') return null;
       throw new FsError(`Failed to stat ${loc.href}`, getCode(e), loc, 'head', this, e);

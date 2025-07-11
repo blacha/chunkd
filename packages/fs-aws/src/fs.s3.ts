@@ -105,20 +105,24 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            yield { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true, $response: null };
+            const info = { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true, $response: null };
+            Object.defineProperty(info, '$response', { enumerable: false });
+            yield info;
           }
         }
 
         if (res.Contents != null) {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
-            yield {
+            const info = {
               url: new URL(`s3://${Bucket}/${obj.Key}`),
               size: obj.Size,
               eTag: obj.ETag,
               lastModified: obj.LastModified?.toISOString(),
               $response: obj,
             };
+            Object.defineProperty(info, '$response', { enumerable: false });
+            yield info;
           }
         }
 
@@ -295,6 +299,7 @@ export class FsAwsS3 implements FileSystem {
       if (res.ContentType) info.contentType = res.ContentType;
       if (res.ETag) info.eTag = res.ETag;
       if (res.LastModified) info.lastModified = res.LastModified.toISOString();
+      Object.defineProperty(info, '$response', { enumerable: false });
 
       return info;
     } catch (e) {
@@ -309,5 +314,9 @@ export class FsAwsS3 implements FileSystem {
       }
       throw ce;
     }
+  }
+
+  static is(fs: FileSystem): fs is FsAwsS3 {
+    return fs instanceof FsAwsS3 || fs.name === 's3';
   }
 }

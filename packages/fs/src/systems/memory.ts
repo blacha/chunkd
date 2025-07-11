@@ -76,7 +76,9 @@ export class FsMemory implements FileSystem {
     for await (const file of this.list(loc, opt)) {
       const data = await this.head(file);
       if (data == null) {
-        yield { url: file, isDirectory: true, $response: null };
+        const info = { url: file, isDirectory: true, $response: null };
+        Object.defineProperty(info, '$response', { enumerable: false });
+        yield info;
       } else {
         yield data;
       }
@@ -91,14 +93,16 @@ export class FsMemory implements FileSystem {
   head(loc: URL): Promise<FileInfo | null> {
     const obj = this.files.get(loc.href);
     if (obj == null) return Promise.resolve(null);
-    return Promise.resolve({
+    const info = {
       url: loc,
       size: obj.buffer.length,
       metadata: obj.opts?.metadata,
       contentType: obj.opts?.contentType,
       contentEncoding: obj.opts?.contentEncoding,
       $response: null,
-    });
+    };
+    Object.defineProperty(info, '$response', { enumerable: false });
+    return Promise.resolve(info);
   }
 
   delete(loc: URL): Promise<void> {

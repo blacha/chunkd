@@ -28,7 +28,9 @@ export class FsHttp implements FileSystem {
       if (!res.ok) {
         throw new FsError(`Failed to head: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
-      return { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false, $response: res };
+      const info = { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false, $response: res };
+      Object.defineProperty(info, '$response', { enumerable: false });
+      return info;
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
       throw new FsError(`Failed to head: ${loc.href}`, 500, loc, 'read', this, e);
