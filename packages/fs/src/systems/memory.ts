@@ -76,7 +76,7 @@ export class FsMemory implements FileSystem {
     for await (const file of this.list(loc, opt)) {
       const data = await this.head(file);
       if (data == null) {
-        yield { url: file, isDirectory: true };
+        yield { url: file, isDirectory: true, $response: null };
       } else {
         yield data;
       }
@@ -97,6 +97,7 @@ export class FsMemory implements FileSystem {
       metadata: obj.opts?.metadata,
       contentType: obj.opts?.contentType,
       contentEncoding: obj.opts?.contentEncoding,
+      $response: null,
     });
   }
 
