@@ -4,7 +4,7 @@ import { Source } from '@chunkd/source';
 
 export type FileWriteTypes = Buffer | Readable | string;
 
-export interface FileInfo {
+export interface FileInfo<T = unknown> {
   /** file path */
   url: URL;
   /**
@@ -24,6 +24,12 @@ export interface FileInfo {
   eTag?: string;
   /** ISO String of when the file was last modified */
   lastModified?: string;
+
+  /**
+   * Raw response object
+   * For example in AWS S3 this is the HeadObjectResponse when doing head requests
+   */
+  $response?: T;
 }
 
 export interface WriteOptions {

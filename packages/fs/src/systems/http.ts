@@ -2,7 +2,7 @@ import type { Readable } from 'node:stream';
 import { PassThrough, Stream } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
 
-import { SourceHttp } from '@chunkd/source-http';
+import { FetchLikeResponse, SourceHttp } from '@chunkd/source-http';
 
 import { FsError } from '../error.js';
 import { FileInfo, FileSystem } from '../file.system.js';
@@ -22,13 +22,15 @@ export class FsHttp implements FileSystem {
     throw new FsError(`NotImplemented to details: ${loc.href}`, 500, loc, 'list', this);
   }
 
-  async head(loc: URL): Promise<(FileInfo & { isDirectory: boolean }) | null> {
+  async head(loc: URL): Promise<FileInfo<FetchLikeResponse> | null> {
     try {
       const res = await SourceHttp.fetch(loc, { method: 'HEAD' });
       if (!res.ok) {
         throw new FsError(`Failed to head: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
-      return { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false };
+      const info = { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false, $response: res };
+      Object.defineProperty(info, '$response', { enumerable: false });
+      return info;
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
       throw new FsError(`Failed to head: ${loc.href}`, 500, loc, 'read', this, e);

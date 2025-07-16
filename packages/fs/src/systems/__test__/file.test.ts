@@ -71,6 +71,16 @@ describe('LocalFileSystem', () => {
     }
   });
 
+  it('should head a file with details', async () => {
+    const ref = await fs.head(new URL('file.test.js', import.meta.url));
+
+    console.log(JSON.stringify(ref));
+
+    // response objects should be hidden
+    assert.ok(!JSON.stringify(ref).includes('$response'));
+    assert.ok(ref?.$response?.atime);
+  });
+
   it('should head/exists a file', async () => {
     const ref = await fs.head(new URL('file.test.js', import.meta.url));
     assert.notEqual(ref, null);

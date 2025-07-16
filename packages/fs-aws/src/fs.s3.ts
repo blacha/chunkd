@@ -2,9 +2,11 @@ import type { Readable } from 'node:stream';
 import { PassThrough } from 'node:stream';
 
 import {
+  _Object,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  HeadObjectOutput,
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
   S3Client,
@@ -81,7 +83,11 @@ export class FsAwsS3 implements FileSystem {
     for await (const obj of this.details(loc, opts)) yield obj.url;
   }
 
-  async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo> {
+  /**
+   * $response object can be null if the object is a directory
+   *
+   */
+  async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo<_Object | null>> {
     let ContinuationToken: string | undefined = undefined;
     const Delimiter: string | undefined = opts?.recursive === false ? '/' : undefined;
     const Bucket = loc.hostname;
@@ -99,19 +105,24 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            yield { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true };
+            const info = { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true, $response: null };
+            Object.defineProperty(info, '$response', { enumerable: false });
+            yield info;
           }
         }
 
         if (res.Contents != null) {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
-            yield {
+            const info = {
               url: new URL(`s3://${Bucket}/${obj.Key}`),
               size: obj.Size,
               eTag: obj.ETag,
               lastModified: obj.LastModified?.toISOString(),
+              $response: obj,
             };
+            Object.defineProperty(info, '$response', { enumerable: false });
+            yield info;
           }
         }
 
@@ -272,7 +283,7 @@ export class FsAwsS3 implements FileSystem {
     return pt;
   }
 
-  async head(loc: URL): Promise<FileInfo | null> {
+  async head(loc: URL): Promise<FileInfo<HeadObjectOutput> | null> {
     try {
       const res = await this.s3.send(
         new HeadObjectCommand({
@@ -282,12 +293,13 @@ export class FsAwsS3 implements FileSystem {
         }),
       );
 
-      const info: FileInfo = { size: res.ContentLength, url: loc };
+      const info: FileInfo<HeadObjectOutput> = { size: res.ContentLength, url: loc, $response: res };
       if (res.Metadata && Object.keys(res.Metadata).length > 0) info.metadata = res.Metadata;
       if (res.ContentEncoding) info.contentEncoding = res.ContentEncoding;
       if (res.ContentType) info.contentType = res.ContentType;
       if (res.ETag) info.eTag = res.ETag;
       if (res.LastModified) info.lastModified = res.LastModified.toISOString();
+      Object.defineProperty(info, '$response', { enumerable: false });
 
       return info;
     } catch (e) {
@@ -302,5 +314,9 @@ export class FsAwsS3 implements FileSystem {
       }
       throw ce;
     }
+  }
+
+  static is(fs: FileSystem): fs is FsAwsS3 {
+    return fs instanceof FsAwsS3 || fs.name === 's3';
   }
 }
