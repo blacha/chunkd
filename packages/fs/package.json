@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs",
-  "version": "11.2.0",
+  "version": "11.3.0",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"

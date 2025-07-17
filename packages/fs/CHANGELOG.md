@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.3.0](https://github.com/blacha/chunkd/compare/fs-v11.2.0...fs-v11.3.0) (2025-07-16)
+
+
+### Features
+
+* expose raw response object from .head and .details ([#1582](https://github.com/blacha/chunkd/issues/1582)) ([e02b7a8](https://github.com/blacha/chunkd/commit/e02b7a81dfa3509c54e0c46314dca9bbb672c040))
+
 ## [11.2.0](https://github.com/blacha/chunkd/compare/fs-v11.1.0...fs-v11.2.0) (2023-11-08)
 
 
