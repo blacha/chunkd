@@ -99,7 +99,14 @@ export class FsAwsS3 implements FileSystem {
         count++;
         // TODO: why is this type assignment needed
         const res: ListObjectsV2CommandOutput = await this.s3.send(
-          new ListObjectsV2Command({ Bucket, Prefix, ContinuationToken, Delimiter, RequestPayer: this.requestPayer }),
+          new ListObjectsV2Command({
+            Bucket,
+            Prefix,
+            ContinuationToken,
+            Delimiter,
+            EncodingType: 'url',
+            RequestPayer: this.requestPayer,
+          }),
         );
 
         if (res.CommonPrefixes != null) {
