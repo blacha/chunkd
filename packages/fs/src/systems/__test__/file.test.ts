@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import assert from 'node:assert';
-import { describe, it } from 'node:test';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { afterEach, beforeEach, describe, it } from 'node:test';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { FsError } from '../../error.js';
+import { fsa } from '../../file.system.abstraction.js';
 import { FsFile } from '../file.js';
 
 async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
@@ -14,19 +16,28 @@ async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
 describe('LocalFileSystem', () => {
   const fs = new FsFile();
 
+  beforeEach(async () => {
+    await mkdir('./.test/', { recursive: true });
+    await writeFile('./.test/test.txt', 'Hello World');
+  });
+
+  afterEach(async () => {
+    await rm('./.test/', { recursive: true });
+  });
+
   it('should read a file', async () => {
-    const buf = await fs.read(new URL('file.test.js', import.meta.url));
-    assert.equal(buf.toString().includes("import o from 'ospec'"), true);
+    const buf = await fs.read(fsa.toUrl('.test/test.txt'));
+    assert.equal(buf.toString().includes('Hello World'), true);
   });
 
   it('should stream a file', async () => {
-    const buf = fs.readStream(new URL('file.test.js', import.meta.url));
+    const buf = fs.readStream(fsa.toUrl('.test/test.txt'));
 
-    const targetFile = new URL('.file.test.js', import.meta.url);
+    const targetFile = fsa.toUrl('.test/test-target.txt');
     await fs.write(targetFile, buf);
 
     const after = await fs.read(targetFile);
-    assert.equal(after.toString().includes("import o from 'ospec'"), true);
+    assert.equal(after.toString().includes('Hello World'), true);
 
     await fs.delete(targetFile);
   });
@@ -72,9 +83,7 @@ describe('LocalFileSystem', () => {
   });
 
   it('should head a file with details', async () => {
-    const ref = await fs.head(new URL('file.test.js', import.meta.url));
-
-    console.log(JSON.stringify(ref));
+    const ref = await fs.head(fsa.toUrl('./.test/test.txt'));
 
     // response objects should be hidden
     assert.ok(!JSON.stringify(ref).includes('$response'));
@@ -82,7 +91,7 @@ describe('LocalFileSystem', () => {
   });
 
   it('should head/exists a file', async () => {
-    const ref = await fs.head(new URL('file.test.js', import.meta.url));
+    const ref = await fs.head(fsa.toUrl('./.test/test.txt'));
     assert.notEqual(ref, null);
   });
 
@@ -100,7 +109,7 @@ describe('LocalFileSystem', () => {
 
     assert.equal(files.length > 2, true);
     assert.notEqual(
-      files.find((f) => f.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.href.includes('__test__/file.test.')),
       undefined,
     );
   });
@@ -110,7 +119,7 @@ describe('LocalFileSystem', () => {
 
     assert.equal(files.length > 3, true);
     assert.notEqual(
-      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.includes('__test__/file.test.')),
       undefined,
     );
     assert.deepEqual(
@@ -122,7 +131,7 @@ describe('LocalFileSystem', () => {
   it('should list recursively', async () => {
     const files = await toArray(fs.details(new URL('..', import.meta.url)));
     assert.notEqual(
-      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.includes('__test__/file.test.')),
       undefined,
     );
     assert.deepEqual(
@@ -135,9 +144,54 @@ describe('LocalFileSystem', () => {
     const files = await toArray(fs.details(new URL('..', import.meta.url), { recursive: false }));
     // In a sub folder shouldn't find it
     assert.equal(
-      files.find((f) => f.url.href.endsWith('__test__/file.test.js')),
+      files.find((f) => f.url.href.endsWith('__test__/file.test.')),
       undefined,
     );
     assert.deepEqual(files.filter((f) => f.isDirectory).length, 1);
+  });
+
+  it('should read and write special characters files', async () => {
+    const badChars = ['#', '?', ':', '@', '=', '+', '$', ',', ';'];
+    const allChars = badChars.join(',');
+    const foundChars = new Set(badChars);
+    foundChars.add(allChars);
+
+    await mkdir('./.test/special/', { recursive: true });
+    const basePath = fileURLToPath(pathToFileURL('./.test/special/'));
+    try {
+      await Promise.all(
+        badChars.map(async (c) => {
+          await writeFile(`./.test/special/${c}_example.txt`, Buffer.from(c));
+        }),
+      );
+      await writeFile(`./.test/special/${allChars}.txt`, Buffer.from(allChars));
+
+      // List all the files then validate that they have all been found and read
+      const fsFiles = await fsa.toArray(fs.list(fsa.toUrl('./.test/special/')));
+
+      for (const f of fsFiles) {
+        const bytes = String(await fs.read(f));
+        assert.ok(foundChars.has(bytes), `Missing char: ${bytes}`);
+        foundChars.delete(bytes);
+      }
+
+      assert.equal(foundChars.size, 0);
+
+      const fileNames = fsFiles.map((m) => fileURLToPath(m).slice(basePath.length));
+      assert.deepEqual(fileNames, [
+        '#,?,:,@,=,+,$,,,;.txt',
+        '#_example.txt',
+        '$_example.txt',
+        '+_example.txt',
+        ',_example.txt',
+        ':_example.txt',
+        ';_example.txt',
+        '=_example.txt',
+        '?_example.txt',
+        '@_example.txt',
+      ]);
+    } finally {
+      await rm('./.test/special', { recursive: true });
+    }
   });
 });

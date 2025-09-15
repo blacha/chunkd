@@ -1,5 +1,7 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { Readable } from 'node:stream';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { SourceFile } from '@chunkd/source-file';
 
@@ -59,16 +61,19 @@ export class FsFile implements FileSystem {
       }
 
       const files = await fs.promises.readdir(loc, { withFileTypes: true });
+      const baseDir = fileURLToPath(loc);
       for (const file of files) {
         if (prefix && !file.name.startsWith(prefix)) continue;
+        const targetFile = pathToFileURL(path.join(baseDir, file.name));
         if (file.isDirectory()) {
+          const targetDir = new URL(targetFile.href + '/');
           if (isRecursive) {
-            yield* this.list(new URL(file.name + '/', loc));
+            yield* this.list(targetDir);
           } else {
-            yield new URL(file.name + '/', loc);
+            yield targetDir;
           }
         } else {
-          yield new URL(file.name, loc);
+          yield targetFile;
         }
       }
     } catch (e) {
