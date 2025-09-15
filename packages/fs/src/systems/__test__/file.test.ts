@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { platform } from 'node:os';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -11,6 +12,10 @@ async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
   const output: T[] = [];
   for await (const o of generator) output.push(o);
   return output;
+}
+
+function isWindows(): boolean {
+  return platform() === 'win32';
 }
 
 describe('LocalFileSystem', () => {
@@ -156,6 +161,11 @@ describe('LocalFileSystem', () => {
     const foundChars = new Set(badChars);
     foundChars.add(allChars);
 
+    if (isWindows()) {
+      badChars.splice(badChars.indexOf('?'), 1);
+      badChars.splice(badChars.indexOf(':'), 1);
+    }
+
     await mkdir('./.test/special/', { recursive: true });
     const basePath = fileURLToPath(pathToFileURL('./.test/special/'));
     try {
@@ -178,19 +188,23 @@ describe('LocalFileSystem', () => {
       assert.equal(foundChars.size, 0);
 
       const fileNames = fsFiles.map((m) => fileURLToPath(m).slice(basePath.length));
-      assert.deepEqual(fileNames, [
-        '#,?,@,=,+,$,,,;.txt',
-        '#_example.txt',
-        '$_example.txt',
-        '+_example.txt',
-        ',_example.txt',
-        // Windows tests fail with :
-        // ':_example.txt',
-        ';_example.txt',
-        '=_example.txt',
-        '?_example.txt',
-        '@_example.txt',
-      ]);
+      assert.deepEqual(
+        fileNames,
+        [
+          '#,?,@,=,+,$,,,;.txt',
+          '#_example.txt',
+          '$_example.txt',
+          '+_example.txt',
+          ',_example.txt',
+          // Windows tests fail with ":"
+          isWindows() ? undefined : ':_example.txt',
+          ';_example.txt',
+          '=_example.txt',
+          // Windows tests fail with "?"
+          isWindows() ? undefined : '?_example.txt',
+          '@_example.txt',
+        ].filter(Boolean),
+      );
     } finally {
       await rm('./.test/special', { recursive: true });
     }
