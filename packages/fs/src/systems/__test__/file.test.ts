@@ -156,15 +156,14 @@ describe('LocalFileSystem', () => {
   });
 
   it('should read and write special characters files', async () => {
-    const badChars = ['#', '?', '@', '=', '+', '$', ',', ';'];
-    const allChars = badChars.join(',');
-    const foundChars = new Set(badChars);
-    foundChars.add(allChars);
-
+    const badChars = ['#', '?', '@', '=', '+', '$', ',', ';', ':'];
     if (isWindows()) {
       badChars.splice(badChars.indexOf('?'), 1);
       badChars.splice(badChars.indexOf(':'), 1);
     }
+    const allChars = badChars.join(',');
+    const foundChars = new Set(badChars);
+    foundChars.add(allChars);
 
     await mkdir('./.test/special/', { recursive: true });
     const basePath = fileURLToPath(pathToFileURL('./.test/special/'));
@@ -191,7 +190,7 @@ describe('LocalFileSystem', () => {
       assert.deepEqual(
         fileNames,
         [
-          '#,?,@,=,+,$,,,;.txt',
+          `${allChars}.txt`,
           '#_example.txt',
           '$_example.txt',
           '+_example.txt',
