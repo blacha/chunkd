@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.3.1](https://github.com/blacha/chunkd/compare/fs-v11.3.0...fs-v11.3.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **fs:** safely join complex characters in local file systems ([249a286](https://github.com/blacha/chunkd/commit/249a28648012b6adc65400ce5e2b1f186873a50b))
+
 ## [11.3.0](https://github.com/blacha/chunkd/compare/fs-v11.2.0...fs-v11.3.0) (2025-07-16)
 
 
