@@ -17,7 +17,7 @@ export type FetchLike = (url: string | URL, opts?: FetchLikeOptions) => Promise<
 
 /** Load the ETag and content-range from the response */
 export function getMetadataFromResponse(response: FetchLikeResponse): SourceMetadata {
-  const metadata: SourceMetadata = { size: -1 };
+  const metadata: SourceMetadata = {};
   const contentRange = response.headers.get('content-range');
   if (contentRange != null) metadata.size = ContentRange.parseSize(contentRange);
   metadata.eTag = response.headers.get('etag') ?? undefined;
