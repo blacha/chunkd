@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs",
-  "version": "11.3.0",
+  "version": "11.3.1",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -21,7 +21,7 @@
     "@chunkd/source": "^11.1.0",
     "@chunkd/source-memory": "^11.0.2",
     "@chunkd/source-file": "^11.0.1",
-    "@chunkd/source-http": "^11.1.0"
+    "@chunkd/source-http": "^11.1.1"
   },
   "devDependencies": {
     "@types/node": "^18.16.19"
