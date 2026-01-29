@@ -24,21 +24,20 @@ const size = source.metadata?.size; // File size if metadata has been fetched
 
 # Building
 
-This requires [NodeJs](https://nodejs.org/en/) >= 18 & [Yarn](https://yarnpkg.com/en/)
+This requires [NodeJs](https://nodejs.org/en/) >= 18 
 
 Use [fnm](https://github.com/Schniz/fnm) to manage nodeJs versions
 
 ```bash
-# Download the latest nodejs & yarn
-fnm use 18
-npm install -g yarn
+# Download the latest nodejs 
+fnm use 24
 
 # Install node deps
-yarn
+npm
 
 # Build everything into /build
-yarn run build
+npm run build
 
 # Run the unit tests
-yarn run test
+npm run test
 ```

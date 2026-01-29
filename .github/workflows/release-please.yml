@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Build and test
         uses: linz/action-typescript@v3
-        with:
-          package-manager: yarn
 
       - name: Publish to NPM
         run: npx lerna publish from-package --no-push --no-private --yes
