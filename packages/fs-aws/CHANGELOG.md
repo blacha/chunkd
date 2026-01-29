@@ -25,6 +25,20 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.4.1](https://github.com/blacha/chunkd/compare/fs-aws-v11.4.0...fs-aws-v11.4.1) (2026-01-29)
+
+
+### Bug Fixes
+
+* properly encode urls that are returned from s3 listing ([5608c68](https://github.com/blacha/chunkd/commit/5608c68d510b58665710c7a4bb3f374395333090))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.3.0 to 11.3.1
+
 ## [11.4.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.3.0...fs-aws-v11.4.0) (2025-07-16)
 
 

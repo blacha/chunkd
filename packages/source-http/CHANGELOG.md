@@ -6,6 +6,13 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.1.1](https://github.com/blacha/chunkd/compare/source-http-v11.1.0...source-http-v11.1.1) (2026-01-29)
+
+
+### Bug Fixes
+
+* **source-http:** do not store -1 for size ([f0a6acb](https://github.com/blacha/chunkd/commit/f0a6acbb443cdc32dd9962912261770d23a8a857))
+
 ## [11.1.0](https://github.com/blacha/chunkd/compare/source-http-v11.0.2...source-http-v11.1.0) (2023-11-08)
 
 
