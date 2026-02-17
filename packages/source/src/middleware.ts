@@ -8,6 +8,8 @@ export interface SourceRequest {
   offset: number;
   /** Number of bytes to read, or undefined see {@link Source.fetch}  */
   length: number | undefined;
+  /** Optional signal to abort requests */
+  signal?: AbortSignal;
 }
 export type SourceCallback = (req: SourceRequest) => Promise<ArrayBuffer>;
 
