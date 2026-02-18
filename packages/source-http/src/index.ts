@@ -4,6 +4,7 @@ import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/sourc
 export interface FetchLikeOptions {
   method?: string;
   headers?: Record<string, string>;
+  signal?: AbortSignal;
 }
 export interface FetchLikeResponse {
   ok: boolean;
@@ -64,11 +65,12 @@ export class SourceHttp implements Source {
     return this._head;
   }
 
-  async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
+  async fetch(offset: number, length?: number, options?: { signal?: AbortSignal }): Promise<ArrayBuffer> {
     try {
       const headers = { range: ContentRange.toRange(offset, length), ...this.headers };
+      const {signal} = options ?? {};
 
-      const response = await SourceHttp.fetch(this.url, { headers });
+      const response = await SourceHttp.fetch(this.url, { headers, signal });
 
       if (!response.ok) {
         throw new SourceError(
