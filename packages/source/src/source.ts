@@ -43,7 +43,7 @@ export interface Source {
    * @throws {SourceError} on read failures.
    * @throws {SourceError} if the file is modified between reads.
    */
-  fetch(offset: number, length?: number): Promise<ArrayBuffer>;
+  fetch(offset: number, length?: number, options?: {signal?: AbortSignal}): Promise<ArrayBuffer>;
 }
 
 /** Metadata returned from some sources like HTTP or AWS */
