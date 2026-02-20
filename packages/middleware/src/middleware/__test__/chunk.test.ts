@@ -14,11 +14,11 @@ describe('SourceChunk', () => {
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(spy.mock.callCount(), 1);
-    assert.deepEqual(spy.mock.calls[0].arguments, [0, 16]);
+    assert.deepEqual(spy.mock.calls[0].arguments, [0, 16, undefined]);
 
     assert.equal(Buffer.from(await view.fetch(2, 5)).toString(), 'hello');
     assert.equal(spy.mock.callCount(), 2);
-    assert.deepEqual(spy.mock.calls[1].arguments, [0, 16]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [0, 16, undefined]);
   });
 
   it('should create multiple requests', async (t) => {
@@ -28,8 +28,8 @@ describe('SourceChunk', () => {
 
     assert.equal(Buffer.from(await view.fetch(0, 8)).toString(), '{"hello"');
     assert.equal(spy.mock.callCount(), 2);
-    assert.deepEqual(spy.mock.calls[0].arguments, [0, 4]);
-    assert.deepEqual(spy.mock.calls[1].arguments, [4, 4]);
+    assert.deepEqual(spy.mock.calls[0].arguments, [0, 4, undefined]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [4, 4, undefined]);
   });
 
   it('should end at the size of the file', async () => {

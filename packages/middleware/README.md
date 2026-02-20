@@ -7,7 +7,8 @@ Middleware layer for sources to provided advanced features for all fetching logi
 [cache](./src/middleware/cache.ts) Cache responses from requests, with a LRU cache
 
 ```typescript
-import { sources, SourceCache } from '@chunkd/middleware';
+import { SourceCache } from '@chunkd/middleware';
+import { Source } from '@chunkd/source';
 import { SourceHttp } from '@chunk/http';
 
 /** Create a cache with 1MB of storage */
@@ -32,7 +33,8 @@ sourceHttp.fetch(0, 1024);
 [absolute](./src/middleware/absolute.ts) Convert reltive byte requests into absolute byte requests to enhance caching
 
 ```typescript
-import { sources, SourceCache } from '@chunkd/middleware';
+import { SourceCache } from '@chunkd/middleware';
+import { Source } from '@chunkd/source';
 import { SourceHttp } from '@chunk/http';
 
 const abs = new SourceAbsolute();
