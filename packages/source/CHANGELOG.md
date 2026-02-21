@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.2.0](https://github.com/blacha/chunkd/compare/source-v11.1.0...source-v11.2.0) (2026-02-21)
+
+
+### Features
+
+* support abort controller ([#1644](https://github.com/blacha/chunkd/issues/1644)) ([7fc54da](https://github.com/blacha/chunkd/commit/7fc54daaef0587067cd1ed45ab4c72d102839bfe))
+
 ## [11.1.0](https://github.com/blacha/chunkd/compare/source-v11.0.0...source-v11.1.0) (2023-08-23)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [11.3.2](https://github.com/blacha/chunkd/compare/fs-v11.3.1...fs-v11.3.2) (2026-02-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.1.0 to ^11.2.0
+    * @chunkd/source-memory bumped from ^11.0.2 to ^11.0.3
+    * @chunkd/source-file bumped from ^11.0.1 to ^11.0.2
+    * @chunkd/source-http bumped from ^11.1.1 to ^11.2.0
+
 ## [11.3.1](https://github.com/blacha/chunkd/compare/fs-v11.3.0...fs-v11.3.1) (2026-01-29)
 
 

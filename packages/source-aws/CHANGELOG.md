@@ -6,6 +6,15 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.0.5](https://github.com/blacha/chunkd/compare/source-aws-v11.0.4...source-aws-v11.0.5) (2026-02-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.1.0 to ^11.2.0
+
 ## [11.0.4](https://github.com/blacha/chunkd/compare/source-aws-v11.0.3...source-aws-v11.0.4) (2024-11-03)
 
 

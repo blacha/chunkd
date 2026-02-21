@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source",
-  "version": "11.1.0",
+  "version": "11.2.0",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"

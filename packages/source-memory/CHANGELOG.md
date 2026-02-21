@@ -1,5 +1,14 @@
 # Changelog
 
+## [11.0.3](https://github.com/blacha/chunkd/compare/source-memory-v11.0.2...source-memory-v11.0.3) (2026-02-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.1.0 to ^11.2.0
+
 ## [11.0.2](https://github.com/blacha/chunkd/compare/source-memory-v11.0.1...source-memory-v11.0.2) (2023-08-23)
 
 

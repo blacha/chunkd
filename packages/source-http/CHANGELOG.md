@@ -6,6 +6,20 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.2.0](https://github.com/blacha/chunkd/compare/source-http-v11.1.1...source-http-v11.2.0) (2026-02-21)
+
+
+### Features
+
+* support abort controller ([#1644](https://github.com/blacha/chunkd/issues/1644)) ([7fc54da](https://github.com/blacha/chunkd/commit/7fc54daaef0587067cd1ed45ab4c72d102839bfe))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.1.0 to ^11.2.0
+
 ## [11.1.1](https://github.com/blacha/chunkd/compare/source-http-v11.1.0...source-http-v11.1.1) (2026-01-29)
 
 
