@@ -16,7 +16,7 @@ describe('SourceCache', () => {
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(spy.mock.callCount(), 1);
-    assert.deepEqual(spy.mock.calls[0].arguments, [0, 1]);
+    assert.deepEqual(spy.mock.calls[0].arguments, [0, 1, undefined]);
 
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
@@ -59,7 +59,7 @@ describe('SourceCache', () => {
 
     assert.equal(cache.size, 1);
     assert.equal(spy.mock.callCount(), 1);
-    assert.deepEqual(spy.mock.calls[0].arguments, [0, 1]);
+    assert.deepEqual(spy.mock.calls[0].arguments, [0, 1, undefined]);
 
     assert.equal(Buffer.from(await view.fetch(2, 1)).toString(), 'h');
     assert.equal(Buffer.from(await view.fetch(2, 1)).toString(), 'h');

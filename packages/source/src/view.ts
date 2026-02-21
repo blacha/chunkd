@@ -33,8 +33,8 @@ export class SourceView implements Source {
     return this.source.metadata;
   }
 
-  head(): Promise<SourceMetadata> {
-    return this.source.head();
+  head(options?: { signal: AbortSignal }): Promise<SourceMetadata> {
+    return this.source.head(options);
   }
 
   async close(): Promise<void> {
@@ -42,17 +42,22 @@ export class SourceView implements Source {
     for (const middleware of this.middleware) await middleware.onClose?.(this.source);
   }
 
-  async fetch(offset: number, length?: number): Promise<ArrayBuffer> {
+  async fetch(offset: number, length?: number, options?: { signal: AbortSignal }): Promise<ArrayBuffer> {
     const middleware = this.middleware;
-    if (middleware == null || middleware.length === 0) return this.source.fetch(offset, length);
-    const handler: SourceCallback = (req: SourceRequest) => this.source.fetch(req.offset, req.length);
-    return this.run(handler, offset, length);
+    if (middleware == null || middleware.length === 0) return this.source.fetch(offset, length, options);
+    const handler: SourceCallback = (req: SourceRequest) => this.source.fetch(req.offset, req.length, options);
+    return this.run(handler, offset, length, options);
   }
 
   /** Run a request using all the middleware */
-  async run(handler: SourceCallback, offset: number, length?: number): Promise<ArrayBuffer> {
+  async run(
+    handler: SourceCallback,
+    offset: number,
+    length?: number,
+    options?: { signal: AbortSignal },
+  ): Promise<ArrayBuffer> {
     const middleware = this.middleware;
-    if (middleware == null) return handler({ source: this, offset, length });
+    if (middleware == null) return handler({ source: this, offset, length, signal: options?.signal });
 
     function runMiddleware(middleware: SourceMiddleware, next: SourceCallback): SourceCallback {
       return (req: SourceRequest): Promise<ArrayBuffer> => middleware.fetch(req, next);

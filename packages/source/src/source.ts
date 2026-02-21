@@ -23,7 +23,7 @@ export interface Source {
   metadata?: SourceMetadata;
 
   /** head the source to read the Metadata and sets {@link metadata} */
-  head(): Promise<SourceMetadata>;
+  head(options?: { signal: AbortSignal }): Promise<SourceMetadata>;
 
   /** close the source, sources like files sometimes have open file handles that need to be closed */
   close?(): Promise<void>;
@@ -43,7 +43,7 @@ export interface Source {
    * @throws {SourceError} on read failures.
    * @throws {SourceError} if the file is modified between reads.
    */
-  fetch(offset: number, length?: number): Promise<ArrayBuffer>;
+  fetch(offset: number, length?: number, options?: { signal: AbortSignal }): Promise<ArrayBuffer>;
 }
 
 /** Metadata returned from some sources like HTTP or AWS */
