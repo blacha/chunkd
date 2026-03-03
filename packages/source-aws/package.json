@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-aws",
-  "version": "11.0.4",
+  "version": "11.0.5",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "*",
-    "@chunkd/source": "^11.1.0"
+    "@chunkd/source": "^11.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.19"

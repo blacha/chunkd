@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-http",
-  "version": "11.1.1",
+  "version": "11.2.0",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
@@ -18,7 +18,7 @@
     "test": "node --test \"build/**/*.test.js\""
   },
   "dependencies": {
-    "@chunkd/source": "^11.1.0"
+    "@chunkd/source": "^11.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.19"

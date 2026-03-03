@@ -6,6 +6,15 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.0.2](https://github.com/blacha/chunkd/compare/source-file-v11.0.1...source-file-v11.0.2) (2026-02-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.1.0 to ^11.2.0
+
 ## [11.0.0](https://github.com/blacha/chunkd/compare/source-file-v10.0.6...source-file-v11.0.0) (2023-07-20)
 
 
