@@ -1,6 +1,16 @@
 export { FsError } from './error.js';
 export { fsa } from './file.system.abstraction.js';
-export { FileInfo, FileSystem, FileSystemAction, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
+export {
+  annotate,
+  FileInfo,
+  FileSystem,
+  FileSystemAction,
+  FileWriteTypes,
+  ListOptions,
+  ReadResponse,
+  ReadStreamResponse,
+  WriteOptions,
+} from './file.system.js';
 export { Flag, FlagRead, FlagReadWrite } from './flags.js';
 export { toArray, toFirst } from './generator.js';
 export { FileSystemProvider } from './provider.js';

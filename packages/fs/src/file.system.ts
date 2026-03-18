@@ -27,7 +27,10 @@ export interface FileInfo<T = unknown> {
 
   /**
    * Raw response object
+   *
    * For example in AWS S3 this is the HeadObjectResponse when doing head requests
+   *
+   * TODO: this should eventually shift to a symbol
    */
   $response?: T;
 }
@@ -39,6 +42,11 @@ export interface WriteOptions {
   contentType?: string;
   /** Additional metadata to be written */
   metadata?: Record<string, string>;
+
+  ifMatch?: string;
+  ifNoneMatch?: string;
+  contentDisposition?: string;
+  cacheControl?: string;
 }
 
 export interface ListOptions {
@@ -48,6 +56,9 @@ export interface ListOptions {
    */
   recursive?: boolean;
 }
+
+export type ReadResponse = Promise<Buffer & { $url: URL; $response?: unknown }>;
+export type ReadStreamResponse = Readable & { $url: URL; $response?: unknown };
 
 export interface FileSystem {
   /**
@@ -60,9 +71,9 @@ export interface FileSystem {
    */
   name: string;
   /** Read a file into a buffer */
-  read(location: URL): Promise<Buffer>;
+  read(location: URL): ReadResponse;
   /** Create a read stream */
-  readStream(location: URL): Readable;
+  readStream(location: URL): ReadStreamResponse;
   /** Write a file from either a buffer or stream */
   write(location: URL, buffer: Buffer | Readable | string, opts?: Partial<WriteOptions>): Promise<void>;
   /** list all files in location */
@@ -79,3 +90,32 @@ export interface FileSystem {
 
 /** All actions on a file system */
 export type FileSystemAction = 'read' | 'readStream' | 'write' | 'list' | 'details' | 'head' | 'source' | 'delete';
+
+/** Annotate responses with more information */
+export const annotate = {
+  /** Annotate a read response with the common properties */
+  read(buffer: Buffer, source: URL, response?: unknown): Awaited<ReadResponse> {
+    const ret = buffer as Awaited<ReadResponse>;
+    ret.$url = source;
+    if (response) {
+      ret.$response = response;
+      Object.defineProperty(buffer, '$response', { enumerable: false });
+    }
+    Object.defineProperty(buffer, '$url', { enumerable: false });
+
+    return ret;
+  },
+
+  /** Annotate a read response with the common properties */
+  readStream(res: Readable, source: URL, response?: unknown): Awaited<ReadStreamResponse> {
+    const ret = res as Awaited<ReadStreamResponse>;
+    ret.$url = source;
+    Object.defineProperty(res, '$url', { enumerable: false });
+
+    if (response) {
+      ret.$response = response;
+      Object.defineProperty(res, '$response', { enumerable: false });
+    }
+    return ret;
+  },
+};

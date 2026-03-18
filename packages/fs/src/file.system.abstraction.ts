@@ -1,11 +1,18 @@
-import type { Readable } from 'node:stream';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { gunzip } from 'node:zlib';
 
 import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
 
-import { FileInfo, FileSystem, FileWriteTypes, ListOptions, WriteOptions } from './file.system.js';
+import {
+  FileInfo,
+  FileSystem,
+  FileWriteTypes,
+  ListOptions,
+  ReadResponse,
+  ReadStreamResponse,
+  WriteOptions,
+} from './file.system.js';
 import { Flag } from './flags.js';
 import { toArray } from './generator.js';
 import { FsFile } from './systems/file.js';
@@ -79,7 +86,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @param loc file to read
    * @returns Content of the file
    */
-  read(loc: URL): Promise<Buffer> {
+  read(loc: URL): ReadResponse {
     return this.get(loc, 'r').read(loc);
   }
 
@@ -106,7 +113,7 @@ export class FileSystemAbstraction implements FileSystem {
    * @param loc file to read
    * @returns Stream of file contents
    */
-  readStream(loc: URL): Readable {
+  readStream(loc: URL): ReadStreamResponse {
     return this.get(loc, 'r').readStream(loc);
   }
 

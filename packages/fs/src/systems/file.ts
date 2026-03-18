@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SourceFile } from '@chunkd/source-file';
 
 import { FsError } from '../error.js';
-import { FileInfo, FileSystem, ListOptions } from '../file.system.js';
+import { annotate, FileInfo, FileSystem, ListOptions, ReadResponse, ReadStreamResponse } from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }
@@ -102,9 +102,10 @@ export class FsFile implements FileSystem {
     }
   }
 
-  async read(loc: URL): Promise<Buffer> {
+  async read(loc: URL): ReadResponse {
     try {
-      return await fs.promises.readFile(loc);
+      const ret = await fs.promises.readFile(loc);
+      return annotate.read(ret, loc);
     } catch (e) {
       throw new FsError(`Failed to read: ${loc.href}`, getCode(e), loc, 'read', this, e);
     }
@@ -146,7 +147,7 @@ export class FsFile implements FileSystem {
     }
   }
 
-  readStream(loc: URL): fs.ReadStream {
-    return fs.createReadStream(loc);
+  readStream(loc: URL): ReadStreamResponse {
+    return annotate.readStream(fs.createReadStream(loc), loc);
   }
 }

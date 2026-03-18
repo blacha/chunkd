@@ -12,7 +12,18 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { FileInfo, FileSystem, FileSystemAction, FsError, isRecord, ListOptions, WriteOptions } from '@chunkd/fs';
+import {
+  annotate,
+  FileInfo,
+  FileSystem,
+  FileSystemAction,
+  FsError,
+  isRecord,
+  ListOptions,
+  ReadResponse,
+  ReadStreamResponse,
+  WriteOptions,
+} from '@chunkd/fs';
 import { SourceAwsS3 } from '@chunkd/source-aws';
 
 import { AwsS3CredentialProvider } from './credentials.js';
@@ -158,7 +169,7 @@ export class FsAwsS3 implements FileSystem {
     }
   }
 
-  async read(loc: URL): Promise<Buffer> {
+  async read(loc: URL): ReadResponse {
     try {
       const res = await this.s3.send(
         new GetObjectCommand({
@@ -168,7 +179,8 @@ export class FsAwsS3 implements FileSystem {
         }),
       );
 
-      return Buffer.from(await new Response(res.Body as BodyInit).arrayBuffer());
+      const ret = Buffer.from(await new Response(res.Body as BodyInit).arrayBuffer());
+      return annotate.read(ret, loc, res);
     } catch (e) {
       const ce = toFsError(e, `Failed to read: "${loc.href}"`, loc, 'read', this);
       if (this.credentials != null && ce.code === 403) {
@@ -232,6 +244,10 @@ export class FsAwsS3 implements FileSystem {
           Key: decodeURIComponent(loc.pathname.slice(1)),
           Body: buf,
           RequestPayer: this.requestPayer,
+          CacheControl: ctx?.cacheControl,
+          ContentDisposition: ctx?.contentDisposition,
+          IfMatch: ctx?.ifMatch,
+          IfNoneMatch: ctx?.ifMatch,
           ContentEncoding: ctx?.contentEncoding,
           ContentType: ctx?.contentType,
           Metadata: ctx?.metadata,
@@ -272,8 +288,9 @@ export class FsAwsS3 implements FileSystem {
     return this.head(loc).then((f) => f != null);
   }
 
-  readStream(loc: URL): Readable {
+  readStream(loc: URL): ReadStreamResponse {
     const pt = new PassThrough();
+    annotate.readStream(pt, loc);
     this.s3
       .send(
         new GetObjectCommand({
@@ -283,11 +300,13 @@ export class FsAwsS3 implements FileSystem {
         }),
       )
       .then((r) => {
+        annotate.readStream(pt, loc, r);
+
         if (r.Body) (r.Body as Readable).pipe(pt);
         else pt.end();
       })
       .catch((e) => pt.emit('error', toFsError(e, `Failed to readStream: ${loc.href}`, loc, 'readStream', this)));
-    return pt;
+    return pt as unknown as ReadStreamResponse;
   }
 
   async head(loc: URL): Promise<FileInfo<HeadObjectOutput> | null> {

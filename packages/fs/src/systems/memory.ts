@@ -2,11 +2,22 @@ import { SourceMemory } from '@chunkd/source-memory';
 import { Readable } from 'stream';
 
 import { FsError } from '../error.js';
-import { FileInfo, FileSystem, ListOptions, WriteOptions } from '../file.system.js';
+import {
+  annotate,
+  FileInfo,
+  FileSystem,
+  ListOptions,
+  ReadResponse,
+  ReadStreamResponse,
+  WriteOptions,
+} from '../file.system.js';
 
-export function toReadable(r: string | Buffer | Readable): Readable {
+export function toReadable(r: string | Buffer | Readable, source: URL): ReadStreamResponse {
   if (typeof r === 'string') r = Buffer.from(r);
-  return Readable.from(r);
+  const ret = Readable.from(r) as ReadStreamResponse;
+  ret.$url = source;
+  Object.defineProperty(ret, '$url', { enumerable: false });
+  return ret;
 }
 
 async function getBuffer(buffer: string | Buffer | Readable): Promise<Buffer> {
@@ -29,16 +40,18 @@ export class FsMemory implements FileSystem {
   name = 'memory';
   files: Map<string, { buffer: Buffer; opts?: WriteOptions }> = new Map();
 
-  read(loc: URL): Promise<Buffer> {
+  read(loc: URL): ReadResponse {
     const data = this.files.get(loc.href);
     if (data == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'read', this);
-    return Promise.resolve(data.buffer);
+    const newBuf = data.buffer.subarray();
+    annotate.read(newBuf, loc, null);
+    return Promise.resolve(newBuf) as ReadResponse;
   }
 
-  readStream(loc: URL): Readable {
+  readStream(loc: URL): ReadStreamResponse {
     const buf = this.files.get(loc.href);
     if (buf == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'readStream', this);
-    return toReadable(buf.buffer);
+    return toReadable(buf.buffer, loc);
   }
 
   async write(loc: URL, buffer: string | Buffer | Readable, opts?: WriteOptions): Promise<void> {
