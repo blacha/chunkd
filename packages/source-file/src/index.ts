@@ -4,35 +4,22 @@ import { pathToFileURL } from 'node:url';
 
 import { Source, SourceError, SourceMetadata } from '@chunkd/source';
 
+// File Stat will always return a size and lastModified
+type SourceMetadataWithSize = SourceMetadata & { size: number; lastModified: string };
+
 export class SourceFile implements Source {
   type = 'file';
-  fd?: Promise<fs.FileHandle> | null = null;
   url: URL;
 
-  /** Automatically close the file descriptor after reading */
-  closeAfterRead = false;
-
-  constructor(loc: URL | string, opts: { closeAfterRead: boolean } = { closeAfterRead: false }) {
-    this.closeAfterRead = opts.closeAfterRead;
+  constructor(loc: URL | string) {
     this.url = typeof loc === 'string' ? pathToFileURL(resolve(loc)) : loc;
   }
 
-  /** Close the file handle */
-  async close(): Promise<void> {
-    if (this.fd == null) return;
-    const fd = await this.fd;
-    if (fd == null) return;
-    await fd.close();
-    this.fd = null;
-  }
-
-  metadata?: SourceMetadata;
-  _head?: Promise<SourceMetadata>;
-  head(): Promise<SourceMetadata> {
+  metadata?: SourceMetadataWithSize;
+  _head?: Promise<SourceMetadataWithSize>;
+  head(): Promise<SourceMetadataWithSize> {
     if (this._head) return this._head;
-    if (this.fd == null) this.fd = fs.open(this.url, 'r');
-    this._head = this.fd?.then(async (fd) => {
-      const stats = await fd.stat();
+    this._head = fs.stat(this.url).then((stats) => {
       this.metadata = { size: stats.size, lastModified: stats.mtime.toString() };
       return this.metadata;
     });
@@ -49,26 +36,25 @@ export class SourceFile implements Source {
       );
     }
 
+    const metadata = await this.head();
+
     // If reading negative offsets we need the length of the file before we can read it.
     if (offset < 0) {
       length = Math.abs(offset);
-      const metadata = await this.head();
-      if (metadata.size == null) throw new SourceError(`Failed to fetch metadata from: ${this.url.href}`, 404, this);
       offset = metadata.size + offset;
-    } else if (this.metadata == null) await this.head();
-
-    const size = this.metadata?.size;
-
-    // If no length given read the entire file
-    if (length == null && size != null) length = size - offset;
-
-    if (length == null || size == null) {
-      throw new SourceError(`Length is required for reading from file: ${this.url.href}`, 400, this);
     }
-    if (this.fd == null) this.fd = fs.open(this.url, 'r');
-    const fd = await this.fd;
-    const { buffer } = await fd.read(Buffer.allocUnsafe(length ?? size), 0, length, offset);
-    if (this.closeAfterRead) await this.close();
-    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+
+    const size = metadata.size;
+    // If no length given read the entire file
+    if (length == null) length = size - offset;
+
+    // console.log({ length, offset });
+    const fd = await fs.open(this.url, 'r');
+    try {
+      const { buffer } = await fd.read(Buffer.allocUnsafe(length ?? size), 0, length, offset);
+      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+    } finally {
+      await fd.close();
+    }
   }
 }

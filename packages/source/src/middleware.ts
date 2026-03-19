@@ -16,7 +16,4 @@ export type SourceCallback = (req: SourceRequest) => Promise<ArrayBuffer>;
 export interface SourceMiddleware {
   name: string;
   fetch(req: SourceRequest, next: SourceCallback): Promise<ArrayBuffer>;
-
-  /** When a source is closed, this call back is fired */
-  onClose?(source: Source): Promise<void>;
 }
