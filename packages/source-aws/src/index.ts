@@ -1,20 +1,20 @@
 import { GetObjectCommand, GetObjectOutput, HeadObjectCommand, HeadObjectOutput, S3Client } from '@aws-sdk/client-s3';
 import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
 
-function parseMetadata(res: GetObjectOutput | HeadObjectOutput): SourceMetadata {
+export function parseMetadata(res: GetObjectOutput | HeadObjectOutput): SourceMetadata {
   const metadata: SourceMetadata = {};
   if ('ContentRange' in res && res.ContentRange) metadata.size = ContentRange.parseSize(res.ContentRange);
   else if (res.ContentLength) metadata.size = res.ContentLength;
 
   if (res.ETag) metadata.eTag = res.ETag;
-  if (res.Metadata && Object.keys(res.Metadata).length > 0) metadata.metadata = res.Metadata;
   if (res.ContentType) metadata.contentType = res.ContentType;
   if (res.ContentDisposition) metadata.contentDisposition = res.ContentDisposition;
+  if (res.CacheControl) metadata.cacheControl = res.CacheControl;
+  if (res.ContentEncoding) metadata.contentEncoding = res.ContentEncoding;
   if (res.LastModified) metadata.lastModified = res.LastModified.toISOString();
-  Object.defineProperty(metadata, '$response', {
-    enumerable: false,
-    value: res,
-  });
+  if (res.Metadata && Object.keys(res.Metadata).length > 0) metadata.metadata = res.Metadata;
+
+  Object.defineProperty(metadata, '$response', { enumerable: false, value: res });
   return metadata;
 }
 

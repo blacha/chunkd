@@ -1,11 +1,10 @@
-import type { Readable } from 'node:stream';
 import { PassThrough, Stream } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
 
-import { FetchLikeResponse, SourceHttp } from '@chunkd/source-http';
+import { FetchLikeResponse, getMetadataFromResponse, SourceHttp } from '@chunkd/source-http';
 
 import { FsError } from '../error.js';
-import { FileInfo, FileSystem } from '../file.system.js';
+import { annotate, FileInfo, FileSystem, ReadResponse, ReadStreamResponse } from '../file.system.js';
 
 export class FsHttp implements FileSystem {
   name = 'http';
@@ -28,22 +27,23 @@ export class FsHttp implements FileSystem {
       if (!res.ok) {
         throw new FsError(`Failed to head: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
-      const info = { url: loc, size: Number(res.headers.get('content-length')), isDirectory: false, $response: res };
-      Object.defineProperty(info, '$response', { enumerable: false });
-      return info;
+
+      return { ...getMetadataFromResponse(res), url: loc };
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
       throw new FsError(`Failed to head: ${loc.href}`, 500, loc, 'read', this, e);
     }
   }
 
-  async read(loc: URL): Promise<Buffer> {
+  async read(loc: URL): ReadResponse {
     try {
       const res = await SourceHttp.fetch(loc, { method: 'GET' });
       if (!res.ok) {
         throw new FsError(`Failed to read: ${loc.href}`, res.status, loc, 'read', this, new Error(res.statusText));
       }
-      return Buffer.from(await res.arrayBuffer());
+      const buf = Buffer.from(await res.arrayBuffer());
+
+      return annotate.read(buf, { ...getMetadataFromResponse(res), url: loc });
     } catch (e) {
       if (FsError.is(e) && e.system === this) throw e;
       throw new FsError(`Failed to read: ${loc.href}`, 500, loc, 'read', this, e);
@@ -58,8 +58,9 @@ export class FsHttp implements FileSystem {
     throw new FsError(`NotImplemented to delete: ${loc.href}`, 500, loc, 'list', this);
   }
 
-  readStream(loc: URL): Readable {
+  readStream(loc: URL): ReadStreamResponse {
     const pt = new PassThrough();
+    annotate.readStream(pt, { url: loc });
     SourceHttp.fetch(loc, { method: 'GET' })
       .then((res) => {
         if (!res.ok) {
@@ -82,11 +83,12 @@ export class FsHttp implements FileSystem {
         }
 
         const st = Stream.Readable.fromWeb(res.body as unknown as ReadableStream);
+        annotate.readStream(pt, { ...getMetadataFromResponse(res), url: loc });
         st.pipe(pt);
       })
       .catch((e) => {
         pt.emit('error', new FsError(`Failed to readStream: ${loc.href}`, 500, loc, 'readStream', this, e));
       });
-    return pt;
+    return pt as unknown as ReadStreamResponse;
   }
 }

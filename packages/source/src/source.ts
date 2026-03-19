@@ -52,8 +52,13 @@ export interface SourceMetadata {
   size?: number;
   /** Entity tag */
   eTag?: string;
+  /** Content type of the file eg "text/plain" */
   contentType?: string;
   contentDisposition?: string;
+  cacheControl?: string;
+  /** Encoding of the file eg "gzip" */
+  contentEncoding?: string;
+  /** ISO String of when the file was last modified */
   lastModified?: string;
   /** Extra metadata from the source, see individual sources to see what values are added */
   metadata?: Record<string, unknown>;

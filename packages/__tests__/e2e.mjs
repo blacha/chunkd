@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { after, before, describe, it } from 'node:test';
 
 import { S3Client } from '@aws-sdk/client-s3';
-import { fsa, FsFile, FsMemory, toArray } from '@chunkd/fs';
+import { fsa, FsFile, FsHttp, FsMemory, toArray } from '@chunkd/fs';
 import { FsAwsS3 } from '@chunkd/fs-aws';
 
 // function getGcp() {
@@ -30,6 +30,7 @@ const TestFiles = [
 console.log = console.trace;
 
 async function setupTestData(prefix) {
+  if (prefix.startsWith('http')) return;
   for (const file of TestFiles) {
     const target = new URL(file.path, prefix);
     await fsa.write(target, file.buffer);
@@ -54,6 +55,8 @@ async function testPrefix(prefix, fs) {
     });
 
     describe('list', () => {
+      if (prefix.startsWith('http')) return; // http cannot delete
+
       it('should list recursive:default ', async () => {
         const files = await toArray(fsa.list(new URL(prefix)));
         assert.equal(files.length, TestFiles.length);
@@ -114,6 +117,24 @@ async function testPrefix(prefix, fs) {
       });
     });
 
+    describe('write', () => {
+      if (prefix.startsWith('http')) return; // http cannot write
+
+      it('should prevent overwrites', async () => {
+        const target = new URL('🦄.json', prefix);
+        const file = await fsa.read(new URL('🦄.json', prefix));
+
+        const resultMatch = await fsa.write(target, 'Something', { ifMatch: 'abc1234' }).catch((e) => e);
+        assert.equal(resultMatch.code, 412);
+
+        const resultNone = await fsa.write(target, 'Something', { ifNoneMatch: '*' }).catch((e) => e);
+        assert.equal(resultNone.code, 412);
+
+        const resultOk = await fsa.write(target, Buffer.from('🦄'), { ifMatch: file.$metadata?.eTag });
+        assert.equal(resultOk, undefined);
+      });
+    });
+
     describe('head', () => {
       it('should head a file', async () => {
         const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
@@ -123,6 +144,7 @@ async function testPrefix(prefix, fs) {
     });
 
     describe('delete', () => {
+      if (prefix.startsWith('http')) return; // http cannot delete
       it('should not error when attempting to delete a missing', async () => {
         await fsa.delete(new URL(TestFiles[0].path + '.MISSING_FILE_NAME', prefix));
       });
@@ -161,6 +183,7 @@ async function testPrefix(prefix, fs) {
   });
 }
 
+testPrefix('https://dwwxelnx3vr6z.cloudfront.net/v3/', new FsHttp());
 testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
 testPrefix('memory://blacha-chunkd-test/', new FsMemory());
 // Only test S3 if a AWS_PROFILE is set

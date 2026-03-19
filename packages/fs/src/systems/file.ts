@@ -6,7 +6,15 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SourceFile } from '@chunkd/source-file';
 
 import { FsError } from '../error.js';
-import { FileInfo, FileSystem, ListOptions } from '../file.system.js';
+import {
+  annotate,
+  FileInfo,
+  FileSystem,
+  ListOptions,
+  ReadResponse,
+  ReadStreamResponse,
+  WriteOptions,
+} from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }
@@ -24,6 +32,8 @@ function getCode(e: unknown): number {
     if (e.code === 'ENOTDIR') return 404;
     if (e.code === 'ENOENT') return 404;
     if (e.code === 'EACCES') return 403;
+    // Attempted to write a file that already exists
+    if (e.code === 'EEXIST') return 412;
   }
 
   return 500;
@@ -93,7 +103,14 @@ export class FsFile implements FileSystem {
   async head(loc: URL): Promise<FileInfo<fs.Stats> | null> {
     try {
       const stat = await fs.promises.stat(loc);
-      const info = { url: loc, size: stat.size, isDirectory: stat.isDirectory(), $response: stat };
+      const info: FileInfo<fs.Stats> = {
+        url: loc,
+        size: stat.size,
+        isDirectory: stat.isDirectory(),
+        // Attempt to make a etag for local files
+        eTag: stat.mtime.getTime() + '_' + stat.size,
+        $response: stat,
+      };
       Object.defineProperty(info, '$response', { enumerable: false });
       return info;
     } catch (e) {
@@ -102,26 +119,40 @@ export class FsFile implements FileSystem {
     }
   }
 
-  async read(loc: URL): Promise<Buffer> {
+  async read(loc: URL): ReadResponse<fs.Stats> {
     try {
-      return await fs.promises.readFile(loc);
+      const [ret, stat] = await Promise.all([fs.promises.readFile(loc), this.head(loc)]);
+      return annotate.read<fs.Stats>(ret, stat as FileInfo<fs.Stats>);
     } catch (e) {
       throw new FsError(`Failed to read: ${loc.href}`, getCode(e), loc, 'read', this, e);
     }
   }
 
-  async write(loc: URL, buf: Buffer | Readable | string): Promise<void> {
+  // While not perfect it attempt to validate that the etag of a local file hasnt recently changed
+  async assertETag(loc: URL, eTag?: string): Promise<void> {
+    if (eTag == null) return;
+    const obj = await this.head(loc);
+    if (obj == null) return;
+    if (obj.eTag === eTag) return;
+    throw new FsError(`Conflict: ${loc.href}`, 412, loc, 'write', this);
+  }
+
+  async write(loc: URL, buf: Buffer | Readable | string, writeOpts?: Partial<WriteOptions>): Promise<void> {
+    const flag = writeOpts?.ifNoneMatch ? 'wx' : undefined;
     try {
       if (Buffer.isBuffer(buf) || typeof buf === 'string') {
         await fs.promises.mkdir(new URL('.', loc), { recursive: true });
-        await fs.promises.writeFile(loc, buf);
+        await this.assertETag(loc, writeOpts?.ifMatch);
+        await fs.promises.writeFile(loc, buf, { flag });
       } else {
         await new Promise((resolve, reject) => {
           buf.once('error', reject); // Has to be run before any awaits
           fs.promises
             .mkdir(new URL('.', loc), { recursive: true })
-            .then(() => {
-              const st = fs.createWriteStream(loc);
+            .then(async () => {
+              await this.assertETag(loc, writeOpts?.ifMatch);
+
+              const st = fs.createWriteStream(loc, { flags: flag });
               st.on('finish', resolve);
               st.on('error', reject);
               buf.pipe(st);
@@ -130,6 +161,7 @@ export class FsFile implements FileSystem {
         });
       }
     } catch (e) {
+      if (FsError.is(e)) throw e; // assertETag will throw the conflict
       throw new FsError(`Failed to write: ${loc.href}`, getCode(e), loc, 'write', this, e);
     }
   }
@@ -146,7 +178,7 @@ export class FsFile implements FileSystem {
     }
   }
 
-  readStream(loc: URL): fs.ReadStream {
-    return fs.createReadStream(loc);
+  readStream(loc: URL): ReadStreamResponse {
+    return annotate.readStream(fs.createReadStream(loc), { url: loc });
   }
 }
