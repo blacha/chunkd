@@ -11,7 +11,7 @@ import {
   ListObjectsV2CommandOutput,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
+import { Options, Upload } from '@aws-sdk/lib-storage';
 import {
   annotate,
   FileInfo,
@@ -24,7 +24,7 @@ import {
   ReadStreamResponse,
   WriteOptions,
 } from '@chunkd/fs';
-import { SourceAwsS3 } from '@chunkd/source-aws';
+import { parseMetadata, SourceAwsS3 } from '@chunkd/source-aws';
 
 import { AwsS3CredentialProvider } from './credentials.js';
 
@@ -42,6 +42,10 @@ export function toFsError(e: unknown, msg: string, url: URL, action: FileSystemA
 }
 /** One megabyte in bytes */
 const OneMegaByte = 1024 * 1204;
+
+function getRequestPayer(req?: 'requester' | 'public'): 'requester' | undefined {
+  return req === 'requester' ? 'requester' : undefined;
+}
 
 export class FsAwsS3 implements FileSystem {
   name = 's3';
@@ -116,7 +120,7 @@ export class FsAwsS3 implements FileSystem {
             ContinuationToken,
             Delimiter,
             EncodingType: 'url',
-            RequestPayer: this.requestPayer,
+            RequestPayer: getRequestPayer(this.requestPayer),
           }),
         );
 
@@ -175,12 +179,12 @@ export class FsAwsS3 implements FileSystem {
         new GetObjectCommand({
           Bucket: loc.hostname,
           Key: decodeURIComponent(loc.pathname.slice(1)),
-          RequestPayer: this.requestPayer,
+          RequestPayer: getRequestPayer(this.requestPayer),
         }),
       );
 
       const ret = Buffer.from(await new Response(res.Body as BodyInit).arrayBuffer());
-      return annotate.read(ret, loc, res);
+      return annotate.read(ret, { ...parseMetadata(res), url: loc });
     } catch (e) {
       const ce = toFsError(e, `Failed to read: "${loc.href}"`, loc, 'read', this);
       if (this.credentials != null && ce.code === 403) {
@@ -207,7 +211,7 @@ export class FsAwsS3 implements FileSystem {
           Bucket: loc.hostname,
           Key: decodeURIComponent(loc.pathname.slice(1)),
           Body: Buffer.from('@chunkd/fs-aws writeTest file'),
-          RequestPayer: this.requestPayer,
+          RequestPayer: getRequestPayer(this.requestPayer),
         },
       }).done();
       // Suffix was added so cleanup the file
@@ -235,23 +239,27 @@ export class FsAwsS3 implements FileSystem {
     }
 
     try {
+      const params: Options['params'] = {
+        Bucket: loc.hostname,
+        Key: decodeURIComponent(loc.pathname.slice(1)),
+        Body: buf,
+      };
+
+      if (this.requestPayer) params.RequestPayer = getRequestPayer(this.requestPayer);
+
+      if (ctx?.cacheControl) params.CacheControl = ctx.cacheControl;
+      if (ctx?.contentDisposition) params.ContentDisposition = ctx.contentDisposition;
+      if (ctx?.ifMatch) params.IfMatch = ctx.ifMatch;
+      if (ctx?.ifNoneMatch) params.IfNoneMatch = ctx.ifNoneMatch;
+      if (ctx?.contentEncoding) params.ContentEncoding = ctx.contentEncoding;
+      if (ctx?.contentType) params.ContentType = ctx.contentType;
+      if (ctx?.metadata) params.Metadata = ctx.metadata;
+
       await new Upload({
         client: this.s3,
         queueSize: this.uploadQueueSize,
         partSize: this.uploadPartSize,
-        params: {
-          Bucket: loc.hostname,
-          Key: decodeURIComponent(loc.pathname.slice(1)),
-          Body: buf,
-          RequestPayer: this.requestPayer,
-          CacheControl: ctx?.cacheControl,
-          ContentDisposition: ctx?.contentDisposition,
-          IfMatch: ctx?.ifMatch,
-          IfNoneMatch: ctx?.ifMatch,
-          ContentEncoding: ctx?.contentEncoding,
-          ContentType: ctx?.contentType,
-          Metadata: ctx?.metadata,
-        },
+        params,
       }).done();
     } catch (e) {
       const ce = toFsError(e, `Failed to write: "${loc.href}"`, loc, 'write', this);
@@ -269,7 +277,7 @@ export class FsAwsS3 implements FileSystem {
         new DeleteObjectCommand({
           Bucket: loc.hostname,
           Key: decodeURIComponent(loc.pathname.slice(1)),
-          RequestPayer: this.requestPayer,
+          RequestPayer: getRequestPayer(this.requestPayer),
         }),
       );
       return;
@@ -290,17 +298,17 @@ export class FsAwsS3 implements FileSystem {
 
   readStream(loc: URL): ReadStreamResponse {
     const pt = new PassThrough();
-    annotate.readStream(pt, loc);
+    annotate.readStream(pt, { url: loc });
     this.s3
       .send(
         new GetObjectCommand({
           Bucket: loc.hostname,
           Key: decodeURIComponent(loc.pathname.slice(1)),
-          RequestPayer: this.requestPayer,
+          RequestPayer: getRequestPayer(this.requestPayer),
         }),
       )
       .then((r) => {
-        annotate.readStream(pt, loc, r);
+        annotate.readStream(pt, { ...parseMetadata(r), url: loc });
 
         if (r.Body) (r.Body as Readable).pipe(pt);
         else pt.end();
@@ -315,19 +323,11 @@ export class FsAwsS3 implements FileSystem {
         new HeadObjectCommand({
           Bucket: loc.hostname,
           Key: decodeURIComponent(loc.pathname.slice(1)),
-          RequestPayer: this.requestPayer,
+          RequestPayer: getRequestPayer(this.requestPayer),
         }),
       );
 
-      const info: FileInfo<HeadObjectOutput> = { size: res.ContentLength, url: loc, $response: res };
-      if (res.Metadata && Object.keys(res.Metadata).length > 0) info.metadata = res.Metadata;
-      if (res.ContentEncoding) info.contentEncoding = res.ContentEncoding;
-      if (res.ContentType) info.contentType = res.ContentType;
-      if (res.ETag) info.eTag = res.ETag;
-      if (res.LastModified) info.lastModified = res.LastModified.toISOString();
-      Object.defineProperty(info, '$response', { enumerable: false });
-
-      return info;
+      return { ...parseMetadata(res), url: loc };
     } catch (e) {
       if (isRecord(e) && e.code === 'NotFound') return null;
 

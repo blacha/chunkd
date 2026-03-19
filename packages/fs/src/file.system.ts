@@ -1,30 +1,14 @@
 import { Readable } from 'node:stream';
 
-import { Source } from '@chunkd/source';
+import { Source, SourceMetadata } from '@chunkd/source';
 
 export type FileWriteTypes = Buffer | Readable | string;
 
-export interface FileInfo<T = unknown> {
+export interface FileInfo<T = unknown> extends SourceMetadata {
   /** file path */
   url: URL;
-  /**
-   * Size of file in bytes
-   * undefined if no size found
-   */
-  size?: number;
   /** Is this file a directory */
   isDirectory?: boolean;
-  /** Additional metadata returned from the request */
-  metadata?: Record<string, string>;
-  /** Encoding of the file eg "gzip" */
-  contentEncoding?: string;
-  /** Content type of the file eg "text/plain" */
-  contentType?: string;
-  /** Entity tag */
-  eTag?: string;
-  /** ISO String of when the file was last modified */
-  lastModified?: string;
-
   /**
    * Raw response object
    *
@@ -42,10 +26,13 @@ export interface WriteOptions {
   contentType?: string;
   /** Additional metadata to be written */
   metadata?: Record<string, string>;
-
+  /** Only write the file if  */
   ifMatch?: string;
-  ifNoneMatch?: string;
+  /** Only write the file if target does not exist */
+  ifNoneMatch?: '*';
+  /** Content-Disposition header */
   contentDisposition?: string;
+  /** Cache-Control header */
   cacheControl?: string;
 }
 
@@ -57,8 +44,8 @@ export interface ListOptions {
   recursive?: boolean;
 }
 
-export type ReadResponse = Promise<Buffer & { $url: URL; $response?: unknown }>;
-export type ReadStreamResponse = Readable & { $url: URL; $response?: unknown };
+export type ReadResponse<T = unknown> = Promise<Buffer & { $metadata?: FileInfo<T> }>;
+export type ReadStreamResponse<T = unknown> = Readable & { $metadata?: FileInfo<T> };
 
 export interface FileSystem {
   /**
@@ -94,28 +81,20 @@ export type FileSystemAction = 'read' | 'readStream' | 'write' | 'list' | 'detai
 /** Annotate responses with more information */
 export const annotate = {
   /** Annotate a read response with the common properties */
-  read(buffer: Buffer, source: URL, response?: unknown): Awaited<ReadResponse> {
-    const ret = buffer as Awaited<ReadResponse>;
-    ret.$url = source;
-    if (response) {
-      ret.$response = response;
-      Object.defineProperty(buffer, '$response', { enumerable: false });
-    }
-    Object.defineProperty(buffer, '$url', { enumerable: false });
+  read<T = unknown>(buffer: Buffer, meta: FileInfo<T>): Awaited<ReadResponse<T>> {
+    const ret = buffer as Awaited<ReadResponse<T>>;
+
+    ret.$metadata = meta;
+    Object.defineProperty(ret, '$response', { enumerable: false });
 
     return ret;
   },
 
   /** Annotate a read response with the common properties */
-  readStream(res: Readable, source: URL, response?: unknown): Awaited<ReadStreamResponse> {
-    const ret = res as Awaited<ReadStreamResponse>;
-    ret.$url = source;
-    Object.defineProperty(res, '$url', { enumerable: false });
-
-    if (response) {
-      ret.$response = response;
-      Object.defineProperty(res, '$response', { enumerable: false });
-    }
+  readStream<T = unknown>(res: Readable, meta: FileInfo<T>): Awaited<ReadStreamResponse<T>> {
+    const ret = res as Awaited<ReadStreamResponse<T>>;
+    ret.$metadata = meta;
+    Object.defineProperty(ret, '$response', { enumerable: false });
     return ret;
   },
 };

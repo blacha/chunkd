@@ -12,12 +12,9 @@ import {
   WriteOptions,
 } from '../file.system.js';
 
-export function toReadable(r: string | Buffer | Readable, source: URL): ReadStreamResponse {
+export function toReadable(r: string | Buffer | Readable): ReadStreamResponse {
   if (typeof r === 'string') r = Buffer.from(r);
-  const ret = Readable.from(r) as ReadStreamResponse;
-  ret.$url = source;
-  Object.defineProperty(ret, '$url', { enumerable: false });
-  return ret;
+  return Readable.from(r) as ReadStreamResponse;
 }
 
 async function getBuffer(buffer: string | Buffer | Readable): Promise<Buffer> {
@@ -36,26 +33,59 @@ export async function toBuffer(stream: Readable): Promise<Buffer> {
   });
 }
 
+function parseMetadata(loc: URL, cache: FsMemoryCache): FileInfo<null> {
+  const obj = {
+    ...cache.opts,
+    url: loc,
+    size: cache.buffer.length,
+    $response: null,
+  };
+  Object.defineProperty(obj, '$response', { enumerable: false });
+
+  return obj;
+}
+
+interface FsMemoryCache {
+  buffer: Buffer;
+  opts?: WriteOptions;
+  eTag: string;
+}
 export class FsMemory implements FileSystem {
   name = 'memory';
-  files: Map<string, { buffer: Buffer; opts?: WriteOptions }> = new Map();
+  files: Map<string, FsMemoryCache> = new Map();
 
   read(loc: URL): ReadResponse {
-    const data = this.files.get(loc.href);
-    if (data == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'read', this);
-    const newBuf = data.buffer.subarray();
-    annotate.read(newBuf, loc, null);
+    const cache = this.files.get(loc.href);
+    if (cache == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'read', this);
+    const newBuf = cache.buffer.subarray();
+    annotate.read(newBuf, parseMetadata(loc, cache));
+
     return Promise.resolve(newBuf) as ReadResponse;
   }
 
   readStream(loc: URL): ReadStreamResponse {
-    const buf = this.files.get(loc.href);
-    if (buf == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'readStream', this);
-    return toReadable(buf.buffer, loc);
+    const cache = this.files.get(loc.href);
+    if (cache == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'readStream', this);
+    return annotate.readStream(toReadable(cache.buffer), { ...cache.opts, eTag: cache.eTag, url: loc });
   }
 
   async write(loc: URL, buffer: string | Buffer | Readable, opts?: WriteOptions): Promise<void> {
-    this.files.set(loc.href, { opts: opts, buffer: await getBuffer(buffer) });
+    if (opts?.ifNoneMatch) {
+      if (this.files.has(loc.href)) throw new FsError(`Exists: ${loc.href}`, 412, loc, 'write', this);
+    }
+
+    if (opts?.ifMatch) {
+      const file = this.files.get(loc.href);
+      if (file != null && opts.ifMatch !== file.eTag) {
+        throw new FsError(`Conflict: ${loc.href} `, 412, loc, 'write', this);
+      }
+    }
+    const outBuffer = await getBuffer(buffer);
+    this.files.set(loc.href, {
+      opts: opts,
+      buffer: outBuffer,
+      eTag: Math.random().toString(32).slice(2) + '.' + outBuffer.byteLength,
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -104,18 +134,9 @@ export class FsMemory implements FileSystem {
   }
 
   head(loc: URL): Promise<FileInfo | null> {
-    const obj = this.files.get(loc.href);
-    if (obj == null) return Promise.resolve(null);
-    const info = {
-      url: loc,
-      size: obj.buffer.length,
-      metadata: obj.opts?.metadata,
-      contentType: obj.opts?.contentType,
-      contentEncoding: obj.opts?.contentEncoding,
-      $response: null,
-    };
-    Object.defineProperty(info, '$response', { enumerable: false });
-    return Promise.resolve(info);
+    const cache = this.files.get(loc.href);
+    if (cache == null) return Promise.resolve(null);
+    return Promise.resolve(parseMetadata(loc, cache));
   }
 
   delete(loc: URL): Promise<void> {

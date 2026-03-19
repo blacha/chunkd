@@ -158,6 +158,20 @@ async function testPrefix(prefix, fs) {
         await source.close();
       });
     });
+
+    it('should prevent overwrites', async () => {
+      const target = new URL('🦄.json', prefix);
+      const file = await fsa.read(new URL('🦄.json', prefix));
+
+      const resultMatch = await fsa.write(target, 'Something', { ifMatch: 'abc1234' }).catch((e) => e);
+      assert.equal(resultMatch.code, 412);
+
+      const resultNone = await fsa.write(target, 'Something', { ifNoneMatch: '*' }).catch((e) => e);
+      assert.equal(resultNone.code, 412);
+
+      const resultOk = await fsa.write(target, Buffer.from('🦄'), { ifMatch: file.$metadata?.eTag });
+      assert.equal(resultOk, undefined);
+    });
   });
 }
 
