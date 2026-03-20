@@ -161,7 +161,6 @@ async function testPrefix(prefix, fs) {
         const source = fsa.source(new URL('🦄.json', prefix));
         const bytes = Buffer.from(await source.fetch(0)).toString('hex');
         assert.equal(bytes, 'f09fa684');
-        await source.close();
       });
 
       it('should read a range from source', async () => {
@@ -169,7 +168,6 @@ async function testPrefix(prefix, fs) {
 
         const bytes = Buffer.from(await source.fetch(0, 2)).toString('hex');
         assert.equal(bytes, 'f09f');
-        await source.close();
       });
 
       it('should read from the end of the source', async () => {
@@ -177,7 +175,6 @@ async function testPrefix(prefix, fs) {
 
         const bytesEnd = Buffer.from(await source.fetch(-2)).toString('hex');
         assert.equal(bytesEnd, 'a684');
-        await source.close();
       });
     });
   });

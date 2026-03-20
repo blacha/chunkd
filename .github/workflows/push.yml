@@ -20,3 +20,4 @@ jobs:
 
     steps:
       - uses: linz/action-typescript@v3
+      - run: npm run test:e2e

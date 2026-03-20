@@ -25,9 +25,6 @@ export interface Source {
   /** head the source to read the Metadata and sets {@link metadata} */
   head(options?: { signal: AbortSignal }): Promise<SourceMetadata>;
 
-  /** close the source, sources like files sometimes have open file handles that need to be closed */
-  close?(): Promise<void>;
-
   /**
    * Directly read bytes from the source
    *

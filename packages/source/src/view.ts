@@ -37,11 +37,6 @@ export class SourceView implements Source {
     return this.source.head(options);
   }
 
-  async close(): Promise<void> {
-    await this.source.close?.();
-    for (const middleware of this.middleware) await middleware.onClose?.(this.source);
-  }
-
   async fetch(offset: number, length?: number, options?: { signal: AbortSignal }): Promise<ArrayBuffer> {
     const middleware = this.middleware;
     if (middleware == null || middleware.length === 0) return this.source.fetch(offset, length, options);
