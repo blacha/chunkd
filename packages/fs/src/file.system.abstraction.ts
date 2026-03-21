@@ -2,9 +2,10 @@ import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { gunzip } from 'node:zlib';
 
-import { Source, SourceMiddleware, SourceView } from '@chunkd/source';
+import type { Source, SourceMiddleware} from '@chunkd/source';
+import { SourceView } from '@chunkd/source';
 
-import {
+import type {
   FileInfo,
   FileSystem,
   FileWriteTypes,
@@ -13,7 +14,7 @@ import {
   ReadStreamResponse,
   WriteOptions,
 } from './file.system.js';
-import { Flag } from './flags.js';
+import type { Flag } from './flags.js';
 import { toArray } from './generator.js';
 import { FsFile } from './systems/file.js';
 

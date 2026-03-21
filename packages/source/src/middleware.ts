@@ -1,4 +1,4 @@
-import { Source } from './source.js';
+import type { Source } from './source.js';
 
 /** A {@link Source.fetch} fetch represented as a object */
 export interface SourceRequest {

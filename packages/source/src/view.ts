@@ -1,5 +1,5 @@
-import { SourceCallback, SourceMiddleware, SourceRequest } from './middleware.js';
-import { Source, SourceMetadata } from './source.js';
+import type { SourceCallback, SourceMiddleware, SourceRequest } from './middleware.js';
+import type { Source, SourceMetadata } from './source.js';
 
 /**
  * Wrap a source with middleware to modify requests to the sources

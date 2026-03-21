@@ -1,4 +1,4 @@
-import { Source } from './source.js';
+import type { Source } from './source.js';
 
 export class SourceError extends Error {
   /** Status code for the error eg 403 - Forbidden vs 404 Not found */

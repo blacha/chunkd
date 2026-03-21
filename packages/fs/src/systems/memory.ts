@@ -2,14 +2,15 @@ import { SourceMemory } from '@chunkd/source-memory';
 import { Readable } from 'stream';
 
 import { FsError } from '../error.js';
-import {
-  annotate,
+import type {
   FileInfo,
   FileSystem,
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
-  WriteOptions,
+  WriteOptions} from '../file.system.js';
+import {
+  annotate
 } from '../file.system.js';
 
 export function toReadable(r: string | Buffer | Readable): ReadStreamResponse {

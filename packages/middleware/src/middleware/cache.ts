@@ -1,4 +1,4 @@
-import { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
+import type { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
 
 export interface CacheObject {
   promise: Promise<ArrayBuffer>;

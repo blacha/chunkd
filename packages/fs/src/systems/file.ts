@@ -1,19 +1,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Readable } from 'node:stream';
+import type { Readable } from 'node:stream';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { SourceFile } from '@chunkd/source-file';
 
 import { FsError } from '../error.js';
-import {
-  annotate,
+import type {
   FileInfo,
   FileSystem,
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
-  WriteOptions,
+  WriteOptions} from '../file.system.js';
+import {
+  annotate
 } from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
