@@ -48,10 +48,10 @@ export class SourceFile implements Source {
     // If no length given read the entire file
     if (length == null) length = size - offset;
 
-    // console.log({ length, offset });
+    const readableLength = Math.min(metadata.size - offset, length);
     const fd = await fs.open(this.url, 'r');
     try {
-      const { buffer } = await fd.read(Buffer.allocUnsafe(length ?? size), 0, length, offset);
+      const { buffer } = await fd.read(Buffer.allocUnsafe(readableLength), 0, readableLength, offset);
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     } finally {
       await fd.close();

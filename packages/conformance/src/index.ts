@@ -175,6 +175,14 @@ async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
         const bytesEnd = Buffer.from(await source.fetch(-2)).toString('hex');
         assert.equal(bytesEnd, 'a684');
       });
+
+      it('should allow reads past the end of the file', async () => {
+        const source = fsa.source(new URL('🦄.json', prefix));
+
+        const bytesEnd = Buffer.from(await source.fetch(0, 1024)).toString('hex');
+        assert.equal(bytesEnd, 'f09fa684');
+        assert.equal(source.metadata?.size, 4);
+      });
     });
   });
 }

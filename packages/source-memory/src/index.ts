@@ -37,10 +37,6 @@ export class SourceMemory implements Source {
       throw new SourceError(`Read offset outside bounds ${ContentRange.toRange(offset, length)}`, 400, this);
     }
 
-    if (length && offset + length > this.data.byteLength) {
-      throw new SourceError(`Read length outside bounds ${ContentRange.toRange(offset, length)}`, 400, this);
-    }
-
     return Promise.resolve(this.data.slice(offset, length == null ? undefined : offset + length));
   }
 }
