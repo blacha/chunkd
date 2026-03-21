@@ -9,6 +9,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import type { FileSystem } from '@chunkd/fs';
 import { fsa, FsError, FsFile, FsHttp, FsMemory, toArray } from '@chunkd/fs';
 import { FsAwsS3 } from '@chunkd/fs-aws';
+import { SourceError } from '@chunkd/source';
 
 // AWS SDK v3 seems to need a region set
 if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
@@ -176,12 +177,19 @@ async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
         assert.equal(bytesEnd, 'a684');
       });
 
+      // Most http servers allow clients to request huge range then only return
+      // the bytes of the range that are actually satisfiable
       it('should allow reads past the end of the file', async () => {
         const source = fsa.source(new URL('🦄.json', prefix));
 
         const bytesEnd = Buffer.from(await source.fetch(0, 1024)).toString('hex');
         assert.equal(bytesEnd, 'f09fa684');
         assert.equal(source.metadata?.size, 4);
+
+        // Should not allow a read that starts past the end of the file
+        const overReadError = await source.fetch(1024, 2048).catch((e: Error) => e);
+        assert.ok(SourceError.is(overReadError));
+        assert.equal(overReadError.code, 416);
       });
     });
   });
