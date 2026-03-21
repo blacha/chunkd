@@ -13,13 +13,36 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
     steps:
-      - uses: linz/action-typescript@v3
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check
+      - run: npm run test
       - run: npm run test:e2e
+
 
 
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: linz/action-typescript@v3
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check
+      - run: npm run test
       - run: npm run test:e2e
