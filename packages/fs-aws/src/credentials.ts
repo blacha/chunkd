@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
-import { FileSystem, FileSystemProvider } from '@chunkd/fs';
+import { FileSystem, FileSystemProvider, Flag } from '@chunkd/fs';
 import type { RequestSigner } from '@smithy/types';
 
 import { FsAwsS3 } from './fs.s3.js';
@@ -17,6 +17,12 @@ export function validateConfig(cfg: AwsCredentialProvider, loc: URL): AwsCredent
   if (!Array.isArray(cfg.prefixes)) throw new Error('Configuration prefixes invalid from:' + loc.href);
 
   return cfg;
+}
+
+function credentialsMatch(cfg: AwsCredentialConfig, href: string, flag: Flag): boolean {
+  if (!href.startsWith(cfg.prefix)) return false;
+  if (flag === 'rw' && cfg.flags === 'r') return false;
+  return true;
 }
 
 export class FsConfigFetcher {
@@ -40,11 +46,11 @@ export class FsConfigFetcher {
     return this._config;
   }
 
-  async findCredentials(loc: URL): Promise<AwsCredentialConfig | null> {
+  async findCredentials(loc: URL, flag: Flag): Promise<AwsCredentialConfig | null> {
     const href = loc.href;
     const cfg = await this.config;
     for (const credentials of cfg.prefixes) {
-      if (href.startsWith(credentials.prefix)) return credentials;
+      if (credentialsMatch(credentials, href, flag)) return credentials;
     }
     return null;
   }
@@ -162,21 +168,23 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
   }
 
   /** Look up the credentials for a path */
-  async findCredentials(loc: URL): Promise<AwsCredentialConfig | null> {
+  async findCredentials(loc: URL, flag: Flag): Promise<AwsCredentialConfig | null> {
     const href = loc.href;
     for (const cfg of this.configs) {
       if ('findCredentials' in cfg) {
-        const credentials = await cfg.findCredentials(loc);
+        const credentials = await cfg.findCredentials(loc, flag);
         if (credentials) return credentials;
       } else if (href.startsWith(cfg.prefix)) {
+        // If we need write credentials but these credentials only provide read skip it
+        if (flag === 'rw' && cfg.flags === 'r') continue;
         return cfg;
       }
     }
     return null;
   }
 
-  async find(path: URL): Promise<FsAwsS3 | null> {
-    const cs = await this.findCredentials(path);
+  async find(loc: URL, flag: Flag): Promise<FsAwsS3 | null> {
+    const cs = await this.findCredentials(loc, flag);
     if (cs == null) return null;
 
     const cacheKey = `${cs.roleArn}__${cs.externalId}__${cs.roleSessionDuration}`;
@@ -186,7 +194,7 @@ export class AwsS3CredentialProvider implements FileSystemProvider<FsAwsS3> {
       this.fileSystems.set(cacheKey, existing);
       this.onFileSystemCreated?.(cs, existing);
     }
-    this.onFileSystemFound?.(cs, existing, path);
+    this.onFileSystemFound?.(cs, existing, loc);
 
     return existing;
   }
