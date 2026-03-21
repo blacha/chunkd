@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.1.0](https://github.com/blacha/chunkd/compare/source-memory-v11.0.3...source-memory-v11.1.0) (2026-03-21)
+
+
+### Features
+
+* limits reads to the maximum size of the source ([#1666](https://github.com/blacha/chunkd/issues/1666)) ([239855b](https://github.com/blacha/chunkd/commit/239855b84679ac57d92358be398637a75a236f93))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.2.0 to ^11.3.0
+
 ## [11.0.3](https://github.com/blacha/chunkd/compare/source-memory-v11.0.2...source-memory-v11.0.3) (2026-02-21)
 
 

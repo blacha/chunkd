@@ -1,5 +1,23 @@
 # Changelog
 
+## [11.4.0](https://github.com/blacha/chunkd/compare/fs-v11.3.2...fs-v11.4.0) (2026-03-21)
+
+
+### Features
+
+* **fs:** support providing credentials for both read and read-write ([#1319](https://github.com/blacha/chunkd/issues/1319)) ([1307d99](https://github.com/blacha/chunkd/commit/1307d99d51ee8e5c681e7376922c5e70724f6022))
+* support more write options ([#1661](https://github.com/blacha/chunkd/issues/1661)) ([bba1d3c](https://github.com/blacha/chunkd/commit/bba1d3c4b7a03ba3b9d21c22462ac78f726f0bce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.2.0 to ^11.3.0
+    * @chunkd/source-memory bumped from ^11.0.3 to ^11.1.0
+    * @chunkd/source-file bumped from ^11.0.2 to ^11.1.0
+    * @chunkd/source-http bumped from ^11.2.0 to ^11.3.0
+
 ## [11.3.2](https://github.com/blacha/chunkd/compare/fs-v11.3.1...fs-v11.3.2) (2026-02-21)
 
 
