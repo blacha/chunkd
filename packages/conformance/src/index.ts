@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import assert from 'node:assert';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
+import { pathToFileURL } from 'node:url';
 
 import { S3Client } from '@aws-sdk/client-s3';
 import type { FileSystem } from '@chunkd/fs';
@@ -176,8 +179,10 @@ async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
   });
 }
 
+const localTemp = pathToFileURL(tmpdir() + path.sep);
+
 testPrefix('https://dwwxelnx3vr6z.cloudfront.net/v3/', new FsHttp());
-testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
+testPrefix(new URL('blacha-chunkd-test/', localTemp).href, new FsFile());
 testPrefix('memory://blacha-chunkd-test/', new FsMemory());
 // Only test S3 if a AWS_PROFILE is set
 if (process.env.AWS_PROFILE) testPrefix('s3://blacha-chunkd-test/v3/', new FsAwsS3(new S3Client()));
