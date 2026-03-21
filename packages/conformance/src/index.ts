@@ -1,17 +1,14 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import assert from 'node:assert';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
+import { pathToFileURL } from 'node:url';
 
 import { S3Client } from '@aws-sdk/client-s3';
-import { fsa, FsFile, FsHttp, FsMemory, toArray } from '@chunkd/fs';
+import type { FileSystem } from '@chunkd/fs';
+import { fsa, FsError, FsFile, FsHttp, FsMemory, toArray } from '@chunkd/fs';
 import { FsAwsS3 } from '@chunkd/fs-aws';
-
-// function getGcp() {
-//   if (process.env.GCP_ACCOUNT) {
-//     const credentials = JSON.parse(Buffer.from(process.env.GCP_ACCOUNT, 'base64'));
-//     return new Storage({ credentials, projectId: 'chunkd-test' });
-//   }
-//   return new Storage();
-// }
 
 // AWS SDK v3 seems to need a region set
 if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
@@ -29,7 +26,7 @@ const TestFiles = [
 ];
 console.log = console.trace;
 
-async function setupTestData(prefix) {
+async function setupTestData(prefix: string): Promise<void> {
   if (prefix.startsWith('http')) return;
   for (const file of TestFiles) {
     const target = new URL(file.path, prefix);
@@ -41,10 +38,10 @@ async function setupTestData(prefix) {
  * @param {string} prefix
  * @param {FileSystemAbstraction} fs
  */
-async function testPrefix(prefix, fs) {
+async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
   fsa.register(prefix, fs);
 
-  describe(prefix, () => {
+  return describe(prefix, () => {
     before(async () => {
       // console.time(prefix);
       await setupTestData(prefix);
@@ -124,10 +121,12 @@ async function testPrefix(prefix, fs) {
         const target = new URL('🦄.json', prefix);
         const file = await fsa.read(new URL('🦄.json', prefix));
 
-        const resultMatch = await fsa.write(target, 'Something', { ifMatch: 'abc1234' }).catch((e) => e);
+        const resultMatch = await fsa.write(target, 'Something', { ifMatch: 'abc1234' }).catch((e: FsError) => e);
+        assert.ok(FsError.is(resultMatch));
         assert.equal(resultMatch.code, 412);
 
-        const resultNone = await fsa.write(target, 'Something', { ifNoneMatch: '*' }).catch((e) => e);
+        const resultNone = await fsa.write(target, 'Something', { ifNoneMatch: '*' }).catch((e: FsError) => e);
+        assert.ok(FsError.is(resultNone));
         assert.equal(resultNone.code, 412);
 
         const resultOk = await fsa.write(target, Buffer.from('🦄'), { ifMatch: file.$metadata?.eTag });
@@ -138,8 +137,8 @@ async function testPrefix(prefix, fs) {
     describe('head', () => {
       it('should head a file', async () => {
         const ret = await fsa.head(new URL(TestFiles[0].path, prefix));
-        assert.equal(ret.url.href, new URL(TestFiles[0].path, prefix).href);
-        assert.equal(ret.size, TestFiles[0].buffer.length);
+        assert.equal(ret?.url.href, new URL(TestFiles[0].path, prefix).href);
+        assert.equal(ret?.size, TestFiles[0].buffer.length);
       });
     });
 
@@ -180,8 +179,10 @@ async function testPrefix(prefix, fs) {
   });
 }
 
+const localTemp = pathToFileURL(tmpdir() + path.sep);
+
 testPrefix('https://dwwxelnx3vr6z.cloudfront.net/v3/', new FsHttp());
-testPrefix('file:///tmp/blacha-chunkd-test/', new FsFile());
+testPrefix(new URL('blacha-chunkd-test/', localTemp).href, new FsFile());
 testPrefix('memory://blacha-chunkd-test/', new FsMemory());
 // Only test S3 if a AWS_PROFILE is set
 if (process.env.AWS_PROFILE) testPrefix('s3://blacha-chunkd-test/v3/', new FsAwsS3(new S3Client()));

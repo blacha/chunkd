@@ -9,7 +9,7 @@
     "bump": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
     "lint": "eslint . --quiet --fix --ignore-path .gitignore",
     "test": "lerna run test",
-    "test:e2e": "cd packages/__tests__ && node e2e.mjs"
+    "test:e2e": "cd packages/conformance && node src/index.ts"
   },
   "type": "module",
   "private": true,
