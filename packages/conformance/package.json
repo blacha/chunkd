@@ -1,0 +1,34 @@
+{
+  "name": "@chunkd/conformance",
+  "version": "11.0.2",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blacha/chunkd.git",
+    "directory": "packages/conformance"
+  },
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
+  "author": "Blayne Chard",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test \"build/**/*.test.js\""
+  },
+  "dependencies": {
+    "@chunkd/source": "^11.2.0",
+    "@chunkd/source-aws": "^11.0.5",
+    "@chunkd/fs": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.19"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/src"
+  ]
+}

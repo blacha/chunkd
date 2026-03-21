@@ -8,6 +8,7 @@
     { "path": "./packages/source-aws" },
     { "path": "./packages/middleware" },
     { "path": "./packages/fs" },
-    { "path": "./packages/fs-aws" }
+    { "path": "./packages/fs-aws" },
+    { "path": "./packages/conformance" }
   ]
 }
