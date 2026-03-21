@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { Source, SourceError, SourceMetadata } from '@chunkd/source';
+import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
 
 // File Stat will always return a size and lastModified
 type SourceMetadataWithSize = SourceMetadata & { size: number; lastModified: string };
@@ -48,10 +48,17 @@ export class SourceFile implements Source {
     // If no length given read the entire file
     if (length == null) length = size - offset;
 
-    // console.log({ length, offset });
+    const readableLength = Math.min(metadata.size - offset, length);
+    if (readableLength < 0) {
+      throw new SourceError(
+        `Read offset outside of file bounds range:${ContentRange.toRange(offset, length)} fileSize:${metadata.size}`,
+        416,
+        this,
+      );
+    }
     const fd = await fs.open(this.url, 'r');
     try {
-      const { buffer } = await fd.read(Buffer.allocUnsafe(length ?? size), 0, length, offset);
+      const { buffer } = await fd.read(Buffer.allocUnsafe(readableLength), 0, readableLength, offset);
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
     } finally {
       await fd.close();
