@@ -1,5 +1,13 @@
 # Changelog
 
+## [11.3.0](https://github.com/blacha/chunkd/compare/source-v11.2.0...source-v11.3.0) (2026-03-21)
+
+
+### Features
+
+* remove close, sources should auto close themselves ([#1663](https://github.com/blacha/chunkd/issues/1663)) ([f9fde92](https://github.com/blacha/chunkd/commit/f9fde928a209ee39f4db9c018f3cc70c3d19fb72))
+* support more write options ([#1661](https://github.com/blacha/chunkd/issues/1661)) ([bba1d3c](https://github.com/blacha/chunkd/commit/bba1d3c4b7a03ba3b9d21c22462ac78f726f0bce))
+
 ## [11.2.0](https://github.com/blacha/chunkd/compare/source-v11.1.0...source-v11.2.0) (2026-02-21)
 
 
