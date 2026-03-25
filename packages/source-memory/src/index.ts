@@ -1,4 +1,4 @@
-import type { Source, SourceMetadata} from '@chunkd/source';
+import type { Source, SourceMetadata } from '@chunkd/source';
 import { ContentRange, SourceError, tryParseUrl } from '@chunkd/source';
 
 function parseMemoryUrl(s: string | URL): URL {

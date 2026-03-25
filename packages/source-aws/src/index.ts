@@ -1,4 +1,4 @@
-import type { GetObjectOutput, HeadObjectOutput} from '@aws-sdk/client-s3';
+import type { GetObjectOutput, HeadObjectOutput } from '@aws-sdk/client-s3';
 import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { Source, SourceMetadata } from '@chunkd/source';
 import { ContentRange, SourceError } from '@chunkd/source';

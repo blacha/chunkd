@@ -1,7 +1,7 @@
 import { PassThrough, Stream } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
 
-import type { FetchLikeResponse} from '@chunkd/source-http';
+import type { FetchLikeResponse } from '@chunkd/source-http';
 import { getMetadataFromResponse, SourceHttp } from '@chunkd/source-http';
 
 import { FsError } from '../error.js';
@@ -15,11 +15,11 @@ export class FsHttp implements FileSystem {
     return new SourceHttp(loc);
   }
 
-  // oxlint-disable-next-line require-yield  
+  // oxlint-disable-next-line require-yield
   async *list(loc: URL): AsyncGenerator<URL> {
     throw new FsError(`NotImplemented to list: ${loc.href}`, 500, loc, 'list', this);
   }
-  
+
   // oxlint-disable-next-line require-yield
   async *details(loc: URL): AsyncGenerator<FileInfo> {
     throw new FsError(`NotImplemented to details: ${loc.href}`, 500, loc, 'list', this);

@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { resolve } from 'node:path';
+import type { URL } from 'node:url';
 import { pathToFileURL } from 'node:url';
 
 import type { Source, SourceMetadata } from '@chunkd/source';

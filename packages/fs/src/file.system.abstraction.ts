@@ -2,7 +2,7 @@ import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { gunzip } from 'node:zlib';
 
-import type { Source, SourceMiddleware} from '@chunkd/source';
+import type { Source, SourceMiddleware } from '@chunkd/source';
 import { SourceView } from '@chunkd/source';
 
 import type {

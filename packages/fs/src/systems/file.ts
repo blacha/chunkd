@@ -12,10 +12,9 @@ import type {
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
-  WriteOptions} from '../file.system.js';
-import {
-  annotate
+  WriteOptions,
 } from '../file.system.js';
+import { annotate } from '../file.system.js';
 export function isRecord<T = unknown>(value: unknown): value is Record<string, T> {
   return typeof value === 'object' && value !== null;
 }

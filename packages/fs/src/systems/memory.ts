@@ -1,5 +1,6 @@
-import { SourceMemory } from '@chunkd/source-memory';
 import { Readable } from 'stream';
+
+import { SourceMemory } from '@chunkd/source-memory';
 
 import { FsError } from '../error.js';
 import type {
@@ -8,10 +9,9 @@ import type {
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
-  WriteOptions} from '../file.system.js';
-import {
-  annotate
+  WriteOptions,
 } from '../file.system.js';
+import { annotate } from '../file.system.js';
 
 export function toReadable(r: string | Buffer | Readable): ReadStreamResponse {
   if (typeof r === 'string') r = Buffer.from(r);

@@ -25,7 +25,7 @@ List a folder
 
 ```typescript
 for await (const url of fsa.list(fsa.toUrl('/'))) {
-  const bytes = await fsa.read(url)
+  const bytes = await fsa.read(url);
 }
 ```
 
@@ -64,8 +64,8 @@ await fsa.write(fsa.toUrl('s3://example/foo.txt'), fsa.readStream(fsa.toUrl('htt
 Multiple s3 clients can be registered with different credentials and then be used to stream files between AWS accounts or roles
 
 ```typescript
-import {fsa} from '@chunkd/fs'
-import {FsAwsS3} from '@chunkd/fs-aws';
+import { fsa } from '@chunkd/fs';
+import { FsAwsS3 } from '@chunkd/fs-aws';
 
 fsa.register('s3://bucket-a/', new FsAwsS3(new S3Client({ credentials: bucketA })));
 fsa.register('s3://bucket-b/', new FsAwsS3(new S3Client({ credentials: bucketB })));
@@ -77,7 +77,7 @@ fsa.write(fsa.toUrl('s3://bucket-a/foo.txt'), fsa.readStream(fsa.toUrl('s3://buc
 
 All file system errors should be wrapped into a `FsError`
 
-```typescript
+````typescript
 try {
   await fsa.read('s3://foo/bar.txt')
 } catch(e) {
@@ -112,4 +112,4 @@ export interface FileSystem {
   /** Delete a file from the location */
   delete(location: URL): Promise<void>;
 }
-```
+````

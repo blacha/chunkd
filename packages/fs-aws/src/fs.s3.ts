@@ -1,18 +1,9 @@
 import type { Readable } from 'node:stream';
 import { PassThrough } from 'node:stream';
 
-import type {
-  _Object,
-  HeadObjectOutput,
-  ListObjectsV2CommandOutput,
-  S3Client} from '@aws-sdk/client-s3';
-import {
-  DeleteObjectCommand,
-  GetObjectCommand,
-  HeadObjectCommand,
-  ListObjectsV2Command
-} from '@aws-sdk/client-s3';
-import type { Options} from '@aws-sdk/lib-storage';
+import type { _Object, HeadObjectOutput, ListObjectsV2CommandOutput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import type { Options } from '@aws-sdk/lib-storage';
 import { Upload } from '@aws-sdk/lib-storage';
 import type {
   FileInfo,
@@ -21,12 +12,9 @@ import type {
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
-  WriteOptions} from '@chunkd/fs';
-import {
-  annotate,
-  FsError,
-  isRecord
+  WriteOptions,
 } from '@chunkd/fs';
+import { annotate, FsError, isRecord } from '@chunkd/fs';
 import { parseMetadata, SourceAwsS3 } from '@chunkd/source-aws';
 
 import type { AwsS3CredentialProvider } from './credentials.js';

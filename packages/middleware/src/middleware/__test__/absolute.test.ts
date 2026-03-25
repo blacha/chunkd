@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { Source} from '@chunkd/source';
+import type { Source } from '@chunkd/source';
 import { SourceView } from '@chunkd/source';
 import { SourceMemory } from '@chunkd/source-memory';
 

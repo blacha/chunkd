@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
-import type { FetchLikeOptions, FetchLikeResponse} from '../index.js';
+import type { FetchLikeOptions, FetchLikeResponse } from '../index.js';
 import { SourceHttp } from '../index.js';
 
 export interface HttpHeaders {
