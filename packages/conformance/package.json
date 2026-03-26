@@ -30,6 +30,7 @@
     "access": "restricted"
   },
   "files": [
-    "build/src"
+    "build/src",
+    "src/"
   ]
 }

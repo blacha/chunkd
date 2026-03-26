@@ -25,6 +25,7 @@
     "access": "public"
   },
   "files": [
-    "build/src"
+    "build/src",
+    "src/"
   ]
 }
