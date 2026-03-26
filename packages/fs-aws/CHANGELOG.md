@@ -25,6 +25,21 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.6.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.5.0...fs-aws-v11.6.0) (2026-03-26)
+
+
+### Features
+
+* distribute source with declaration maps ([#1672](https://github.com/blacha/chunkd/issues/1672)) ([ae54773](https://github.com/blacha/chunkd/commit/ae54773d6bed66d7b560edb56c56072dae105fc9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.4.0 to 11.5.0
+    * @chunkd/source-aws bumped from 11.1.0 to 11.2.0
+
 ## [11.5.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.4.2...fs-aws-v11.5.0) (2026-03-21)
 
 

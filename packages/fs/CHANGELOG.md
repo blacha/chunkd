@@ -1,5 +1,27 @@
 # Changelog
 
+## [11.5.0](https://github.com/blacha/chunkd/compare/fs-v11.4.0...fs-v11.5.0) (2026-03-26)
+
+
+### Features
+
+* distribute source with declaration maps ([#1672](https://github.com/blacha/chunkd/issues/1672)) ([ae54773](https://github.com/blacha/chunkd/commit/ae54773d6bed66d7b560edb56c56072dae105fc9))
+
+
+### Bug Fixes
+
+* **fs:** fs memory.read should be async so it can be caught ([#1674](https://github.com/blacha/chunkd/issues/1674)) ([cb80458](https://github.com/blacha/chunkd/commit/cb8045869b075053dc926027d4aa7eb058d454f8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.3.0 to ^11.4.0
+    * @chunkd/source-memory bumped from ^11.1.0 to ^11.2.0
+    * @chunkd/source-file bumped from ^11.1.0 to ^11.2.0
+    * @chunkd/source-http bumped from ^11.3.0 to ^11.4.0
+
 ## [11.4.0](https://github.com/blacha/chunkd/compare/fs-v11.3.2...fs-v11.4.0) (2026-03-21)
 
 
