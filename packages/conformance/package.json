@@ -24,7 +24,7 @@
     "@chunkd/fs": "^11.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.19"
+    "@types/node": "^25.5.0"
   },
   "publishConfig": {
     "access": "restricted"

@@ -21,7 +21,7 @@
     "@chunkd/source": "^11.4.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.19"
+    "@types/node": "^25.5.0"
   },
   "publishConfig": {
     "access": "public"
