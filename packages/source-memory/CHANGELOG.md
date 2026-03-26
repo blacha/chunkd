@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.2.0](https://github.com/blacha/chunkd/compare/source-memory-v11.1.0...source-memory-v11.2.0) (2026-03-26)
+
+
+### Features
+
+* distribute source with declaration maps ([#1672](https://github.com/blacha/chunkd/issues/1672)) ([ae54773](https://github.com/blacha/chunkd/commit/ae54773d6bed66d7b560edb56c56072dae105fc9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.3.0 to ^11.4.0
+
 ## [11.1.0](https://github.com/blacha/chunkd/compare/source-memory-v11.0.3...source-memory-v11.1.0) (2026-03-21)
 
 
