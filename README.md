@@ -24,12 +24,12 @@ const size = source.metadata?.size; // File size if metadata has been fetched
 
 # Building
 
-This requires [NodeJs](https://nodejs.org/en/) >= 18 
+This requires [NodeJs](https://nodejs.org/en/) >= 18
 
 Use [fnm](https://github.com/Schniz/fnm) to manage nodeJs versions
 
 ```bash
-# Download the latest nodejs 
+# Download the latest nodejs
 fnm use 24
 
 # Install node deps

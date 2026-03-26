@@ -1,8 +1,10 @@
 import { promises as fs } from 'node:fs';
 import { resolve } from 'node:path';
+import type { URL } from 'node:url';
 import { pathToFileURL } from 'node:url';
 
-import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
+import type { Source, SourceMetadata } from '@chunkd/source';
+import { ContentRange, SourceError } from '@chunkd/source';
 
 // File Stat will always return a size and lastModified
 type SourceMetadataWithSize = SourceMetadata & { size: number; lastModified: string };

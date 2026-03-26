@@ -1,7 +1,8 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { Source, SourceView } from '@chunkd/source';
+import type { Source } from '@chunkd/source';
+import { SourceView } from '@chunkd/source';
 import { SourceMemory } from '@chunkd/source-memory';
 
 import { SourceAbsolute } from '../absolute.js';

@@ -1,4 +1,5 @@
-import { ContentRange, SourceCallback, SourceError, SourceMiddleware, SourceRequest } from '@chunkd/source';
+import type { SourceCallback, SourceMiddleware, SourceRequest } from '@chunkd/source';
+import { ContentRange, SourceError } from '@chunkd/source';
 
 interface SourceChunkOptions {
   /**

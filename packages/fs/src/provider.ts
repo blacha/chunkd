@@ -1,5 +1,5 @@
-import { FileSystem } from './file.system.js';
-import { Flag } from './flags.js';
+import type { FileSystem } from './file.system.js';
+import type { Flag } from './flags.js';
 
 export interface FileSystemProvider<T extends FileSystem = FileSystem> {
   /**

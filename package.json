@@ -7,7 +7,8 @@
     "build-watch": "tsc -b --pretty --watch",
     "version": "eslint lerna.json --fix",
     "bump": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
-    "lint": "eslint . --quiet --fix --ignore-path .gitignore",
+    "lint": "oxlint . --type-aware --fix && oxfmt . --write",
+    "check": "oxlint . --type-aware && oxfmt . --check",
     "test": "lerna run test",
     "test:e2e": "cd packages/conformance && node src/index.ts"
   },
@@ -18,8 +19,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@linzjs/style": "^5.2.0",
-    "lerna": "^9.0.3"
+    "lerna": "^9.0.3",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.56.0",
+    "oxlint-tsgolint": "^0.17.1",
+    "typescript": "^5.9.3"
   },
   "workspaces": {
     "packages": [

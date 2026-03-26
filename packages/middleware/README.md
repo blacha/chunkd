@@ -53,8 +53,8 @@ sourceHttp.fetch(-10); // Instead of a request for -10 bytes it will now request
 
 ```typescript
 // read files in 32KB chunks
-const chunk = new SourceChunk({size: 32 * 1024 });
-const cache = new SourceCache({size: 1024 * 1024 * 1024 });
+const chunk = new SourceChunk({ size: 32 * 1024 });
+const cache = new SourceCache({ size: 1024 * 1024 * 1024 });
 
 source.use(chunk);
 source.use(cache);

@@ -1,10 +1,12 @@
 import { PassThrough, Stream } from 'node:stream';
 import type { ReadableStream } from 'node:stream/web';
 
-import { FetchLikeResponse, getMetadataFromResponse, SourceHttp } from '@chunkd/source-http';
+import type { FetchLikeResponse } from '@chunkd/source-http';
+import { getMetadataFromResponse, SourceHttp } from '@chunkd/source-http';
 
 import { FsError } from '../error.js';
-import { annotate, FileInfo, FileSystem, ReadResponse, ReadStreamResponse } from '../file.system.js';
+import type { FileInfo, FileSystem, ReadResponse, ReadStreamResponse } from '../file.system.js';
+import { annotate } from '../file.system.js';
 
 export class FsHttp implements FileSystem {
   name = 'http';
@@ -12,11 +14,13 @@ export class FsHttp implements FileSystem {
   source(loc: URL): SourceHttp {
     return new SourceHttp(loc);
   }
-  // eslint-disable-next-line @typescript-eslint/require-await
+
+  // oxlint-disable-next-line require-yield
   async *list(loc: URL): AsyncGenerator<URL> {
     throw new FsError(`NotImplemented to list: ${loc.href}`, 500, loc, 'list', this);
   }
-  // eslint-disable-next-line @typescript-eslint/require-await
+
+  // oxlint-disable-next-line require-yield
   async *details(loc: URL): AsyncGenerator<FileInfo> {
     throw new FsError(`NotImplemented to details: ${loc.href}`, 500, loc, 'list', this);
   }

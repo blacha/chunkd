@@ -1,32 +1,23 @@
 import type { Readable } from 'node:stream';
 import { PassThrough } from 'node:stream';
 
-import {
-  _Object,
-  DeleteObjectCommand,
-  GetObjectCommand,
-  HeadObjectCommand,
-  HeadObjectOutput,
-  ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
-  S3Client,
-} from '@aws-sdk/client-s3';
-import { Options, Upload } from '@aws-sdk/lib-storage';
-import {
-  annotate,
+import type { _Object, HeadObjectOutput, ListObjectsV2CommandOutput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import type { Options } from '@aws-sdk/lib-storage';
+import { Upload } from '@aws-sdk/lib-storage';
+import type {
   FileInfo,
   FileSystem,
   FileSystemAction,
-  FsError,
-  isRecord,
   ListOptions,
   ReadResponse,
   ReadStreamResponse,
   WriteOptions,
 } from '@chunkd/fs';
+import { annotate, FsError, isRecord } from '@chunkd/fs';
 import { parseMetadata, SourceAwsS3 } from '@chunkd/source-aws';
 
-import { AwsS3CredentialProvider } from './credentials.js';
+import type { AwsS3CredentialProvider } from './credentials.js';
 
 function isReadable(r: unknown): r is Readable {
   return r != null && typeof (r as { read: unknown })['read'] === 'function';

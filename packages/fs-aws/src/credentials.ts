@@ -1,10 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
-import { FileSystem, FileSystemProvider, Flag } from '@chunkd/fs';
+import type { FileSystem, FileSystemProvider, Flag } from '@chunkd/fs';
 import type { RequestSigner } from '@smithy/types';
 
 import { FsAwsS3 } from './fs.s3.js';
-import { AwsCredentialConfig, AwsCredentialProvider } from './types.js';
+import type { AwsCredentialConfig, AwsCredentialProvider } from './types.js';
 
 export function isPromise<T>(t: AwsCredentialProvider | Promise<T>): t is Promise<T> {
   return 'then' in t && typeof t['then'] === 'function';

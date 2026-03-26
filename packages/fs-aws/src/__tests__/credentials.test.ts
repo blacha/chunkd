@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { AwsS3CredentialProvider, getPublicS3 } from '../credentials.js';
-import { AwsCredentialConfig } from '../types.js';
+import type { AwsCredentialConfig } from '../types.js';
 
 describe('AwsS3CredentialProvider', () => {
   const baseConfig: AwsCredentialConfig = { type: 's3', prefix: 's3://' };

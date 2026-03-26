@@ -25,7 +25,7 @@ export interface Source {
 
   /** close the source, sources like files sometimes have open file handles that need to be closed */
   close?(): Promise<void>;
-  
+
   /**
    * Directly read bytes from the source
    *

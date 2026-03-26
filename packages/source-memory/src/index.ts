@@ -1,4 +1,5 @@
-import { ContentRange, Source, SourceError, SourceMetadata, tryParseUrl } from '@chunkd/source';
+import type { Source, SourceMetadata } from '@chunkd/source';
+import { ContentRange, SourceError, tryParseUrl } from '@chunkd/source';
 
 function parseMemoryUrl(s: string | URL): URL {
   if (typeof s !== 'string') return s;
@@ -15,8 +16,8 @@ export class SourceMemory implements Source {
 
   static toArrayBuffer(buf: Buffer | Uint8Array | ArrayBuffer): ArrayBuffer {
     if (buf instanceof ArrayBuffer) return buf;
-    if (buf.byteLength === buf.buffer.byteLength) return buf.buffer;
-    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    if (buf.byteLength === buf.buffer.byteLength) return buf.buffer as ArrayBuffer;
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
   }
 
   constructor(url: URL | string, bytes: Buffer | Uint8Array | ArrayBuffer) {

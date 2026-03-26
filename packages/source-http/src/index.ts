@@ -1,4 +1,5 @@
-import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
+import type { Source, SourceMetadata } from '@chunkd/source';
+import { ContentRange, SourceError } from '@chunkd/source';
 
 /** Minimal typings for fetch */
 export interface FetchLikeOptions {

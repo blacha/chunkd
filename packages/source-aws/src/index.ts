@@ -1,5 +1,7 @@
-import { GetObjectCommand, GetObjectOutput, HeadObjectCommand, HeadObjectOutput, S3Client } from '@aws-sdk/client-s3';
-import { ContentRange, Source, SourceError, SourceMetadata } from '@chunkd/source';
+import type { GetObjectOutput, HeadObjectOutput } from '@aws-sdk/client-s3';
+import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import type { Source, SourceMetadata } from '@chunkd/source';
+import { ContentRange, SourceError } from '@chunkd/source';
 
 export function parseMetadata(res: GetObjectOutput | HeadObjectOutput): SourceMetadata {
   const metadata: SourceMetadata = {};
