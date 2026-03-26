@@ -30,6 +30,7 @@
     // "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declarationMap": true
   }
 }
