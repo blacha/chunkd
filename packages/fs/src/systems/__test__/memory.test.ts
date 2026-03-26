@@ -63,4 +63,9 @@ describe('FsMemory', () => {
     await memory.delete(new URL('memory://a/d.png'));
     assert.deepEqual(toHref(await toArray(memory.list(new URL('memory://a/')))), []);
   });
+
+  it('should read as async', async () => {
+    const ft = await memory.read(new URL('memory://foo/bar')).catch(() => null);
+    assert.equal(ft, null);
+  });
 });
