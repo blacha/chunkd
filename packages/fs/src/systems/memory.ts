@@ -55,7 +55,7 @@ export class FsMemory implements FileSystem {
   name = 'memory';
   files: Map<string, FsMemoryCache> = new Map();
 
-  read(loc: URL): ReadResponse {
+  async read(loc: URL): ReadResponse {
     const cache = this.files.get(loc.href);
     if (cache == null) throw new FsError(`Not found: ${loc.href}`, 404, loc, 'read', this);
     const newBuf = cache.buffer.subarray();
