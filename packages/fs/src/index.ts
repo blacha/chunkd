@@ -18,3 +18,4 @@ export { FsFile } from './systems/file.js';
 export { isRecord } from './systems/file.js';
 export { FsHttp } from './systems/http.js';
 export { FsMemory } from './systems/memory.js';
+export { HashTransform } from './hash.stream.js';

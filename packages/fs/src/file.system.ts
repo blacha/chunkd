@@ -34,6 +34,12 @@ export interface WriteOptions {
   contentDisposition?: string;
   /** Cache-Control header */
   cacheControl?: string;
+  /**
+   * Length of the file being written if known
+   *
+   * AWS SDK likes to have this information when writing streams
+   */
+  contentLength?: number;
 }
 
 export interface ListOptions {

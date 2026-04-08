@@ -14,7 +14,7 @@ export class HashTransform extends Transform {
   /** type of hash used @example "sha256" */
   hashType: string;
   /** Number of bytes processed */
-  size = 0;
+  bytesRead = 0;
   /** digest of hash */
   private _digestHex: string | null = null;
 
@@ -29,7 +29,7 @@ export class HashTransform extends Transform {
     if (this._digestHex) return callback(new Error(`Conflict: Hash has already been digested`));
 
     this.hash.update(chunk);
-    this.size += chunk.byteLength ?? chunk.length;
+    this.bytesRead += chunk.byteLength ?? chunk.length;
     callback(null, chunk);
   }
 

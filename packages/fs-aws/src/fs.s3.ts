@@ -245,6 +245,7 @@ export class FsAwsS3 implements FileSystem {
       if (ctx?.contentEncoding) params.ContentEncoding = ctx.contentEncoding;
       if (ctx?.contentType) params.ContentType = ctx.contentType;
       if (ctx?.metadata) params.Metadata = ctx.metadata;
+      if (ctx?.contentLength) params.ContentLength = ctx.contentLength;
 
       await new Upload({
         client: this.s3,
