@@ -20,9 +20,9 @@
   "description": "",
   "devDependencies": {
     "lerna": "^9.0.3",
-    "oxfmt": "^0.42.0",
+    "oxfmt": "^0.44.0",
     "oxlint": "^1.56.0",
-    "oxlint-tsgolint": "^0.17.1",
+    "oxlint-tsgolint": "^0.20.0",
     "typescript": "^6.0.2"
   },
   "workspaces": {
