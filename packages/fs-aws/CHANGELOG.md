@@ -25,6 +25,20 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.6.1](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.0...fs-aws-v11.6.1) (2026-04-08)
+
+
+### Bug Fixes
+
+* do not use .size for hash stream ([fb17cc5](https://github.com/blacha/chunkd/commit/fb17cc5d05bd6bde58c7aa62e4be249e0d436e95))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.5.0 to 11.5.1
+
 ## [11.6.0](https://github.com/blacha/chunkd/compare/fs-aws-v11.5.0...fs-aws-v11.6.0) (2026-03-26)
 
 
