@@ -8,6 +8,11 @@ updates:
     open-pull-requests-limit: 10
     versioning-strategy: increase-if-necessary
     groups:
+      oxlint:
+        patterns:
+          - 'oxfmt'
+          - 'oxlint'
+          - 'oxlint-tsgolint'
       aws-sdk:
         patterns:
           - '@aws-sdk/*'
