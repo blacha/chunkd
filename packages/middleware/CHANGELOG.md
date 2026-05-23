@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.3.1](https://github.com/blacha/chunkd/compare/middleware-v11.3.0...middleware-v11.3.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* forward abort signal to middleware and chunked requests ([#1697](https://github.com/blacha/chunkd/issues/1697)) ([372a96d](https://github.com/blacha/chunkd/commit/372a96da1740c8a8b39610c3d20be602d5dfe19b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.4.0 to ^11.4.1
+
 ## [11.3.0](https://github.com/blacha/chunkd/compare/middleware-v11.2.1...middleware-v11.3.0) (2026-03-26)
 
 
