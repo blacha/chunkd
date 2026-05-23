@@ -71,7 +71,9 @@ export class SourceChunk implements SourceMiddleware {
       const startByte = chunk * this.chunkSize;
       const endByte = Math.min(startByte + this.chunkSize, maxEndByte);
       const chunkLength = endByte - startByte;
-      promises.push(req.source.fetch(chunk * this.chunkSize, chunkLength));
+      promises.push(
+        req.source.fetch(chunk * this.chunkSize, chunkLength, req.signal ? { signal: req.signal } : undefined),
+      );
     }
 
     const results = await Promise.all(promises);

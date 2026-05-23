@@ -59,6 +59,6 @@ export class SourceView implements Source {
     }
 
     for (let i = middleware.length - 1; i >= 0; i--) handler = runMiddleware(middleware[i], handler);
-    return handler({ source: this, offset, length });
+    return handler({ source: this, offset, length, signal: options?.signal });
   }
 }

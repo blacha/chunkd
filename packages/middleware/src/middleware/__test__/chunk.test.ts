@@ -32,6 +32,18 @@ describe('SourceChunk', () => {
     assert.deepEqual(spy.mock.calls[1].arguments, [4, 4, undefined]);
   });
 
+  it('should forward the abort signal to chunked requests', async (t) => {
+    const source = new SourceMemory('memory://test.json', Buffer.from(JSON.stringify({ hello: 'world' })));
+    const view = new SourceView(source, [new SourceChunk({ size: 4 })]);
+    const spy = t.mock.method(source, 'fetch');
+    const controller = new AbortController();
+
+    await view.fetch(0, 8, { signal: controller.signal });
+    assert.equal(spy.mock.callCount(), 2);
+    assert.deepEqual(spy.mock.calls[0].arguments, [0, 4, { signal: controller.signal }]);
+    assert.deepEqual(spy.mock.calls[1].arguments, [4, 4, { signal: controller.signal }]);
+  });
+
   it('should end at the size of the file', async () => {
     const dataTest = JSON.stringify({ hello: 'world', data: Buffer.alloc(16).toString('base64') });
     const source = new SourceMemory('memory://test.json', Buffer.from(dataTest));
