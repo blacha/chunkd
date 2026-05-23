@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs",
-  "version": "11.5.1",
+  "version": "11.5.2",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -18,10 +18,10 @@
     "test": "node --test \"build/**/*.test.js\""
   },
   "dependencies": {
-    "@chunkd/source": "^11.4.0",
-    "@chunkd/source-memory": "^11.2.0",
-    "@chunkd/source-file": "^11.2.0",
-    "@chunkd/source-http": "^11.4.0"
+    "@chunkd/source": "^11.4.1",
+    "@chunkd/source-memory": "^11.2.1",
+    "@chunkd/source-file": "^11.2.1",
+    "@chunkd/source-http": "^11.4.1"
   },
   "devDependencies": {
     "@types/node": "^18.16.19"

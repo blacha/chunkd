@@ -25,6 +25,16 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.6.2](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.1...fs-aws-v11.6.2) (2026-05-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.5.1 to 11.5.2
+    * @chunkd/source-aws bumped from 11.2.0 to 11.2.1
+
 ## [11.6.1](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.0...fs-aws-v11.6.1) (2026-04-08)
 
 
