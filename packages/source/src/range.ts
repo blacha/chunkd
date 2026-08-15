@@ -10,6 +10,7 @@ export const ContentRange = {
   toRange(offset: number, length?: number): string {
     if (length == null) return `bytes=${offset}`;
     if (offset < 0) throw new Error('Cannot read from remote source with negative offset and length');
+    if (length <= 0) throw new Error('Cannot read range with length <= 0');
     return `bytes=${offset}-${offset + length - 1}`;
   },
 
