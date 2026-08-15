@@ -18,7 +18,7 @@ export const ContentRange = {
    *
    * @example
    * ```typescript
-   * ContentRange.parseRange("bytes 200-1000/67589"); // 67589
+   * ContentRange.parseSize("bytes 200-1000/67589"); // 67589
    * ```
    * @throws if range is not a Content-Range with size
    */
@@ -27,8 +27,8 @@ export const ContentRange = {
     if (unit !== 'bytes') throw new Error('Failed to parse content-range: ' + range);
     if (chunks == null) throw new Error('Failed to parse content-range: ' + range);
     const [, size] = chunks.split('/');
-    const result = Number(size);
-    if (isNaN(result)) throw new Error('Failed to parse content-range: ' + range);
+    const result = Number.parseInt(size, 10);
+    if (Number.isNaN(result)) throw new Error('Failed to parse content-range: ' + range);
     return result;
   },
 };

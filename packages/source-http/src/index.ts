@@ -17,14 +17,16 @@ export interface FetchLikeResponse {
 }
 export type FetchLike = (url: string | URL, opts?: FetchLikeOptions) => Promise<FetchLikeResponse>;
 
-/** Load the ETag and content-range from the response */
 export function getMetadataFromResponse(response: FetchLikeResponse): SourceMetadata {
   const metadata: SourceMetadata = {};
-  const contentLength = response.headers.get('content-length');
-  if (contentLength) metadata.size = parseInt(contentLength);
 
   const contentRange = response.headers.get('content-range');
-  if (contentRange != null) metadata.size = ContentRange.parseSize(contentRange);
+  if (contentRange != null) {
+    metadata.size = ContentRange.parseSize(contentRange);
+  } else if (response.status !== 206) {
+    const contentLength = response.headers.get('content-length');
+    if (contentLength) metadata.size = parseInt(contentLength, 10);
+  }
 
   metadata.eTag = response.headers.get('etag') ?? undefined;
   metadata.contentType = response.headers.get('content-type') ?? undefined;
