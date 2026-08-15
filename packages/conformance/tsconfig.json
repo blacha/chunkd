@@ -5,5 +5,5 @@
     "lib": []
   },
   "include": ["src/"],
-  "references": [{ "path": "../fs" }]
+  "references": [{ "path": "../fs" }, { "path": "../fs-aws" }]
 }
