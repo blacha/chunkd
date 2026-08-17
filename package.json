@@ -20,7 +20,7 @@
   "description": "",
   "devDependencies": {
     "lerna": "^9.0.3",
-    "oxfmt": "^0.62.0",
+    "oxfmt": "^0.63.0",
     "oxlint": "^1.77.0",
     "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
