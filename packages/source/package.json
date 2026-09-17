@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source",
-  "version": "11.4.1",
+  "version": "11.4.2",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -19,7 +19,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^26.4.0"
+    "@types/node": "^18.16.19"
   },
   "publishConfig": {
     "access": "public"

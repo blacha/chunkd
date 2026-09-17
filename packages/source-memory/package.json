@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/source-memory",
-  "version": "11.2.1",
+  "version": "11.2.2",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
@@ -18,10 +18,10 @@
     "test": "node --test \"build/**/*.test.js\""
   },
   "dependencies": {
-    "@chunkd/source": "^11.4.1"
+    "@chunkd/source": "^11.4.2"
   },
   "devDependencies": {
-    "@types/node": "^26.4.0"
+    "@types/node": "^18.16.19"
   },
   "publishConfig": {
     "access": "public"
