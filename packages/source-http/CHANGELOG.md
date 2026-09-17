@@ -6,6 +6,20 @@
   * dependencies
     * @chunkd/source bumped from ^11.0.0 to ^11.1.0
 
+## [11.4.2](https://github.com/blacha/chunkd/compare/source-http-v11.4.1...source-http-v11.4.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* prevent reading invalid range on 206 responses ([#1716](https://github.com/blacha/chunkd/issues/1716)) ([438c905](https://github.com/blacha/chunkd/commit/438c9051474536d21dfc2cbac38e252be6df1069)), closes [#1691](https://github.com/blacha/chunkd/issues/1691)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.4.1 to ^11.4.2
+
 ## [11.4.1](https://github.com/blacha/chunkd/compare/source-http-v11.4.0...source-http-v11.4.1) (2026-05-23)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.4.2](https://github.com/blacha/chunkd/compare/source-v11.4.1...source-v11.4.2) (2026-09-17)
+
+
+### Bug Fixes
+
+* prevent reading invalid range on 206 responses ([#1716](https://github.com/blacha/chunkd/issues/1716)) ([438c905](https://github.com/blacha/chunkd/commit/438c9051474536d21dfc2cbac38e252be6df1069)), closes [#1691](https://github.com/blacha/chunkd/issues/1691)
+
 ## [11.4.1](https://github.com/blacha/chunkd/compare/source-v11.4.0...source-v11.4.1) (2026-05-23)
 
 
