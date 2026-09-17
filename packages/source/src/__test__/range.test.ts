@@ -17,5 +17,10 @@ describe('ContentRange', () => {
     assert.throws(() => ContentRange.parseSize(''));
     assert.throws(() => ContentRange.parseSize('test 1234'));
     assert.throws(() => ContentRange.parseSize('bytes 0-1024/*'));
+    assert.throws(() => ContentRange.parseSize('bytes 0-1024/'));
+  });
+
+  it('should throw on zero or negative range lengths', () => {
+    assert.throws(() => ContentRange.toRange(0, 0));
   });
 });

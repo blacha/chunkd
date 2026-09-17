@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { FetchLikeOptions, FetchLikeResponse } from '../index.js';
-import { SourceHttp } from '../index.js';
+import { getMetadataFromResponse, SourceHttp } from '../index.js';
 
 export interface HttpHeaders {
   Range: string;
@@ -113,6 +113,24 @@ describe('SourceHttp', () => {
     it('should should support "../../../"', () => {
       const sourceRelUp = new SourceHttp('../../../bar.txt');
       assert.equal(sourceRelUp.url.href, 'https://example.com/bar.txt');
+    });
+  });
+
+  describe('getMetadataFromResponse', () => {
+    it('should not set metadata.size to chunk length on 206 response when content-range is missing', () => {
+      const headers = new Map<string, string>([['content-length', '1024']]);
+      const res: FetchLikeResponse = {
+        ok: true,
+        status: 206,
+        statusText: 'Partial Content',
+        headers: { get: (k: string) => headers.get(k) ?? null },
+        body: null,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(1024)),
+      };
+
+      const metadata = getMetadataFromResponse(res);
+      // In a 206 Partial Content response, content-length is ONLY the chunk payload size (1024).
+      assert.equal(metadata.size, undefined);
     });
   });
 });
