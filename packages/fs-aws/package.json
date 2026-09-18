@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@smithy/types": "*",
-    "@types/node": "^26.4.0"
+    "@types/node": "^26.6.0"
   },
   "publishConfig": {
     "access": "public"
