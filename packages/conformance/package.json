@@ -19,12 +19,12 @@
     "test": "node --test \"build/**/*.test.js\""
   },
   "dependencies": {
+    "@chunkd/fs": "^11.2.0",
     "@chunkd/source": "^11.2.0",
-    "@chunkd/source-aws": "^11.0.5",
-    "@chunkd/fs": "^11.2.0"
+    "@chunkd/source-aws": "^11.0.5"
   },
   "devDependencies": {
-    "@types/node": "^26.4.0"
+    "@types/node": "^26.6.0"
   },
   "publishConfig": {
     "access": "restricted"

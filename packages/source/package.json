@@ -17,9 +17,8 @@
   "scripts": {
     "test": "node --test \"build/**/*.test.js\""
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^26.4.0"
+    "@types/node": "^26.6.0"
   },
   "publishConfig": {
     "access": "public"
