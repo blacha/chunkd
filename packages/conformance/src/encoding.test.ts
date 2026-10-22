@@ -81,7 +81,7 @@ function testEncoding(backend: TestBackend): void {
     for (const key of testKeys) {
       it(`should round trip: ${JSON.stringify(key)}`, async () => {
         // Compare on the decoded path, URLs can validly differ in what they encode (eg `'` vs `%27`)
-        const expectedPath = new URL(backend.prefix).pathname + key;
+        const expectedPath = decodeURIComponent(new URL(backend.prefix).pathname) + key;
         const found = files.find((f) => decodeURIComponent(f.pathname) === expectedPath);
         assert.ok(
           found,
