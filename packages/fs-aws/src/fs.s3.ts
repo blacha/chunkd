@@ -38,6 +38,17 @@ function getRequestPayer(req?: 'requester' | 'public'): 'requester' | undefined 
   return req === 'requester' ? 'requester' : undefined;
 }
 
+/** Decode a form encoded listing key */
+function decodeListKey(key: string): string {
+  return decodeURIComponent(key.replace(/\+/g, ' '));
+}
+
+/** Create a URL that round trips to the key */
+function toS3Url(bucket: string, key: string): URL {
+  // oxlint-disable-next-line no-control-regex
+  return new URL(`s3://${bucket}/${key.replace(/[\x00-\x20%#?\x7f]/g, (c) => encodeURIComponent(c))}`);
+}
+
 export class FsAwsS3 implements FileSystem {
   name = 's3';
 
@@ -118,7 +129,7 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            const info = { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true, $response: null };
+            const info = { url: toS3Url(Bucket, decodeListKey(prefix.Prefix)), isDirectory: true, $response: null };
             Object.defineProperty(info, '$response', { enumerable: false });
             yield info;
           }
@@ -127,8 +138,9 @@ export class FsAwsS3 implements FileSystem {
         if (res.Contents != null) {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
+            obj.Key = decodeListKey(obj.Key);
             const info = {
-              url: new URL(`s3://${Bucket}/${obj.Key}`),
+              url: toS3Url(Bucket, obj.Key),
               size: obj.Size,
               eTag: obj.ETag,
               lastModified: obj.LastModified?.toISOString(),
