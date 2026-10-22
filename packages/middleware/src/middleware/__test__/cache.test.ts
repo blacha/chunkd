@@ -81,4 +81,29 @@ describe('SourceCache', () => {
     assert.equal(Buffer.from(await view.fetch(0, 1)).toString(), '{');
     assert.equal(spy.mock.callCount(), 4);
   });
+
+  it('should not cache rejected requests', async () => {
+    let attempts = 0;
+    const source = new SourceMemory('memory://test.json', Buffer.from('hello'));
+    source.fetch = async () => {
+      attempts++;
+      if (attempts === 1) throw new Error('Temporary failure');
+      return new Uint8Array([104]).buffer;
+    };
+
+    const cache = new SourceCache({ size: 1024 });
+    const view = new SourceView(source, [cache]);
+
+    await assert.rejects(view.fetch(0, 1), /Temporary failure/);
+    assert.equal(attempts, 1);
+    assert.equal(cache.cacheA.size, 0);
+    assert.equal(cache.size, 0);
+
+    // Second request should retry and succeed, not return the cached rejection
+    const res = await view.fetch(0, 1);
+    assert.equal(Buffer.from(res).toString(), 'h');
+    assert.equal(attempts, 2);
+    assert.equal(cache.cacheA.size, 1);
+    assert.equal(cache.size, 1);
+  });
 });

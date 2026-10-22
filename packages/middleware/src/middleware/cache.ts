@@ -50,8 +50,11 @@ export class SourceCache implements SourceMiddleware {
       return existing.promise;
     }
 
-    existing = { promise: next(req), hits: 0, saves: 0, size: req.length };
+    const promise = next(req);
+    existing = { promise, hits: 0, saves: 0, size: req.length };
     this.size += existing.size;
+
+    promise.catch(() => this.evict(cacheKey, existing));
 
     if (this.size > this.maxSize) {
       this.size = existing.size;
@@ -61,5 +64,22 @@ export class SourceCache implements SourceMiddleware {
     }
     this.cacheA.set(cacheKey, existing);
     return existing.promise;
+  }
+
+  /** Remove a cache entry if it matches the current entry in cacheA or cacheB */
+  evict(cacheKey: string, existing?: CacheObject): boolean {
+    let evicted = false;
+    const currentA = this.cacheA.get(cacheKey);
+    if (currentA && (existing == null || currentA === existing)) {
+      this.cacheA.delete(cacheKey);
+      this.size -= currentA.size;
+      evicted = true;
+    }
+    const currentB = this.cacheB.get(cacheKey);
+    if (currentB && (existing == null || currentB === existing)) {
+      this.cacheB.delete(cacheKey);
+      evicted = true;
+    }
+    return evicted;
   }
 }
