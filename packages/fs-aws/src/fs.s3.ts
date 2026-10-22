@@ -43,10 +43,14 @@ function decodeListKey(key: string): string {
   return decodeURIComponent(key.replace(/\+/g, ' '));
 }
 
+const UrlUnsafe = new Set(['%', '#', '?', '\x7f']);
+
 /** Create a URL that round trips to the key */
 function toS3Url(bucket: string, key: string): URL {
-  // oxlint-disable-next-line no-control-regex
-  return new URL(`s3://${bucket}/${key.replace(/[\x00-\x20%#?\x7f]/g, (c) => encodeURIComponent(c))}`);
+  let path = '';
+  // Escape control chars and space (stripped by the URL parser), `%` (read as an escape), `#` and `?` (end the path)
+  for (const c of key) path += c <= ' ' || UrlUnsafe.has(c) ? encodeURIComponent(c) : c;
+  return new URL(`s3://${bucket}/${path}`);
 }
 
 export class FsAwsS3 implements FileSystem {
