@@ -67,16 +67,14 @@ export class SourceCache implements SourceMiddleware {
   }
 
   /** Remove a cache entry if it matches the current entry in cacheA or cacheB */
-  evict(cacheKey: string, existing?: CacheObject): boolean {
+  evict(cacheKey: string, existing: CacheObject): boolean {
     let evicted = false;
-    const currentA = this.cacheA.get(cacheKey);
-    if (currentA && (existing == null || currentA === existing)) {
+    if (this.cacheA.get(cacheKey) === existing) {
       this.cacheA.delete(cacheKey);
-      this.size -= currentA.size;
+      this.size -= existing.size;
       evicted = true;
     }
-    const currentB = this.cacheB.get(cacheKey);
-    if (currentB && (existing == null || currentB === existing)) {
+    if (this.cacheB.get(cacheKey) === existing) {
       this.cacheB.delete(cacheKey);
       evicted = true;
     }
