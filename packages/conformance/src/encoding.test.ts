@@ -58,12 +58,14 @@ function testEncoding(backend: TestBackend): void {
   describe(`encoding ${backend.name}`, () => {
     fsa.register(backend.prefix, backend.fs);
 
+    let files: URL[] = [];
+
     before(async () => {
       for (const key of RawKeys) await fsa.write(new URL(encodeKey(key), prefix), Buffer.from(key));
+      files = await toArray(fsa.list(new URL(backend.prefix)));
     });
 
-    it('should show what fsa.list returns', async () => {
-      const files = await toArray(fsa.list(new URL(backend.prefix)));
+    it('should show what fsa.list returns', () => {
       const hrefs = files.map((f) => f.href).sort();
       console.error(`\n--- ${backend.name} (${hrefs.length}) ---\n${hrefs.join('\n')}`);
       assert.equal(files.length, RawKeys.length);
@@ -71,8 +73,6 @@ function testEncoding(backend: TestBackend): void {
 
     for (const key of RawKeys) {
       it(`should round trip: ${JSON.stringify(key)}`, async () => {
-        const files = await toArray(fsa.list(new URL(backend.prefix)));
-
         // Compare on the decoded path, URLs can validly differ in what they encode (eg `'` vs `%27`)
         const expectedPath = new URL(backend.prefix).pathname + key;
         const found = files.find((f) => decodeURIComponent(f.pathname) === expectedPath);
