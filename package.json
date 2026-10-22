@@ -9,8 +9,8 @@
     "bump": "lerna version --conventional-commits --no-push --sign-git-commit --sign-git-tag",
     "lint": "oxlint . --type-aware --fix && oxfmt . --write",
     "check": "oxlint . --type-aware && oxfmt . --check",
-    "test": "lerna run test",
-    "test:e2e": "cd packages/conformance && node src/index.ts"
+    "test": "lerna run test --ignore @chunkd/conformance",
+    "test:e2e": "npm run build && cd packages/conformance && npm test"
   },
   "type": "module",
   "private": true,
