@@ -48,8 +48,9 @@ const RawKeys = [
   'folder%25/file.txt',
 ];
 
-/** Characters illegal in Windows filenames: < > : " \ | ? * */
-const WindowsReserved = /[<>:"\\|?*]/;
+/** Characters illegal in Windows filenames: control chars (0x00-0x1F) and < > : " \ | ? * */
+// eslint-disable-next-line no-control-regex
+const WindowsReserved = /[\x00-\x1f<>:"\\|?*]/;
 
 /** Encode each segment of a raw key, the way a user of fsa would to build a URL */
 function encodeKey(key: string): string {
