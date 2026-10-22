@@ -1,20 +1,12 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import assert from 'node:assert';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
 import { before, describe, it } from 'node:test';
-import { pathToFileURL } from 'node:url';
 
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import type { FileSystem } from '@chunkd/fs';
-import { fsa, FsFile, FsMemory, toArray } from '@chunkd/fs';
-import { FsAwsS3 } from '@chunkd/fs-aws';
+import { fsa, toArray } from '@chunkd/fs';
 
-// AWS SDK v3 seems to need a region set
-if (process.env.AWS_REGION == null) process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION ?? 'ap-southeast-2';
+import type { TestBackend } from './backends.js';
+import { getWritableBackends } from './backends.js';
 
-const Bucket = 'blacha-chunkd-test';
 const Folder = 'encoding-v1/';
 
 /** Raw (unencoded) object keys, relative to the test prefix */
@@ -56,34 +48,18 @@ const RawKeys = [
   'folder%25/file.txt',
 ];
 
-interface EncodingBackend {
-  name: string;
-  /** Folder URL (ending in "/") that all keys are written under */
-  prefix: string;
-  fs: FileSystem;
-  /** Write a raw key to the backend */
-  write: (key: string) => Promise<void>;
-  cleanup: () => Promise<void>;
-}
-
 /** Encode each segment of a raw key, the way a user of fsa would to build a URL */
 function encodeKey(key: string): string {
   return key.split('/').map(encodeURIComponent).join('/');
 }
 
-/** Write using fsa with a standard encoded URL */
-function fsaWriter(prefix: string): (key: string) => Promise<void> {
-  return async (key) => {
-    await fsa.write(new URL(encodeKey(key), prefix), Buffer.from(key));
-  };
-}
-
-function testEncoding(backend: EncodingBackend): void {
+function testEncoding(backend: TestBackend): void {
+  const prefix = backend.prefix;
   describe(`encoding ${backend.name}`, () => {
     fsa.register(backend.prefix, backend.fs);
 
     before(async () => {
-      for (const key of RawKeys) await backend.write(key);
+      for (const key of RawKeys) await fsa.write(new URL(encodeKey(key), prefix), Buffer.from(key));
     });
 
     it('should show what fsa.list returns', async () => {
@@ -126,44 +102,10 @@ function testEncoding(backend: EncodingBackend): void {
     });
 
     it('cleanup', async () => {
-      await backend.cleanup();
+      for (const key of RawKeys) await fsa.delete(new URL(encodeKey(key), prefix));
     });
   });
 }
 
-// Memory
-testEncoding({
-  name: 'memory',
-  prefix: `memory://blacha-chunkd-test/${Folder}`,
-  fs: new FsMemory(),
-  write: fsaWriter(`memory://blacha-chunkd-test/${Folder}`),
-  cleanup: async () => {},
-});
-
-// Local file system
-const localDir = mkdtempSync(path.join(tmpdir(), 'chunkd-encoding-'));
-const localPrefix = pathToFileURL(localDir + path.sep).href;
-testEncoding({
-  name: 'file',
-  prefix: localPrefix,
-  fs: new FsFile(),
-  write: fsaWriter(localPrefix),
-  cleanup: async () => rmSync(localDir, { recursive: true, force: true }),
-});
-
-// S3, only if a AWS_PROFILE is set
-if (process.env.AWS_PROFILE) {
-  const client = new S3Client();
-  testEncoding({
-    name: 's3',
-    prefix: `s3://${Bucket}/${Folder}`,
-    fs: new FsAwsS3(client),
-    // Write the raw key directly with the SDK so the key does not depend on any fsa encoding
-    write: async (key) => {
-      await client.send(new PutObjectCommand({ Bucket, Key: Folder + key, Body: Buffer.from(key) }));
-    },
-    cleanup: async () => {
-      for (const key of RawKeys) await client.send(new DeleteObjectCommand({ Bucket, Key: Folder + key }));
-    },
-  });
-}
+// memory, file and s3 (only if a AWS_PROFILE is set)
+for (const backend of getWritableBackends(Folder)) testEncoding(backend);
