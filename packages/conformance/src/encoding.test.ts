@@ -94,6 +94,24 @@ function testEncoding(backend: TestBackend): void {
       });
     }
 
+    it('should serialize file list to JSON and read each file back', async () => {
+      const jsonTarget = new URL('file-list.json', prefix);
+      const jsonString = JSON.stringify(files.map((f) => f.href));
+      await fsa.write(jsonTarget, jsonString);
+
+      const readJson = (await fsa.read(jsonTarget)).toString();
+      const parsedUrls: string[] = JSON.parse(readJson);
+
+      assert.equal(parsedUrls.length, testKeys.length);
+      for (const urlStr of parsedUrls) {
+        const fileUrl = fsa.toUrl(urlStr);
+        const content = await fsa.read(fileUrl);
+        assert.ok(content.length > 0);
+      }
+
+      await fsa.delete(jsonTarget);
+    });
+
     it('should list the same urls with recursive:false', async () => {
       const recursive = await toArray(fsa.list(new URL(backend.prefix)));
       const folders = await toArray(fsa.details(new URL(backend.prefix), { recursive: false }));
