@@ -48,6 +48,9 @@ const RawKeys = [
   'folder%25/file.txt',
 ];
 
+/** Characters illegal in Windows filenames: < > : " \ | ? * */
+const WindowsReserved = /[<>:"\\|?*]/;
+
 /** Encode each segment of a raw key, the way a user of fsa would to build a URL */
 function encodeKey(key: string): string {
   return key.split('/').map(encodeURIComponent).join('/');
@@ -55,23 +58,26 @@ function encodeKey(key: string): string {
 
 function testEncoding(backend: TestBackend): void {
   const prefix = backend.prefix;
+  const isWindowsFile = backend.name === 'file' && process.platform === 'win32';
+  const testKeys = isWindowsFile ? RawKeys.filter((key) => !WindowsReserved.test(key)) : RawKeys;
+
   describe(`encoding ${backend.name}`, () => {
     fsa.register(backend.prefix, backend.fs);
 
     let files: URL[] = [];
 
     before(async () => {
-      for (const key of RawKeys) await fsa.write(new URL(encodeKey(key), prefix), Buffer.from(key));
+      for (const key of testKeys) await fsa.write(new URL(encodeKey(key), prefix), Buffer.from(key));
       files = await toArray(fsa.list(new URL(backend.prefix)));
     });
 
     it('should show what fsa.list returns', () => {
       const hrefs = files.map((f) => f.href).sort();
       console.error(`\n--- ${backend.name} (${hrefs.length}) ---\n${hrefs.join('\n')}`);
-      assert.equal(files.length, RawKeys.length);
+      assert.equal(files.length, testKeys.length);
     });
 
-    for (const key of RawKeys) {
+    for (const key of testKeys) {
       it(`should round trip: ${JSON.stringify(key)}`, async () => {
         // Compare on the decoded path, URLs can validly differ in what they encode (eg `'` vs `%27`)
         const expectedPath = new URL(backend.prefix).pathname + key;
@@ -102,7 +108,7 @@ function testEncoding(backend: TestBackend): void {
     });
 
     it('cleanup', async () => {
-      for (const key of RawKeys) await fsa.delete(new URL(encodeKey(key), prefix));
+      for (const key of testKeys) await fsa.delete(new URL(encodeKey(key), prefix));
     });
   });
 }
