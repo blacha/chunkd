@@ -24,6 +24,7 @@ const TestFiles = [
   { path: 'file-1', buffer: Buffer.from('file-1') },
   { path: 'file-2', buffer: Buffer.from('file-2') },
   { path: '🦄.json', buffer: Buffer.from('🦄') },
+  { path: 'space and+plus/file 1+2.txt', buffer: Buffer.from('file 1+2.txt') },
 ];
 console.log = console.trace;
 
@@ -75,10 +76,10 @@ async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
       it('should list recursive:false ', async () => {
         const files = await toArray(fsa.list(new URL(prefix), { recursive: false }));
         files.sort((a, b) => a.href.localeCompare(b.href));
-        assert.equal(files.length, 7);
+        assert.equal(files.length, 8);
         assert.deepEqual(
           files.map((f) => decodeURI(f.href.slice(prefix.length))),
-          ['🦄.json', 'a-file.txt', 'a/', 'c/', 'd/', 'file-1', 'file-2'],
+          ['🦄.json', 'a-file.txt', 'a/', 'c/', 'd/', 'file-1', 'file-2', 'space and+plus/'],
         );
       });
 
@@ -103,7 +104,7 @@ async function testPrefix(prefix: string, fs: FileSystem): Promise<void> {
         const files = await toArray(fsa.details(new URL(prefix), { recursive: false }));
         assert.deepEqual(
           files.filter((f) => f.isDirectory).map((f) => f.url.href.slice(prefix.length)),
-          ['a/', 'c/', 'd/'],
+          ['a/', 'c/', 'd/', 'space%20and+plus/'],
         );
       });
     });
