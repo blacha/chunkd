@@ -94,6 +94,12 @@ export class FsAwsS3 implements FileSystem {
    *
    */
   async *details(loc: URL, opts?: ListOptions): AsyncGenerator<FileInfo<_Object | null>> {
+    /**
+     * S3 `EncodingType=url` uses form encoding, spaces are returned as `+` and a literal `+` as `%2B`.
+     * A `+` in a URL path is a literal plus, so convert to `%20` to make a standard percent encoded path
+     */
+    const fromS3UrlEncoded = (str: string): string => str.replaceAll('+', '%20');
+
     let ContinuationToken: string | undefined = undefined;
     const Delimiter: string | undefined = opts?.recursive === false ? '/' : undefined;
     const Bucket = loc.hostname;
@@ -118,7 +124,11 @@ export class FsAwsS3 implements FileSystem {
         if (res.CommonPrefixes != null) {
           for (const prefix of res.CommonPrefixes) {
             if (prefix.Prefix == null) continue;
-            const info = { url: new URL(`s3://${Bucket}/${prefix.Prefix}`), isDirectory: true, $response: null };
+            const info = {
+              url: new URL(`s3://${Bucket}/${fromS3UrlEncoded(prefix.Prefix)}`),
+              isDirectory: true,
+              $response: null,
+            };
             Object.defineProperty(info, '$response', { enumerable: false });
             yield info;
           }
@@ -128,7 +138,7 @@ export class FsAwsS3 implements FileSystem {
           for (const obj of res.Contents) {
             if (obj.Key == null) continue;
             const info = {
-              url: new URL(`s3://${Bucket}/${obj.Key}`),
+              url: new URL(`s3://${Bucket}/${fromS3UrlEncoded(obj.Key)}`),
               size: obj.Size,
               eTag: obj.ETag,
               lastModified: obj.LastModified?.toISOString(),
