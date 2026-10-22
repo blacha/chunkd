@@ -121,4 +121,21 @@ describe('FsAwsS3.list', () => {
     assert.strictEqual(s3.listRequests[0]?.Prefix, 'plus/a+b');
     assert.deepStrictEqual(urls.map(toKey), ['plus/a+b.tiff']);
   });
+
+  it('should list unicode keys', async () => {
+    const keys = ['🦄/🦄 🌈.tiff', '🦄/🦄+ユニコーン.tiff', '🦄/Ōtautahi 🦄🦄.tiff'];
+    const s3 = new FakeS3([...keys, 'other/🦄.tiff']);
+    const fs = new FsAwsS3(s3 as unknown as S3Client);
+
+    const urls = await toArray(fs.list(new URL('s3://bucket/🦄/')));
+    assert.strictEqual(s3.listRequests[0]?.Prefix, '🦄/');
+    assert.deepStrictEqual(urls.map(toKey), keys);
+    assert.strictEqual(urls[0]?.href, 's3://bucket/%F0%9F%A6%84/%F0%9F%A6%84%20%F0%9F%8C%88.tiff');
+    assert.strictEqual(urls[0]?.href, new URL('s3://bucket/🦄/🦄 🌈.tiff').href);
+
+    for (const url of urls) {
+      const buf = await fs.read(url);
+      assert.strictEqual(buf.toString(), toKey(url));
+    }
+  });
 });
