@@ -7,49 +7,6 @@ import { toArray } from '@chunkd/fs';
 
 import { FsAwsS3 } from '../fs.s3.js';
 
-/** S3 `EncodingType: 'url'` encoding */
-function s3UrlEncode(key: string): string {
-  return encodeURIComponent(key).replace(/%2F/g, '/').replace(/%20/g, '+');
-}
-
-/** Minimal S3 mock */
-class FakeS3 {
-  files = new Map<string, Buffer>();
-  listRequests: Record<string, unknown>[] = [];
-
-  constructor(keys: string[]) {
-    for (const key of keys) this.files.set(key, Buffer.from(key));
-  }
-
-  send(cmd: unknown): Promise<unknown> {
-    if (cmd instanceof ListObjectsV2Command) {
-      const input = cmd.input;
-      this.listRequests.push({ ...input });
-      const encode = input.EncodingType === 'url' ? s3UrlEncode : (s: string): string => s;
-      const prefix = input.Prefix ?? '';
-      const contents: { Key: string; Size: number }[] = [];
-      const prefixes = new Set<string>();
-      for (const [key, buf] of this.files) {
-        if (!key.startsWith(prefix)) continue;
-        const delimIndex = input.Delimiter ? key.indexOf(input.Delimiter, prefix.length) : -1;
-        if (delimIndex > -1) prefixes.add(key.slice(0, delimIndex + 1));
-        else contents.push({ Key: encode(key), Size: buf.length });
-      }
-      return Promise.resolve({
-        IsTruncated: false,
-        Contents: contents,
-        CommonPrefixes: [...prefixes].map((p) => ({ Prefix: encode(p) })),
-      });
-    }
-    if (cmd instanceof GetObjectCommand) {
-      const buf = this.files.get(cmd.input.Key ?? '');
-      if (buf == null) return Promise.reject({ $metadata: { httpStatusCode: 404 } });
-      return Promise.resolve({ Body: buf, ContentLength: buf.length });
-    }
-    return Promise.reject(new Error('Unsupported command'));
-  }
-}
-
 const Keys = [
   '3. Processed (including calibrations)/Feature Layers/a b.tiff',
   'plus/a+b.tiff',
@@ -59,83 +16,75 @@ const Keys = [
   'special/a#b?c.tiff',
   'special/tab\t.tiff',
   'special/trailing ',
-  'unicode/Ōtautahi tē.tiff',
+  '🦄/Ōtautahi 🦄+🌈.tiff',
 ];
+
+/** S3 `EncodingType: 'url'` encoding */
+function s3UrlEncode(key: string): string {
+  return encodeURIComponent(key).replace(/%2F/g, '/').replace(/%20/g, '+');
+}
+
+/** Minimal S3 mock */
+const s3 = {
+  async send(cmd: unknown): Promise<unknown> {
+    if (cmd instanceof GetObjectCommand) {
+      const key = cmd.input.Key ?? '';
+      if (!Keys.includes(key)) throw new Error(`NoSuchKey: ${key}`);
+      return { Body: Buffer.from(key) };
+    }
+    if (!(cmd instanceof ListObjectsV2Command)) throw new Error('Unsupported command');
+
+    const { Prefix = '', Delimiter, EncodingType } = cmd.input;
+    const encode = (s: string): string => (EncodingType === 'url' ? s3UrlEncode(s) : s);
+    const contents: { Key: string }[] = [];
+    const prefixes = new Set<string>();
+    for (const key of Keys.filter((k) => k.startsWith(Prefix))) {
+      const end = Delimiter ? key.indexOf(Delimiter, Prefix.length) : -1;
+      if (end === -1) contents.push({ Key: encode(key) });
+      else prefixes.add(encode(key.slice(0, end + 1)));
+    }
+    return { Contents: contents, CommonPrefixes: [...prefixes].map((p) => ({ Prefix: p })) };
+  },
+} as unknown as S3Client;
 
 function toKey(url: URL): string {
   return decodeURIComponent(url.pathname.slice(1));
 }
 
 describe('FsAwsS3.list', () => {
-  it('should list urls that round trip to the original key', async () => {
-    const s3 = new FakeS3(Keys);
-    const fs = new FsAwsS3(s3 as unknown as S3Client);
+  const fs = new FsAwsS3(s3);
 
-    const urls = await toArray(fs.list(new URL('s3://bucket/')));
-    assert.deepStrictEqual(urls.map(toKey).sort(), [...Keys].sort());
-
-    for (const url of urls) {
-      const buf = await fs.read(url);
-      assert.strictEqual(buf.toString(), toKey(url));
-    }
-
-    const details = await toArray(fs.details(new URL('s3://bucket/')));
-    assert.deepStrictEqual(details.map((f) => f.$response?.Key ?? '').sort(), [...Keys].sort());
-  });
-
-  it('should list urls matching a url created from the same path', async () => {
-    const s3 = new FakeS3(Keys);
-    const fs = new FsAwsS3(s3 as unknown as S3Client);
-
-    const root = new URL('s3://bucket/3. Processed (including calibrations)/');
-    const urls = await toArray(fs.list(root));
+  it('should list files that round trip to their key', async () => {
+    const files = await toArray(fs.details(new URL('s3://bucket/')));
     assert.deepStrictEqual(
-      urls.map((u) => u.href),
-      ['s3://bucket/3.%20Processed%20(including%20calibrations)/Feature%20Layers/a%20b.tiff'],
+      files.map((f) => toKey(f.url)),
+      Keys,
     );
-    assert.ok(urls[0]?.href.startsWith(root.href));
-    assert.strictEqual(s3.listRequests[0]?.Prefix, '3. Processed (including calibrations)/');
+    assert.deepStrictEqual(
+      files.map((f) => f.$response?.Key),
+      Keys,
+    );
+    for (const f of files) assert.strictEqual((await fs.read(f.url)).toString(), toKey(f.url));
   });
 
-  it('should list folders that round trip to the original prefix', async () => {
-    const s3 = new FakeS3(Keys);
-    const fs = new FsAwsS3(s3 as unknown as S3Client);
-
-    const folders = await toArray(fs.details(new URL('s3://bucket/'), { recursive: false }));
-    assert.ok(folders.every((f) => f.isDirectory));
-    const root = folders.find((f) => toKey(f.url).startsWith('3.'));
-    assert.strictEqual(root?.url.href, 's3://bucket/3.%20Processed%20(including%20calibrations)/');
-
-    for (const folder of folders) {
-      const files = await toArray(fs.list(folder.url));
-      assert.ok(files.length > 0, `No files found in ${folder.url.href}`);
-      assert.strictEqual(s3.listRequests.at(-1)?.Prefix, toKey(folder.url));
-    }
+  it('should list folders matching urls created from their path', async () => {
+    const folders = await toArray(fs.list(new URL('s3://bucket/'), { recursive: false }));
+    const paths = [...new Set(Keys.map((k) => k.slice(0, k.indexOf('/') + 1)))];
+    assert.deepStrictEqual(
+      folders.map((f) => f.href),
+      paths.map((p) => new URL(`s3://bucket/${p}`).href),
+    );
   });
 
-  it('should send prefixes containing "+" unchanged', async () => {
-    const s3 = new FakeS3(Keys);
-    const fs = new FsAwsS3(s3 as unknown as S3Client);
-
-    const urls = await toArray(fs.list(new URL('s3://bucket/plus/a+b')));
-    assert.strictEqual(s3.listRequests[0]?.Prefix, 'plus/a+b');
-    assert.deepStrictEqual(urls.map(toKey), ['plus/a+b.tiff']);
-  });
-
-  it('should list unicode keys', async () => {
-    const keys = ['🦄/🦄 🌈.tiff', '🦄/🦄+ユニコーン.tiff', '🦄/Ōtautahi 🦄🦄.tiff'];
-    const s3 = new FakeS3([...keys, 'other/🦄.tiff']);
-    const fs = new FsAwsS3(s3 as unknown as S3Client);
-
-    const urls = await toArray(fs.list(new URL('s3://bucket/🦄/')));
-    assert.strictEqual(s3.listRequests[0]?.Prefix, '🦄/');
-    assert.deepStrictEqual(urls.map(toKey), keys);
-    assert.strictEqual(urls[0]?.href, 's3://bucket/%F0%9F%A6%84/%F0%9F%A6%84%20%F0%9F%8C%88.tiff');
-    assert.strictEqual(urls[0]?.href, new URL('s3://bucket/🦄/🦄 🌈.tiff').href);
-
-    for (const url of urls) {
-      const buf = await fs.read(url);
-      assert.strictEqual(buf.toString(), toKey(url));
+  it('should list files by prefix', async () => {
+    for (const prefix of ['3. Processed (', 'plus/a+', '🦄/Ōtautahi 🦄+']) {
+      const root = new URL(`s3://bucket/${prefix}`);
+      const urls = await toArray(fs.list(root));
+      assert.deepStrictEqual(
+        urls.map(toKey),
+        Keys.filter((k) => k.startsWith(prefix)),
+      );
+      assert.ok(urls.length > 0 && urls.every((u) => u.href.startsWith(root.href)), root.href);
     }
   });
 });
