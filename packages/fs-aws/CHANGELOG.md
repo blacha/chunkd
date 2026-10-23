@@ -25,6 +25,22 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.6.3](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.2...fs-aws-v11.6.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* evict rejected promises from cache ([#1740](https://github.com/blacha/chunkd/issues/1740)) ([f9df7db](https://github.com/blacha/chunkd/commit/f9df7db1a0aca31a4dd8aa1bd44a94f3ea25fb5d)), closes [#1733](https://github.com/blacha/chunkd/issues/1733)
+* s3 enocdes spaces as "+" but URL expects "%20" ([#1738](https://github.com/blacha/chunkd/issues/1738)) ([59573c8](https://github.com/blacha/chunkd/commit/59573c8cbd3c376ad08ca24f5763698efabb396c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/fs bumped from 11.5.2 to 11.5.3
+    * @chunkd/source-aws bumped from 11.2.1 to 11.2.2
+
 ## [11.6.2](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.1...fs-aws-v11.6.2) (2026-05-23)
 
 

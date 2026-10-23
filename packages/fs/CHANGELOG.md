@@ -1,5 +1,22 @@
 # Changelog
 
+## [11.5.3](https://github.com/blacha/chunkd/compare/fs-v11.5.2...fs-v11.5.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* evict rejected promises from cache ([#1740](https://github.com/blacha/chunkd/issues/1740)) ([f9df7db](https://github.com/blacha/chunkd/commit/f9df7db1a0aca31a4dd8aa1bd44a94f3ea25fb5d)), closes [#1733](https://github.com/blacha/chunkd/issues/1733)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.4.1 to ^11.4.2
+    * @chunkd/source-memory bumped from ^11.2.1 to ^11.2.2
+    * @chunkd/source-file bumped from ^11.2.1 to ^11.2.2
+    * @chunkd/source-http bumped from ^11.4.1 to ^11.4.2
+
 ## [11.5.2](https://github.com/blacha/chunkd/compare/fs-v11.5.1...fs-v11.5.2) (2026-05-23)
 
 
