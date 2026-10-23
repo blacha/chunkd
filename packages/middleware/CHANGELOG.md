@@ -1,5 +1,19 @@
 # Changelog
 
+## [11.3.2](https://github.com/blacha/chunkd/compare/middleware-v11.3.1...middleware-v11.3.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* evict rejected promises from cache ([#1740](https://github.com/blacha/chunkd/issues/1740)) ([f9df7db](https://github.com/blacha/chunkd/commit/f9df7db1a0aca31a4dd8aa1bd44a94f3ea25fb5d)), closes [#1733](https://github.com/blacha/chunkd/issues/1733)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @chunkd/source bumped from ^11.4.1 to ^11.4.2
+
 ## [11.3.1](https://github.com/blacha/chunkd/compare/middleware-v11.3.0...middleware-v11.3.1) (2026-05-23)
 
 
