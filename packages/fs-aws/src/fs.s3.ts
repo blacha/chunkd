@@ -312,8 +312,13 @@ export class FsAwsS3 implements FileSystem {
       .then((r) => {
         annotate.readStream(pt, { ...parseMetadata(r), url: loc });
 
-        if (r.Body) (r.Body as Readable).pipe(pt);
-        else pt.end();
+        if (r.Body) {
+          const body = r.Body as Readable;
+          body.on('error', (e) =>
+            pt.destroy(toFsError(e, `Failed to readStream: ${loc.href}`, loc, 'readStream', this)),
+          );
+          body.pipe(pt);
+        } else pt.end();
       })
       .catch((e) => pt.emit('error', toFsError(e, `Failed to readStream: ${loc.href}`, loc, 'readStream', this)));
     return pt as unknown as ReadStreamResponse;
