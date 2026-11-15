@@ -25,6 +25,13 @@
   * dependencies
     * @chunkd/source-aws bumped from 11.0.2 to 11.0.3
 
+## [11.6.4](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.3...fs-aws-v11.6.4) (2026-11-15)
+
+
+### Bug Fixes
+
+* **fs-aws:** forward body stream errors in readStream ([#1743](https://github.com/blacha/chunkd/issues/1743)) ([36534fd](https://github.com/blacha/chunkd/commit/36534fd7068daf6e347d722149c4233cfeb66aec))
+
 ## [11.6.3](https://github.com/blacha/chunkd/compare/fs-aws-v11.6.2...fs-aws-v11.6.3) (2026-10-23)
 
 
