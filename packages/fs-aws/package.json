@@ -1,6 +1,6 @@
 {
   "name": "@chunkd/fs-aws",
-  "version": "11.6.3",
+  "version": "11.6.4",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"
